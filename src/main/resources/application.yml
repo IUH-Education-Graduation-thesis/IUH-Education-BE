@@ -13,7 +13,7 @@ spring:
           merge:
             entity_copy_observer: allow
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
     database: mysql
     show-sql: true
