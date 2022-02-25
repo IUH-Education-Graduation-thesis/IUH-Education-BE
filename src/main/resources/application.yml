@@ -1,0 +1,50 @@
+db_locate: localhost
+port: 3306
+db_name: IUHStudent
+db_username: root
+db_password: Tokelovip12@
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+    hibernate:
+      ddl-auto: update
+
+    database: mysql
+    show-sql: true
+
+  datasource:
+    url: jdbc:mysql://${db_locate}:${port}/${db_name}
+    username: ${db_username}
+    password: ${db_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+graphql:
+  servlet:
+    mapping: /graphql
+    enabled: true
+    exception-handlers-enabled: true
+    context-setting: per_query_with_instrumentation
+    tracingEnabled: false
+    corsEnabled: true
+
+graphiql:
+  headers:
+    Authorization: Bearer my-generated-token
+  mapping: /graphiql
+  endpoint:
+    graphql: /graphql
+    subscriptions: /subscriptions
+  subscriptions:
+    reconnect: false
+    timeout: 30
+  enabled: true
+  pageTitle: GraphiQL
+  cdn:
+    enabled: false
+    version: 0.13.0
