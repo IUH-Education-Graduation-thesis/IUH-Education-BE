@@ -2,10 +2,13 @@ package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.SinhVien;
+import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
+import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.service.AccountService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import kotlin.collections.ArrayDeque;
@@ -18,6 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Configuration
 public class Mutation implements GraphQLMutationResolver {
@@ -65,4 +69,38 @@ public class Mutation implements GraphQLMutationResolver {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public RegisterResponse register(CreateAccountInput inputs) {
+        try {
+            Account _account = accountService.createAccount(null, inputs);
+
+            return RegisterResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tạo tài khoản thành công!")
+                    .data(_account)
+                    .build();
+        } catch (UserAlreadyExistsException UAEexp) {
+            return RegisterResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tạo tài khoản không thành công!")
+                    .errors(new ArrayList<>() {{
+                        add(ErrorResponse.builder()
+                                .message("Tên tài khoản đã tồn tại!")
+                                .error_fields(new ArrayList<>(Arrays.asList("username")))
+                                .build());
+                    }})
+                    .build();
+        } catch (Exception exp) {
+            return RegisterResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tạo tài khoản không thành công!")
+                    .errors(new ArrayList<>() {{
+                        add(ErrorResponse.builder()
+                                .message("Tên tài khoản đã tồn tại!")
+                                .error_fields(new ArrayList<>(Arrays.asList("username")))
+                                .build());
+                    }})
+                    .build();
+        }
+    }
 }

@@ -1,0 +1,11 @@
+enum Role {
+    ADMIN
+    STUDENT
+    TEACHER
+}
+
+input CreateAccountInput {
+    username: String!
+    password: String!
+    roles: [Role]!
+}
