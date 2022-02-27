@@ -8,7 +8,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.SinhVien;
 import com.hong_hoan.iuheducation.exception.BadTokenException;
+import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
 import com.hong_hoan.iuheducation.repository.AccountRepository;
+import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.security.JWTUserDetails;
 import com.hong_hoan.iuheducation.security.SecurityProperties;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,8 @@ import static java.util.function.Predicate.not;
 @RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
     private static final String ADMIN_AUTHORITY = "ADMIN";
-    private static final String USER_AUTHORITY = "USER";
+    private static final String STUDENT_AUTHORITY = "STUDENT";
+    private static final String TEACHER_AUTHORITY = "TEACHER";
     private final Algorithm algorithm;
     private final JWTVerifier verifier;
     private final PasswordEncoder passwordEncoder;
@@ -73,25 +76,31 @@ public class AccountService implements UserDetailsService {
                 .orElse(null);
     }
 
-//    @Transactional
-//    public Account createAccount(SinhVien sinhVien, AccountInput input) {
-//        if (!exists(input)) {
-//            return accountRepository.saveAndFlush(Account
-//                    .builder()
-//                    .username(input.getUserName())
-//                    .password(passwordEncoder.encode(input.getPassword()))
-//                    .roles(Set.of(USER_AUTHORITY))
-//                    .sinhVien(sinhVien)
-//                    .build());
-//        } else {
-//            throw new UserAlreadyExistsException(input.getUserName());
-//        }
-//    }
+    @Transactional
+    public Account createAccount(SinhVien sinhVien, CreateAccountInput input) {
+        if (!exists(input.getUsername())) {
+            Set<String> _listRole = new HashSet<String>();
 
-//    public boolean exists(AccountInput input) {
-//        return accountRepository.existsByUsername(input.getUserName());
-//    }
+            input.getRoles().forEach(i -> {
+                _listRole.add(i.name());
+            });
 
+            return accountRepository.saveAndFlush(Account
+                    .builder()
+                    .userName(input.getUsername())
+                    .password(passwordEncoder.encode(input.getPassword()))
+                    .roles(_listRole)
+                    .sinhVien(sinhVien)
+                    .build());
+        } else {
+            throw new UserAlreadyExistsException(input.getUsername());
+        }
+    }
+
+    public boolean exists(String username) {
+        return accountRepository.existsByUserName(username);
+    }
+//
 //    @Transactional
 //    public Account updatePassword(Long userId, UpdatePasswordInput input) {
 //        Account account = accountRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
