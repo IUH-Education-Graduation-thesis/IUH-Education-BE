@@ -19,7 +19,7 @@ public class Account {
     private Long id;
 
     private String userName;
-    private String passworld;
+    private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "account_id"))

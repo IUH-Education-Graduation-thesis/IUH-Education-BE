@@ -26,13 +26,8 @@ public class MonHoc {
     @JoinColumn(name = "hoc_phan_id")
     private HocPhan hocPhan;
 
-
     @ManyToOne
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "chuyen_nganh_id")
-    private ChuyenNganh chuyenNganh;
 
 }

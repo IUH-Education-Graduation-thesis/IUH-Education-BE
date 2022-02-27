@@ -1,0 +1,23 @@
+scalar Date
+scalar Boolean
+scalar String
+scalar Int
+scalar ID
+scalar Float
+
+interface ResponseInterface {
+    status: ResponseStatus!
+    message: String
+    errors: [ErrorResponse]
+}
+
+type ErrorResponse {
+    message: String
+    error_fields: [String]
+}
+
+enum ResponseStatus {
+    OK
+    WARNING
+    ERROR
+}

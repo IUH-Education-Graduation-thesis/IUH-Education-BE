@@ -1,0 +1,12 @@
+type LichHoc {
+    id: ID
+    ghiChu: String
+    ngayHocTrongTuan: Int
+    nhomThuHanh: Int
+    thoiGianBatDau: Date
+    thoiGianKetThuc: Date
+    tietHocBatDau: Int
+    tietHocKetThuc: Int
+    lopHocPhan: LopHocPhan
+    phongHoc: PhongHoc
+}

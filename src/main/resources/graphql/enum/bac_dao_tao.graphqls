@@ -1,0 +1,5 @@
+enum BacDaoTao {
+    DAI_HOC
+    CAO_DANG
+    THAC_SI
+}

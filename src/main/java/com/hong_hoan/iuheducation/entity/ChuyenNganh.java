@@ -4,7 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -26,11 +28,13 @@ public class ChuyenNganh {
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 
-    @OneToMany(mappedBy = "chuyenNganh", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MonHoc> monHocs = new ArrayList<>();
-
-
     @OneToMany(mappedBy = "chuyenNganh")
     private List<Lop> lops = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "chuyen_nganh_mon_hocs",
+            joinColumns = @JoinColumn(name = "chuyen_nganh_id"),
+            inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
+    private Set<MonHoc> monHocs = new LinkedHashSet<>();
 
 }

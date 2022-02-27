@@ -1,0 +1,6 @@
+type HocKy {
+    id: ID
+    thuTu: Int
+    moTa: String
+    namHoc: NamHoc
+}

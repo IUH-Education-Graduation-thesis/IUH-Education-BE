@@ -1,0 +1,5 @@
+enum TrangThai {
+    RA_TRUONG
+    DANG_HOC
+    BAO_LUU
+}

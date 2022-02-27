@@ -1,0 +1,7 @@
+type Lop {
+    id: ID
+    ten: String
+    moTa: String
+    khoa: Khoa
+    chuyenNganh: ChuyenNganh
+}
