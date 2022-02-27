@@ -1,0 +1,11 @@
+type HocPhan {
+    id: ID
+    maHocPhan: String
+    moTa: String
+    batBuoc: Boolean
+    hocKy: HocKy
+    monHoc: MonHoc
+    monHocTienQuyet: [MonHoc]
+    monHocSongHanh: [MonHoc]
+    monHocTruoc: [MonHoc]
+}

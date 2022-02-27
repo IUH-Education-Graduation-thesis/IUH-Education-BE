@@ -32,6 +32,7 @@ graphql:
     context-setting: per_query_with_instrumentation
     tracingEnabled: false
     corsEnabled: true
+    async-mode-enabled: true
 
 graphiql:
   headers:
@@ -43,8 +44,9 @@ graphiql:
   subscriptions:
     reconnect: false
     timeout: 30
+  basePath: /
   enabled: true
   pageTitle: GraphiQL
   cdn:
     enabled: false
-    version: 0.13.0
+    version: latest

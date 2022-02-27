@@ -1,0 +1,5 @@
+type DayNha {
+    id: ID
+    moTa: String
+    tenDayNha: String
+}

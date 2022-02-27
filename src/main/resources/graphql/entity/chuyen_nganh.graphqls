@@ -1,0 +1,6 @@
+type ChuyenNganh {
+    id: ID
+    moTa: String
+    ten: String
+    khoaVien: KhoaVien
+}
