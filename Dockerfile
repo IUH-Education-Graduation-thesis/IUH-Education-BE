@@ -2,8 +2,8 @@ FROM openjdk:latest
 
 VOLUME /tmp
 
-ADD target/IUHEducation-0.0.1-SNAPSHOT.jar app.jar
+ADD target/iuh-education-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}","-jar", "app.jar", "/IUHEducation-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}","-jar", "app.jar", "/iuh-education-0.0.1-SNAPSHOT.jar"]
 
 EXPOSE 8080
