@@ -1,0 +1,4 @@
+type SinhVienLopHocPhanId {
+    sinhVienId: ID
+    lopHocPhanId: ID
+}

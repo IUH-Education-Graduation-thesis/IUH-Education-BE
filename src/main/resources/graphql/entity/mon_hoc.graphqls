@@ -1,0 +1,8 @@
+type MonHoc {
+    id: ID
+    moTa: String
+    soTinChiLyThuyet: Int
+    soTinChiThucHanh: Int
+    ten: String
+    khoaVien: KhoaVien
+}

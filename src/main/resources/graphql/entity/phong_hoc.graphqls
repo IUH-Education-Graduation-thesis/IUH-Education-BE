@@ -1,0 +1,7 @@
+type PhongHoc {
+    id: ID
+    tenPhongHoc: String
+    sucChua: Int
+    moTa: String
+    dayNha: DayNha
+}

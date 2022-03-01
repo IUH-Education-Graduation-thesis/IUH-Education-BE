@@ -1,0 +1,6 @@
+type Account {
+    id: Int
+    userName: String
+    roles: [String]
+    sinhVien: SinhVien
+}

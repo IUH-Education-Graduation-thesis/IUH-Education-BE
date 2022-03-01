@@ -1,0 +1,4 @@
+enum HocHam {
+    THAC_SI
+    TIEN_SI
+}

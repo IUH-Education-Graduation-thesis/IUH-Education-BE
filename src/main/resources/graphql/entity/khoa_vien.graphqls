@@ -1,0 +1,6 @@
+type KhoaVien {
+    id: ID
+    ten: String
+    moTa: String
+    link: String
+}

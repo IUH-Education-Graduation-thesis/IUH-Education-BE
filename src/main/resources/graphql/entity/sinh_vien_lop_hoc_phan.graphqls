@@ -1,0 +1,10 @@
+type SinhVienLopHocPhan {
+    sinhVienLopHocPhanId: SinhVienLopHocPhanId
+    ghiChu: String
+    diemThuongKy: [Float]
+    diemThucHanh: [Float]
+    diemGiuaKy: Float
+    diemCuoiKy: Float
+    sinhVien: SinhVien
+    lopHocPhan: LopHocPhan
+}
