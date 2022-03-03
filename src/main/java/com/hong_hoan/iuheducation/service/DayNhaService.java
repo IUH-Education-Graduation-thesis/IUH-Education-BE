@@ -1,18 +1,26 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.DayNha;
+import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
 import com.hong_hoan.iuheducation.repository.DayNhaRepository;
+import com.hong_hoan.iuheducation.util.Helper;
+import com.hong_hoan.iuheducation.util.Merge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class DayNhaService {
+    private Helper helper = Helper.getInstance();
+
     @Autowired
     private DayNhaRepository dayNhaRepository;
+    @Autowired
+    private Merge merge;
 
     public List<DayNha> getListDayNha() {
         List<DayNha> _dayNhas = dayNhaRepository.findAll();
@@ -25,18 +33,27 @@ public class DayNhaService {
         return _dayNha;
     }
 
-    public DayNha updateDayNha(DayNha dayNha) {
-        DayNha _dayNha = dayNhaRepository.save(dayNha);
+    public DayNha updateDayNha(DayNha dayNha) throws IllegalAccessException, InstantiationException {
+        boolean _isExist = dayNhaRepository.existsById(dayNha.getId());
 
-        return _dayNha;
+        if (!_isExist) {
+            throw new DayNhaIsNotExistException();
+        }
+
+        DayNha _dayNhaResult = dayNhaRepository.save(dayNha);
+
+        return _dayNhaResult;
     }
 
-    public boolean deleteDayNha(long dayNhaId) {
-        dayNhaRepository.deleteById(dayNhaId);
-
+    public void deleteDayNha(long dayNhaId) {
         boolean _isExist = dayNhaRepository.existsById(dayNhaId);
 
-        return !_isExist;
+        if(!_isExist) {
+            throw new DayNhaIsNotExistException();
+        }
+
+        dayNhaRepository.deleteById(dayNhaId);
     }
 
 }
+
