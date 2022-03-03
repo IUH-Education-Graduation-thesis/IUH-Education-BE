@@ -1,0 +1,4 @@
+input ThemDayNhaInput {
+    tenDayNha: String!
+    moTa: String
+}
