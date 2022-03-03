@@ -1,0 +1,10 @@
+input ThemDayNhaInput {
+    tenDayNha: String!
+    moTa: String
+}
+
+input SuaDayNhaInput {
+    id: ID!
+    tenDayNha: String!
+    moTa: String
+}
