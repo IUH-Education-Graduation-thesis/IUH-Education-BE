@@ -1,0 +1,4 @@
+input ThemKhoaHocInputs {
+    khoa: Int!
+    moTa: String
+}

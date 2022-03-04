@@ -1,9 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers;
 
-import com.hong_hoan.iuheducation.entity.Account;
-import com.hong_hoan.iuheducation.entity.DayNha;
-import com.hong_hoan.iuheducation.entity.PhongHoc;
-import com.hong_hoan.iuheducation.entity.SinhVien;
+import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
 import com.hong_hoan.iuheducation.exception.PhongHocIsNotExist;
 import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
@@ -12,7 +9,9 @@ import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
+import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
+import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
@@ -20,6 +19,7 @@ import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.service.AccountService;
 import com.hong_hoan.iuheducation.service.DayNhaService;
+import com.hong_hoan.iuheducation.service.KhoaHocService;
 import com.hong_hoan.iuheducation.service.PhongHocService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +44,39 @@ public class Mutation implements GraphQLMutationResolver {
     private AuthenticationProvider authenticationProvider;
     @Autowired
     private PhongHocService phongHocService;
+    @Autowired
+    private KhoaHocService khoaHocService;
+
+    /*
+        phong hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaHocResponse themKhoaHoc(ThemKhoaHocInputs inputs) {
+
+        try {
+            Khoa _khoa = khoaHocService.createKhoaHoc(inputs);
+
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm khóa học thành công.")
+                    .data(Arrays.asList(_khoa))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm khóa học không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+
+
+    }
 
     /*
         phong hoc
