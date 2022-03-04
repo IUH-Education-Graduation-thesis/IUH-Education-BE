@@ -1,15 +1,20 @@
 package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.DayNha;
+import com.hong_hoan.iuheducation.entity.Khoa;
 import com.hong_hoan.iuheducation.entity.PhongHoc;
+import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.DayNhaRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
+import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.service.DayNhaService;
+import com.hong_hoan.iuheducation.service.KhoaHocService;
 import com.hong_hoan.iuheducation.service.PhongHocService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,71 @@ public class Query implements GraphQLQueryResolver {
     private DayNhaService dayNhaService;
     @Autowired
     private PhongHocService phongHocService;
+    @Autowired
+    private KhoaHocService khoaHocService;
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STUDENT', 'TEACHER')")
+    public KhoaHocResponse findKhoaHocs(String id) {
+
+        try {
+
+
+            if (id.isEmpty()) {
+
+                List<Khoa> _khoas = khoaHocService.findAllKhoaHoc();
+                return KhoaHocResponse.builder()
+                        .status(ResponseStatus.OK)
+                        .message("Lấy thông tin khóa học thành công!")
+                        .data(_khoas)
+                        .build();
+            }
+
+            Khoa _khoa = khoaHocService.findById(id);
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin khóa học thành công!")
+                    .data(Arrays.asList(_khoa))
+                    .build();
+
+        } catch (NullPointerException ex) {
+            List<Khoa> _khoas = khoaHocService.findAllKhoaHoc();
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin khóa học thành công!")
+                    .data(_khoas)
+                    .build();
+
+        } catch (NumberFormatException ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin lớp học không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("id"))
+                                    .message("Định dạng id không đúng format!")
+                                    .build()
+                    ))
+                    .build();
+        } catch (KhoaHocIsNotExist ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin khóa học thành công!")
+                    .data(Arrays.asList())
+                    .build();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin lớp học không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public PhongHocResponse findPhongHocs(FindPhongHocInputs inputs) {
