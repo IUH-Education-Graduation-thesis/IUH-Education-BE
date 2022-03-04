@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.NamHoc;
+import com.hong_hoan.iuheducation.exception.NgayBatDauSauNgayKetThucException;
 import com.hong_hoan.iuheducation.repository.NamHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,10 @@ public class NamHocService {
     private NamHocRepository namHocRepository;
 
     public NamHoc themNamHoc(ThemNamHocInputs inputs) {
+        if(inputs.getNgayBatDau().after(inputs.getNgayKetThuc())) {
+            throw new NgayBatDauSauNgayKetThucException();
+        }
+
         NamHoc _namHoc = NamHoc.builder()
                 .moTa(inputs.getMoTa())
                 .ngayBatDau(inputs.getNgayBatDau())
