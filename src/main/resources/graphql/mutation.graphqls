@@ -9,4 +9,5 @@ type Mutation {
 
     # phong hoc
     themPhongHoc(inputs: ThemPhongHocInputs!): PhongHocResponse!
+    xoaPhongHoc(phongHocId: ID!): PhongHocResponse!
 }

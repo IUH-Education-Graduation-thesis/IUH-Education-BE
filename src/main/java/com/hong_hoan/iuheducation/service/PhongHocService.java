@@ -3,6 +3,7 @@ package com.hong_hoan.iuheducation.service;
 import com.hong_hoan.iuheducation.entity.DayNha;
 import com.hong_hoan.iuheducation.entity.PhongHoc;
 import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
+import com.hong_hoan.iuheducation.exception.PhongHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.DayNhaRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
@@ -21,6 +22,12 @@ public class PhongHocService {
     private PhongHocRepository phongHocRepository;
     @Autowired
     private DayNhaRepository dayNhaRepository;
+
+    public void xoaPhongHoc(long id) {
+        boolean _isExistPhongHoc = phongHocRepository.existsById(id);
+        if(!_isExistPhongHoc) throw new PhongHocIsNotExist();
+        phongHocRepository.deleteById(id);
+    }
 
     public PhongHoc themPhongHoc(ThemPhongHocInputs inputs) {
         boolean _isExistDayNha = dayNhaRepository.existsById(inputs.getDayNhaId());

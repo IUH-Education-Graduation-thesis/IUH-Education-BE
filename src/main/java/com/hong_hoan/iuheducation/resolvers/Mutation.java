@@ -5,6 +5,7 @@ import com.hong_hoan.iuheducation.entity.DayNha;
 import com.hong_hoan.iuheducation.entity.PhongHoc;
 import com.hong_hoan.iuheducation.entity.SinhVien;
 import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
+import com.hong_hoan.iuheducation.exception.PhongHocIsNotExist;
 import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
@@ -48,6 +49,42 @@ public class Mutation implements GraphQLMutationResolver {
         phong hoc
         ======================================================================
      */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public PhongHocResponse xoaPhongHoc(String id) {
+        try {
+            long _id = Long.valueOf(id);
+
+            phongHocService.xoaPhongHoc(_id);
+
+            return PhongHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa phòng học thành công.")
+                    .build();
+        } catch (PhongHocIsNotExist ex) {
+            return PhongHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa phòng học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("id"))
+                                    .message("Phòng học không tồn tại!")
+                                    .build()
+                    ))
+                    .build();
+        } catch (NumberFormatException ex) {
+            return PhongHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa phòng học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("id"))
+                                    .message("Phòng hoc ID không đúng format!")
+                                    .build()
+                    ))
+                    .build();
+        }
+    }
+
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public PhongHocResponse themPhongHoc(ThemPhongHocInputs inputs) {
 
