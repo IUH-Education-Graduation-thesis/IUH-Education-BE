@@ -1,4 +1,5 @@
 scalar Date
+scalar DateTime
 scalar Boolean
 scalar String
 scalar Int

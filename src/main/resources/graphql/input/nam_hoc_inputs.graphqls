@@ -1,0 +1,5 @@
+input ThemNamHocInputs {
+    moTa: String
+    ngayBatDau: Date!
+    ngayKetThuc: Date!
+}

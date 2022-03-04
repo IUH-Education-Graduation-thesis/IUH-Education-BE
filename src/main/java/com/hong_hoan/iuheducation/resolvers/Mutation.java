@@ -1,27 +1,23 @@
 package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.*;
-import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
-import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
-import com.hong_hoan.iuheducation.exception.PhongHocIsNotExist;
-import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
+import com.hong_hoan.iuheducation.exception.*;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
-import com.hong_hoan.iuheducation.service.AccountService;
-import com.hong_hoan.iuheducation.service.DayNhaService;
-import com.hong_hoan.iuheducation.service.KhoaHocService;
-import com.hong_hoan.iuheducation.service.PhongHocService;
+import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +43,44 @@ public class Mutation implements GraphQLMutationResolver {
     private PhongHocService phongHocService;
     @Autowired
     private KhoaHocService khoaHocService;
+    @Autowired
+    private NamHocService namHocService;
+
+    /*
+        phong hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public NamHocResponse themNamHoc(ThemNamHocInputs inputs) {
+        try {
+            NamHoc _namHoc = namHocService.themNamHoc(inputs);
+
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm năm học thành công.")
+                    .data(Arrays.asList(_namHoc))
+                    .build();
+        } catch (NgayBatDauSauNgayKetThucException ex) {
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm năm học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("ngayBatDau"))
+                            .message("Ngày bắt đầu nhỏ hơn ngày kết thúc!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm năm học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+
+    }
 
     /*
         phong hoc

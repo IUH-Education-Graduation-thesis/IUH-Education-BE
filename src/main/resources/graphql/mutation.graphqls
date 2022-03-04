@@ -2,6 +2,9 @@ type Mutation {
     login(user_name: String!, password: String!): LoginResponse!
     register(inputs: CreateAccountInput!): RegisterResponse!
 
+    # nam hoc
+    themNamHoc(inputs: ThemNamHocInputs): NamHocResponse!
+
     # khoa
     themKhoaHoc(inputs: ThemKhoaHocInputs!): KhoaHocResponse!
     xoaKhoaHoc(id: ID!): KhoaHocResponse!

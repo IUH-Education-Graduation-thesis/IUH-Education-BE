@@ -1,5 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers;
 
+import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.DayNha;
 import com.hong_hoan.iuheducation.entity.Khoa;
 import com.hong_hoan.iuheducation.entity.PhongHoc;
@@ -11,8 +12,10 @@ import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
+import com.hong_hoan.iuheducation.service.AccountService;
 import com.hong_hoan.iuheducation.service.DayNhaService;
 import com.hong_hoan.iuheducation.service.KhoaHocService;
 import com.hong_hoan.iuheducation.service.PhongHocService;
@@ -32,13 +35,34 @@ public class Query implements GraphQLQueryResolver {
     private PhongHocService phongHocService;
     @Autowired
     private KhoaHocService khoaHocService;
+    @Autowired
+    private AccountService accountService;
+
+    @PreAuthorize("isAuthenticated()")
+    public ProfileResponse getProfile() {
+        try {
+            Account _account = accountService.getCurrentAccount();
+
+            return ProfileResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin tài khoản thành công!")
+                    .data(Arrays.asList(_account))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ProfileResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin tài khoản không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STUDENT', 'TEACHER')")
     public KhoaHocResponse findKhoaHocs(String id) {
-
         try {
-
-
             if (id.isEmpty()) {
 
                 List<Khoa> _khoas = khoaHocService.findAllKhoaHoc();
