@@ -1,3 +1,4 @@
 type Query {
     findDayNha: DayNhaResponse!
+    findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
 }
