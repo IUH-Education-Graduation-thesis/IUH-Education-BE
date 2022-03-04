@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.Khoa;
+import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.KhoaRepository;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,17 @@ import org.springframework.stereotype.Service;
 public class KhoaHocService {
     @Autowired
     private KhoaRepository khoaRepository;
+
+    public void deleteKhoaHoc(String id) throws NumberFormatException {
+        long _idLong = Long.valueOf(id);
+        boolean _isExistKhoaHoc = khoaRepository.existsById(_idLong);
+
+        if(!_isExistKhoaHoc) {
+            throw new KhoaHocIsNotExist();
+        }
+
+        khoaRepository.deleteById(_idLong);
+    }
 
     public Khoa createKhoaHoc(ThemKhoaHocInputs inputs) {
         Khoa _khoaInputs = Khoa.builder()

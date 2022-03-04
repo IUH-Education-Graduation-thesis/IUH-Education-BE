@@ -2,6 +2,7 @@ package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
+import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.exception.PhongHocIsNotExist;
 import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
@@ -76,6 +77,53 @@ public class Mutation implements GraphQLMutationResolver {
         }
 
 
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaHocResponse xoaKhoaHoc(String id) {
+        try {
+            khoaHocService.deleteKhoaHoc(id);
+
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa khóa học thành công.")
+                    .build();
+
+        } catch (NumberFormatException ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa khóa học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("id"))
+                                    .message("Id nhập không đúng format!")
+                                    .build()
+                    ))
+                    .build();
+
+        } catch (KhoaHocIsNotExist ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa khóa học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("id"))
+                                    .message("Khóa học không tồn tại")
+                                    .build()
+                    ))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa khóa học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
     }
 
     /*
