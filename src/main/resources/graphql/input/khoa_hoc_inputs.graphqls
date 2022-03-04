@@ -2,3 +2,7 @@ input ThemKhoaHocInputs {
     khoa: Int!
     moTa: String
 }
+
+input FindKhoaHocInputs {
+    id: ID
+}
