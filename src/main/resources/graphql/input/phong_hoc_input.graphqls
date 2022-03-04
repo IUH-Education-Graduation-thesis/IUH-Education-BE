@@ -1,0 +1,4 @@
+input FindPhongHocInputs {
+    id: ID
+    dayNhaId: ID
+}
