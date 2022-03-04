@@ -1,0 +1,11 @@
+input FindPhongHocInputs {
+    id: ID
+    dayNhaId: ID
+}
+
+input ThemPhongHocInputs {
+    moTa: String
+    sucChua: Int!
+    tenPhongHoc: String!
+    dayNhaId: ID!
+}
