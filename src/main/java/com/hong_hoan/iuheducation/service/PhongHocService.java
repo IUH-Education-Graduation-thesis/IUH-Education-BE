@@ -1,7 +1,11 @@
 package com.hong_hoan.iuheducation.service;
 
+import com.hong_hoan.iuheducation.entity.DayNha;
 import com.hong_hoan.iuheducation.entity.PhongHoc;
+import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
+import com.hong_hoan.iuheducation.repository.DayNhaRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
+import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,34 @@ import java.util.Optional;
 public class PhongHocService {
     @Autowired
     private PhongHocRepository phongHocRepository;
+    @Autowired
+    private DayNhaRepository dayNhaRepository;
+
+    public PhongHoc themPhongHoc(ThemPhongHocInputs inputs) {
+        boolean _isExistDayNha = dayNhaRepository.existsById(inputs.getDayNhaId());
+
+        if(!_isExistDayNha) {
+            throw new DayNhaIsNotExistException();
+        }
+
+        Optional<DayNha> _dayNhaOptional = dayNhaRepository.findById(inputs.getDayNhaId());
+        try {
+            DayNha _dayNha = _dayNhaOptional.get();
+
+            PhongHoc _phongHoc = PhongHoc.builder()
+                    .dayNha(_dayNha)
+                    .tenPhongHoc(inputs.getTenPhongHoc())
+                    .moTa(inputs.getMoTa())
+                    .sucChua(inputs.getSucChua())
+                    .build();
+
+            PhongHoc _phongHocRes = phongHocRepository.saveAndFlush(_phongHoc);
+
+            return _phongHocRes;
+        } catch (NoSuchElementException ex) {
+            throw new DayNhaIsNotExistException();
+        }
+    }
 
     public List<PhongHoc> findAllPhongHoc(){
         List<PhongHoc> _listPhongHoc = phongHocRepository.findAll();

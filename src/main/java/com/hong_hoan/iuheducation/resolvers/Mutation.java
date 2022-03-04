@@ -2,6 +2,7 @@ package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.DayNha;
+import com.hong_hoan.iuheducation.entity.PhongHoc;
 import com.hong_hoan.iuheducation.entity.SinhVien;
 import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
 import com.hong_hoan.iuheducation.exception.UserAlreadyExistsException;
@@ -10,12 +11,15 @@ import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
+import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
+import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.service.AccountService;
 import com.hong_hoan.iuheducation.service.DayNhaService;
+import com.hong_hoan.iuheducation.service.PhongHocService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +37,59 @@ public class Mutation implements GraphQLMutationResolver {
 
     @Autowired
     private DayNhaService dayNhaService;
-
     @Autowired
     private AccountService accountService;
-
     @Autowired
     private AuthenticationProvider authenticationProvider;
+    @Autowired
+    private PhongHocService phongHocService;
+
+    /*
+        phong hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public PhongHocResponse themPhongHoc(ThemPhongHocInputs inputs) {
+
+        try {
+            PhongHoc _phongHoc = phongHocService.themPhongHoc(inputs);
+
+            return PhongHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm phòng học thành công.")
+                    .data(Arrays.asList(_phongHoc))
+                    .build();
+        } catch (DayNhaIsNotExistException ex) {
+            return PhongHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm phòng học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("dayNhaId"))
+                                    .message("Dãy nhà không tồn tại!")
+                                    .build()
+                    ))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return PhongHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm phòng học không thành công.")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+
+    }
+
+    /*
+        day nha
+        ======================================================================
+     */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public DayNhaResponse xoaDayNha(long id) {
@@ -49,7 +100,7 @@ public class Mutation implements GraphQLMutationResolver {
                     .status(ResponseStatus.OK)
                     .message("Xóa dãy nhà thành công.")
                     .build();
-        }catch (DayNhaIsNotExistException ex) {
+        } catch (DayNhaIsNotExistException ex) {
             return DayNhaResponse.builder()
                     .status(ResponseStatus.ERROR)
                     .message("Xóa dãy nhà không thành công!")
@@ -111,6 +162,11 @@ public class Mutation implements GraphQLMutationResolver {
                 .data(Arrays.asList(_dayNhaResponse))
                 .build();
     }
+
+    /*
+        login register
+        ======================================================================
+     */
 
     @PreAuthorize("isAnonymous()")
     public LoginResponse login(String user_name, String password) {

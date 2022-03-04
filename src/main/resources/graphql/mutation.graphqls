@@ -1,7 +1,12 @@
 type Mutation {
     login(user_name: String!, password: String!): LoginResponse!
     register(inputs: CreateAccountInput!): RegisterResponse!
+
+    # day nha
     themDayNha(inputs: ThemDayNhaInput!): DayNhaResponse!
     suaDayNha(inputs: SuaDayNhaInput!): DayNhaResponse!
     xoaDayNha(id: ID!): DayNhaResponse!
+
+    # phong hoc
+    themPhongHoc(inputs: ThemPhongHocInputs!): PhongHocResponse!
 }
