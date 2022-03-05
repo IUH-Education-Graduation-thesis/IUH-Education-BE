@@ -4,6 +4,7 @@ type Mutation {
 
     # nam hoc
     themNamHoc(inputs: ThemNamHocInputs): NamHocResponse!
+    xoaNamHoc(id: ID!): NamHocResponse!
 
     # khoa
     themKhoaHoc(inputs: ThemKhoaHocInputs!): KhoaHocResponse!

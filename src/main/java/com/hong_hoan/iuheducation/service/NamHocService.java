@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.NamHoc;
+import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.exception.NgayBatDauSauNgayKetThucException;
 import com.hong_hoan.iuheducation.repository.NamHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
@@ -14,8 +15,20 @@ public class NamHocService {
     @Autowired
     private NamHocRepository namHocRepository;
 
+    public void xoaNamHocById(String id) throws NumberFormatException {
+        long _id = Long.valueOf(id);
+
+        boolean _isExistNamHoc = namHocRepository.existsById(_id);
+
+        if(!_isExistNamHoc) {
+            throw new NamHocIsNotExist();
+        }
+
+        namHocRepository.deleteById(_id);
+    }
+
     public NamHoc themNamHoc(ThemNamHocInputs inputs) {
-        if(inputs.getNgayBatDau().after(inputs.getNgayKetThuc())) {
+        if (inputs.getNgayBatDau().after(inputs.getNgayKetThuc())) {
             throw new NgayBatDauSauNgayKetThucException();
         }
 
