@@ -9,11 +9,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NamHocService {
     @Autowired
     private NamHocRepository namHocRepository;
+
+    public List<NamHoc> findNamHoc(String id) {
+
+        List<NamHoc> _listNamHoc = namHocRepository.findByIdEquals(id);
+
+        return _listNamHoc;
+    }
 
     public void xoaNamHocById(String id) throws NumberFormatException {
         long _id = Long.valueOf(id);

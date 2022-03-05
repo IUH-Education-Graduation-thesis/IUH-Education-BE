@@ -1,4 +1,5 @@
 type Query {
+    findNamHoc(id: ID): NamHocResponse!
     findDayNha: DayNhaResponse!
     findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
     findKhoaHocs(id: ID): KhoaHocResponse!
