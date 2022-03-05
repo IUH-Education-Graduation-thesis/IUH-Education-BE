@@ -1,9 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers;
 
-import com.hong_hoan.iuheducation.entity.Account;
-import com.hong_hoan.iuheducation.entity.DayNha;
-import com.hong_hoan.iuheducation.entity.Khoa;
-import com.hong_hoan.iuheducation.entity.PhongHoc;
+import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.DayNhaRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
@@ -12,13 +9,11 @@ import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
-import com.hong_hoan.iuheducation.service.AccountService;
-import com.hong_hoan.iuheducation.service.DayNhaService;
-import com.hong_hoan.iuheducation.service.KhoaHocService;
-import com.hong_hoan.iuheducation.service.PhongHocService;
+import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +32,29 @@ public class Query implements GraphQLQueryResolver {
     private KhoaHocService khoaHocService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private NamHocService namHocService;
+
+    @PreAuthorize("isAuthenticated()")
+    public NamHocResponse findNamHoc(String id) {
+        try {
+            List<NamHoc> _listNamHoc = namHocService.findNamHoc(id);
+
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy danh sách lớp học thành công!")
+                    .data(_listNamHoc)
+                    .build();
+        } catch (Exception ex) {
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy danh sách lớp học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public ProfileResponse getProfile() {
