@@ -47,9 +47,48 @@ public class Mutation implements GraphQLMutationResolver {
     private NamHocService namHocService;
 
     /*
-        phong hoc
+        nam hoc
         ======================================================================
      */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public NamHocResponse xoaNamHoc(String id) {
+        try {
+            namHocService.xoaNamHocById(id);
+
+            return NamHocResponse.builder()
+                    .message("Xóa năm học thành công!")
+                    .status(ResponseStatus.OK)
+                    .build();
+        } catch (NumberFormatException ex) {
+            return NamHocResponse.builder()
+                    .message("Xóa năm học không thành công!")
+                    .status(ResponseStatus.ERROR)
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("id"))
+                            .message("id nhập không đúng format!")
+                            .build()))
+                    .build();
+        } catch (NamHocIsNotExist ex) {
+            return NamHocResponse.builder()
+                    .message("Xóa năm học không thành công!")
+                    .status(ResponseStatus.ERROR)
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("id"))
+                            .message("Năm học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return NamHocResponse.builder()
+                    .message("Xóa năm học không thành công!")
+                    .status(ResponseStatus.ERROR)
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public NamHocResponse themNamHoc(ThemNamHocInputs inputs) {
         try {
