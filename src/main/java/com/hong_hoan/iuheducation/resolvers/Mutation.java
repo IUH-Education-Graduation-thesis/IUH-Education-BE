@@ -55,6 +55,44 @@ public class Mutation implements GraphQLMutationResolver {
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public HocKyResponse xoaHocKy(String id) {
+        try {
+            hocKyService.xoaHocKy(id);
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa học kỳ thành công.")
+                    .build();
+        } catch (NumberFormatException ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("id"))
+                            .message("Hoc ky không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocKyIsNotExist ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("id"))
+                            .message("Hoc ky không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public HocKyResponse themHocKy(ThemHocKyInputs inputs) {
         try {
             HocKy _hocKy = hocKyService.themHocKy(inputs);

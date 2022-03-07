@@ -4,6 +4,7 @@ type Mutation {
 
     # hoc ky
     themHocKy(inputs: ThemHocKyInputs!): HocKyResponse!
+    xoaHocKy(id: ID!): HocKyResponse!
 
     # nam hoc
     themNamHoc(inputs: ThemNamHocInputs): NamHocResponse!
