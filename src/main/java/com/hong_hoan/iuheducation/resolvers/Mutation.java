@@ -7,9 +7,11 @@ import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
+import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
@@ -45,6 +47,51 @@ public class Mutation implements GraphQLMutationResolver {
     private KhoaHocService khoaHocService;
     @Autowired
     private NamHocService namHocService;
+    @Autowired
+    private HocKyService hocKyService;
+
+    /*
+        hoc ky
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public HocKyResponse themHocKy(ThemHocKyInputs inputs) {
+        try {
+            HocKy _hocKy = hocKyService.themHocKy(inputs);
+
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm học kỳ thành công!")
+                    .data(Arrays.asList(_hocKy))
+                    .build();
+        } catch (NumberFormatException ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("namHocId"))
+                            .message("Năm học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (NamHocIsNotExist ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("namHocId"))
+                            .message("Năm học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     /*
         nam hoc
