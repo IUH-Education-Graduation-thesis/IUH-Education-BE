@@ -22,7 +22,7 @@ public class DayNha implements Serializable {
     private String tenDayNha;
     private String moTa;
 
-    @OneToMany(mappedBy = "dayNha")
+    @OneToMany(mappedBy = "dayNha", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<PhongHoc> phongHocs = new ArrayList<>();
 
 }
