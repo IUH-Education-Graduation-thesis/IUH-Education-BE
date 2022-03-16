@@ -7,7 +7,7 @@ type Mutation {
     xoaHocKy(id: ID!): HocKyResponse!
 
     # nam hoc
-    themNamHoc(inputs: ThemNamHocInputs): NamHocResponse!
+    themNamHoc(inputs: ThemNamHocInputs!): NamHocResponse!
     xoaNamHoc(id: ID!): NamHocResponse!
 
     # khoa
@@ -17,7 +17,7 @@ type Mutation {
     # day nha
     themDayNha(inputs: ThemDayNhaInput!): DayNhaResponse!
     suaDayNha(inputs: SuaDayNhaInput!): DayNhaResponse!
-    xoaDayNha(id: ID!): DayNhaResponse!
+    xoaDayNha(ids: [ID!]): DayNhaResponse!
 
     # phong hoc
     themPhongHoc(inputs: ThemPhongHocInputs!): PhongHocResponse!

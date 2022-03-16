@@ -31,6 +31,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Configuration
 public class Mutation implements GraphQLMutationResolver {
@@ -368,13 +370,14 @@ public class Mutation implements GraphQLMutationResolver {
      */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public DayNhaResponse xoaDayNha(long id) {
+    public DayNhaResponse xoaDayNha(Set<Long> ids) {
         try {
-            dayNhaService.deleteDayNha(id);
+            List<DayNha> _dayNhaDeleted = dayNhaService.deleteDayNhas(ids);
 
             return DayNhaResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Xóa dãy nhà thành công.")
+                    .data(_dayNhaDeleted)
                     .build();
         } catch (DayNhaIsNotExistException ex) {
             return DayNhaResponse.builder()

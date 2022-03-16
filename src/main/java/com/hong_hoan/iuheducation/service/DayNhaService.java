@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,18 @@ public class DayNhaService {
         DayNha _dayNhaResult = dayNhaRepository.save(dayNha);
 
         return _dayNhaResult;
+    }
+
+    public List<DayNha> deleteDayNhas(Set<Long> ids) {
+        List<DayNha> _dayNhas = dayNhaRepository.findAllById(ids);
+
+        if(_dayNhas.isEmpty()) throw new DayNhaIsNotExistException();
+
+        List<Long> _ids = _dayNhas.stream().map(i -> i.getId()).collect(Collectors.toList());
+
+        dayNhaRepository.deleteAllById(_ids);
+
+        return _dayNhas;
     }
 
     public void deleteDayNha(long dayNhaId) {
