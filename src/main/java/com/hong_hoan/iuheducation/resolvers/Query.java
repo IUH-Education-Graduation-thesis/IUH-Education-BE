@@ -7,6 +7,7 @@ import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
@@ -36,9 +37,9 @@ public class Query implements GraphQLQueryResolver {
     private NamHocService namHocService;
 
     @PreAuthorize("isAuthenticated()")
-    public NamHocResponse findNamHoc(String id) {
+    public NamHocResponse findNamHoc(FindNamHocInputs inputs) {
         try {
-            List<NamHoc> _listNamHoc = namHocService.findNamHoc(id);
+            List<NamHoc> _listNamHoc = namHocService.findNamHocs(inputs);
 
             return NamHocResponse.builder()
                     .status(ResponseStatus.OK)
@@ -46,6 +47,7 @@ public class Query implements GraphQLQueryResolver {
                     .data(_listNamHoc)
                     .build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return NamHocResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Lấy danh sách lớp học không thành công!")

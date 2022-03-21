@@ -3,3 +3,9 @@ input ThemNamHocInputs {
     ngayBatDau: Date!
     ngayKetThuc: Date!
 }
+
+input FindNamHocInputs {
+    id: ID
+    formDate: Date
+    toDate: Date
+}
