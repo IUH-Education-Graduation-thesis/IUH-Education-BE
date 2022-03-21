@@ -3,4 +3,5 @@ type NamHoc {
     moTa: String
     ngayBatDau: Date
     ngayKetThuc: Date
+    hocKys: [HocKy]
 }
