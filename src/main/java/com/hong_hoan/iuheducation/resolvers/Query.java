@@ -6,6 +6,7 @@ import com.hong_hoan.iuheducation.repository.DayNhaRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
@@ -245,8 +246,8 @@ public class Query implements GraphQLQueryResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public DayNhaResponse findDayNha() {
-        List<DayNha> _listDayNha = dayNhaService.getListDayNha();
+    public DayNhaResponse findDayNha(FindDayNhaInputs inputs) {
+        List<DayNha> _listDayNha = dayNhaService.getListDayNha(inputs);
 
         return DayNhaResponse.builder()
                 .status(ResponseStatus.OK)

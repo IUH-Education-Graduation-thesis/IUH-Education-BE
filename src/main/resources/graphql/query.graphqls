@@ -1,6 +1,6 @@
 type Query {
     findNamHoc(inputs: FindNamHocInputs): NamHocResponse!
-    findDayNha: DayNhaResponse!
+    findDayNha(inputs: FindDayNhaInputs): DayNhaResponse!
     findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
     findKhoaHocs(id: ID): KhoaHocResponse!
     getProfile: ProfileResponse!
