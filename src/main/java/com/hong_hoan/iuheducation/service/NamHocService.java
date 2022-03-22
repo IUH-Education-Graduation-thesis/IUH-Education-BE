@@ -1,18 +1,20 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.NamHoc;
-import com.hong_hoan.iuheducation.exception.InputsEmptyException;
 import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.exception.NgayBatDauSauNgayKetThucException;
 import com.hong_hoan.iuheducation.repository.NamHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocRest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -34,28 +36,66 @@ public class NamHocService {
         }
     }
 
-    public List<NamHoc> findNamHocs(FindNamHocInputs inputs) {
 
-        boolean _inputsEmpty = ObjectUtils.isEmpty(inputs);
+    public FindNamHocRest findNamHocs(FindNamHocInputs inputs) {
 
-        if (_inputsEmpty) {
-            return namHocRepository.findAll();
-        }
+        boolean _isInputsEmpty = ObjectUtils.isEmpty(inputs);
+        if (!_isInputsEmpty) {
+            Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
 
-        try {
-            boolean _idIsEmpty = inputs.getId().isEmpty();
-            NamHoc _namHoc = findNamHocById(inputs.getId());
-            if (_namHoc == null) {
-                return Arrays.asList();
+            if (inputs.checkIsNull()) {
+                Page<NamHoc> _namHocPage = namHocRepository.findAll(_pageable);
+
+                List<NamHoc> _listNamHoc = _namHocPage.getContent();
+                long _countNamHoc = _namHocPage.getTotalElements();
+
+                return FindNamHocRest.builder()
+                        .count(_countNamHoc)
+                        .data(_listNamHoc)
+                        .build();
             }
 
-            return Arrays.asList(_namHoc);
-        } catch (NullPointerException ex) {
-            List<NamHoc> _listNamHoc = namHocRepository.findByNgayBatDauBetweenAndNgayKetThucBetween(inputs.getFormDate(), inputs.getToDate(), inputs.getFormDate(), inputs.getToDate());
+            try {
+                boolean _idIsEmpty = inputs.getId().isEmpty();
+                long _id = Long.valueOf(inputs.getId());
 
-            System.out.println(_listNamHoc.size());
-            return _listNamHoc;
+                Page<NamHoc> _namHoc = namHocRepository.findById(_id, _pageable);
+
+                List<NamHoc> _listNamHoc = _namHoc.getContent();
+                long _totalItem = _namHoc.getTotalElements();
+
+                return FindNamHocRest.builder()
+                        .count(_totalItem)
+                        .data(_listNamHoc)
+                        .build();
+
+            } catch (NullPointerException ex) {
+                Page<NamHoc> _namHocPage = namHocRepository.findByNgayBatDauBetweenAndNgayKetThucBetween(inputs.getFormDate(), inputs.getToDate(), inputs.getFormDate(), inputs.getToDate(), _pageable);
+
+                List<NamHoc> _listNamHoc = _namHocPage.getContent();
+                long _totalItem = _namHocPage.getTotalElements();
+
+                return FindNamHocRest.builder()
+                        .count(_totalItem)
+                        .data(_listNamHoc)
+                        .build();
+            }
         }
+
+        FindNamHocInputs _inputs = FindNamHocInputs.builder()
+                .page(0)
+                .size(10)
+                .build();
+
+        Pageable _pageable = PageRequest.of(_inputs.getPage(), _inputs.getSize());
+
+        Page<NamHoc> _namHocPage = namHocRepository.findAll(_pageable);
+        List<NamHoc> _listNamHoc = _namHocPage.getContent();
+        long _totalItem = _namHocPage.getTotalElements();
+        return FindNamHocRest.builder()
+                .count(_totalItem)
+                .data(_listNamHoc)
+                .build();
     }
 
     public void xoaNamHocById(String id) throws NumberFormatException {

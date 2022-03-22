@@ -2,16 +2,14 @@ package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
-import com.hong_hoan.iuheducation.repository.DayNhaRepository;
-import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
-import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
-import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocRest;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
@@ -38,19 +36,19 @@ public class Query implements GraphQLQueryResolver {
     private NamHocService namHocService;
 
     @PreAuthorize("isAuthenticated()")
-    public NamHocResponse findNamHoc(FindNamHocInputs inputs) {
+    public FindNamHocResponse findNamHoc(FindNamHocInputs inputs) {
         try {
-            List<NamHoc> _listNamHoc = namHocService.findNamHocs(inputs);
+            FindNamHocRest _findNamHocRest = namHocService.findNamHocs(inputs);
 
-            return NamHocResponse.builder()
+            return FindNamHocResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Lấy danh sách lớp học thành công!")
-                    .data(_listNamHoc)
+                    .data(Arrays.asList(_findNamHocRest))
                     .build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return NamHocResponse.builder()
-                    .status(ResponseStatus.OK)
+            return FindNamHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
                     .message("Lấy danh sách lớp học không thành công!")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Lỗi hệ thống!")
