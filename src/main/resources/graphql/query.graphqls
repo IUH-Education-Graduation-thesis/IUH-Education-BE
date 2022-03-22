@@ -2,6 +2,6 @@ type Query {
     findNamHoc(inputs: FindNamHocInputs): FindNamHocResponse!
     findDayNha(inputs: FindDayNhaInputs): DayNhaResponse!
     findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
-    findKhoaHocs(id: ID): KhoaHocResponse!
+    findKhoaHocs(inputs: FindKhoaHocInputs): FindKhoaHocResponse!
     getProfile: ProfileResponse!
 }

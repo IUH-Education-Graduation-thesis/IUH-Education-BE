@@ -3,6 +3,7 @@ package com.hong_hoan.iuheducation.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Builder
@@ -19,4 +20,7 @@ public class Khoa {
 
     private int khoa;
     private String moTa;
+
+    private Date thoiGianBatDau;
+    private Date thoiGianKetThuc;
 }
