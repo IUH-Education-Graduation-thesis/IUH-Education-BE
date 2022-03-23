@@ -2,7 +2,7 @@ type LichHoc {
     id: ID
     ghiChu: String
     ngayHocTrongTuan: Int
-    nhomThuHanh: Int
+    nhomThucHanh: Int
     thoiGianBatDau: Date
     thoiGianKetThuc: Date
     tietHocBatDau: Int

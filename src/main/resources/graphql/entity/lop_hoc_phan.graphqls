@@ -1,13 +1,13 @@
 type LopHocPhan {
     id: ID
     maLopHocPhan: String
-    moTaString: String
+    moTa: String
     tenLopHocPhan: String
     soLuongToiDa: Int
     soNhomThucHanh: Int
     trangThaiLopHocPhan: TrangThaiLopHocPhan
     hocPhan: HocPhan
     lop: Lop
-    giangVien: [GiangVien]
+    giangViens: [GiangVien]
     lichHocs: [LichHoc]
 }

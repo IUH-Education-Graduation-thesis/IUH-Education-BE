@@ -48,4 +48,7 @@ public class LopHocPhan {
     @OneToMany(mappedBy = "lopHocPhan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SinhVienLopHocPhan> sinhVienLopHocPhans = new ArrayList<>();
 
+    @OneToMany(mappedBy = "lopHocPhan", orphanRemoval = true)
+    private List<LichHoc> lichHocs = new ArrayList<>();
+
 }
