@@ -3,4 +3,5 @@ type KhoaVien {
     ten: String
     moTa: String
     link: String
+    chuyenNganhs: [ChuyenNganh]
 }

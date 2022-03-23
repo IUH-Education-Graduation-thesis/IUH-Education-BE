@@ -9,5 +9,4 @@ import java.util.List;
 
 public interface KhoaVienRepository extends JpaRepository<KhoaVien, Long> {
     Page<KhoaVien> findByTenContaining(String ten, Pageable pageable);
-
 }

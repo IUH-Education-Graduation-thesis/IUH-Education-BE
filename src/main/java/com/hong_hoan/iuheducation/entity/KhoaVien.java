@@ -26,7 +26,7 @@ public class KhoaVien {
     private String moTa;
 
 
-    @OneToMany(mappedBy = "khoaVien")
+    @OneToMany(mappedBy = "khoaVien", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ChuyenNganh> chuyenNganhs = new ArrayList<>();
 
 }
