@@ -6,11 +6,14 @@ import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.FindKhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.PaginationKhoaHoc;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.FindKhoaVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.PaginationKhoaVien;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocRest;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
@@ -37,6 +40,30 @@ public class Query implements GraphQLQueryResolver {
     private AccountService accountService;
     @Autowired
     private NamHocService namHocService;
+    @Autowired
+    private KhoaVienService khoaVienService;
+
+    @PreAuthorize("isAuthenticated()")
+    public FindKhoaVienResponse findKhoaVien(FindKhoaVienInputs inputs) {
+        try {
+            PaginationKhoaVien _paginationKhoaVien = khoaVienService.getListKhoaVienPagination(inputs);
+            return FindKhoaVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm khoa viện thành công.")
+                    .data(Arrays.asList(_paginationKhoaVien))
+                    .build();
+        } catch (Exception ex) {
+            return FindKhoaVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm khoa viện không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public FindNamHocResponse findNamHoc(FindNamHocInputs inputs) {

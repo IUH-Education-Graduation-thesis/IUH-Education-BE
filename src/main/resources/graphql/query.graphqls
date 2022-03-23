@@ -4,4 +4,5 @@ type Query {
     findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
     findKhoaHocs(inputs: FindKhoaHocInputs): FindKhoaHocResponse!
     getProfile: ProfileResponse!
+    findKhoaVien(inputs: FindKhoaVienInputs): FindKhoaVienResponse!
 }

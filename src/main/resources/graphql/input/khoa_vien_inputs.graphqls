@@ -1,0 +1,6 @@
+input FindKhoaVienInputs {
+    id: ID
+    ten: String
+    page: Int!
+    size: Int!
+}
