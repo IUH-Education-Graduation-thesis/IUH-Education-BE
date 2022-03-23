@@ -55,4 +55,7 @@ public class LopHocPhan {
     @LazyCollection(LazyCollectionOption.FALSE)
     private Set<LichHoc> lichHocs = new HashSet<>();
 
+    @OneToMany(mappedBy = "lopHocPhan", orphanRemoval = true)
+    private List<LichHoc> lichHocs = new ArrayList<>();
+
 }
