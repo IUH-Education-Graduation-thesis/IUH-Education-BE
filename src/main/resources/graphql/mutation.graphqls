@@ -22,4 +22,8 @@ type Mutation {
     # phong hoc
     themPhongHoc(inputs: ThemPhongHocInputs!): PhongHocResponse!
     xoaPhongHoc(phongHocId: ID!): PhongHocResponse!
+
+    #lich hoc
+    themLichHoc(inputs: ThemLichHocInputs!): LichHocResponse!
+
 }
