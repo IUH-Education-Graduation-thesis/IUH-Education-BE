@@ -9,6 +9,7 @@ import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
@@ -18,6 +19,7 @@ import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -51,7 +53,43 @@ public class Mutation implements GraphQLMutationResolver {
     private NamHocService namHocService;
     @Autowired
     private HocKyService hocKyService;
+    @Autowired
+    private LichHocService lichHocService;
 
+    /*
+        lich hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LichHocResponse themLichHoc(ThemLichHocInputs inputs){
+        try {
+            LichHoc _lichHoc = lichHocService.themLichHoc(inputs);
+
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm lịch học thành công")
+                    .data(Arrays.asList(_lichHoc))
+                    .build();
+        }
+        catch (PhongHocIsNotExist ex){
+            return  LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Phòng học không tồn tại")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
     /*
         hoc ky
         ======================================================================

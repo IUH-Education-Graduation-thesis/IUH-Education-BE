@@ -1,0 +1,12 @@
+input ThemLichHocInputs{
+    id: ID
+    ghiChu: String
+    ngayHocTrongTuan: Int!
+    nhomThuHanh: Int
+    thoiGianBatDau: Date!
+    thoiGianKetThuc: Date!
+    tietHocBatDau: Int!
+    tietHocKetThuc: Int!
+    lopHocPhan: ID!
+    phongHoc: ID!
+}
