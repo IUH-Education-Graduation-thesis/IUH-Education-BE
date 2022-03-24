@@ -5,10 +5,13 @@ import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
+import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
+import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.FindKhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.PaginationKhoaHoc;
@@ -42,6 +45,35 @@ public class Query implements GraphQLQueryResolver {
     private NamHocService namHocService;
     @Autowired
     private KhoaVienService khoaVienService;
+    @Autowired
+    private GiangVienService giangVienService;
+
+    @PreAuthorize("isAuthenticated()")
+    public FindGiangVienResponse findGiangVien(FindGiangVienInputs inputs) {
+        try {
+            PaginationGiangVien _paginationGiangVien = giangVienService.findGiangVienPagination(inputs);
+
+            return FindGiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm giảng viên thành công.")
+                    .data(Arrays.asList(_paginationGiangVien))
+                    .build();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return FindGiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm khoa viện không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+    }
+
 
     @PreAuthorize("isAuthenticated()")
     public FindKhoaVienResponse findKhoaVien(FindKhoaVienInputs inputs) {
