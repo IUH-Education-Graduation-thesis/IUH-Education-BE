@@ -3,6 +3,8 @@ package com.hong_hoan.iuheducation.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -32,5 +34,8 @@ public class Lop {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "khoa_id")
     private Khoa khoa;
+
+    @OneToMany(mappedBy = "lop", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<SinhVien> sinhViens = new ArrayList<>();
 
 }

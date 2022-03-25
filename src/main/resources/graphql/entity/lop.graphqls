@@ -4,4 +4,5 @@ type Lop {
     moTa: String
     khoa: Khoa
     chuyenNganh: ChuyenNganh
+    sinhViens: [SinhVien]
 }
