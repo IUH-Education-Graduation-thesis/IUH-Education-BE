@@ -1,13 +1,10 @@
 package com.hong_hoan.iuheducation.entity;
 
 import lombok.*;
-import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
+import
 @Entity
 @Builder
 @Getter
