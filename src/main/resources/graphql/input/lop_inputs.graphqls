@@ -1,0 +1,9 @@
+input FindLopHocInputs {
+    id: ID
+    ten: String
+    khoaVienIds: [ID]
+    chuyenNganhIds: [ID]
+    khoaHocIds: [ID]
+    page: Int!
+    size: Int!
+}
