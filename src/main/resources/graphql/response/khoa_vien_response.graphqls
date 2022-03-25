@@ -1,0 +1,6 @@
+type KhoaVienResponse implements ResponseInterface{
+    status: ResponseStatus!
+    errors: [ErrorResponse]
+    message: String
+    data: [KhoaVien]
+}
