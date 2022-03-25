@@ -9,11 +9,13 @@ import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
@@ -55,7 +57,50 @@ public class Mutation implements GraphQLMutationResolver {
     private HocKyService hocKyService;
     @Autowired
     private LichHocService lichHocService;
+    @Autowired
+    private KhoaVienSevice khoaVienSevice;
 
+    /*
+        khoa vien
+        ======================================================================
+     */
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaVienResponse themKhoaVien(ThemKhoaVienInputs inputs){
+        try{
+            KhoaVien _khoaVienInput = khoaVienSevice.themKhoaVien(inputs);
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm khoa viện thành công")
+                    .data(List.of(_khoaVienInput))
+                    .build();
+        }catch(Exception ex){
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm khoa viện không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaVienResponse xoaKhoaViens(Set<Long> ids){
+        try{
+            List<KhoaVien> _idKhoaVien = khoaVienSevice.xoaKhoaViens(ids);
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa khoa viện thành công")
+                    .data(_idKhoaVien)
+                    .build();
+        }catch (Exception exception){
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa khoa viện không thánh công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Khoa viện không tồn tại!").build()))
+                    .build();
+        }
+    }
     /*
         lich hoc
         ======================================================================

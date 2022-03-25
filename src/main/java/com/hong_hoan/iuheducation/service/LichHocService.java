@@ -23,12 +23,12 @@ public class LichHocService {
     private LichHocRepository lichHocRepository;
 
     public LichHoc themLichHoc(ThemLichHocInputs inputs) {
-        boolean _isExistPhongHoc = phongHocRepository.existsById(inputs.getId());
+        boolean _isExistPhongHoc = phongHocRepository.existsById(inputs.getPhongHoc().getId());
 
         if(!_isExistPhongHoc) {
             throw new PhongHocIsNotExist();
         }
-        Optional<PhongHoc> _phongHocOptional = phongHocRepository.findById(inputs.getId());
+        Optional<PhongHoc> _phongHocOptional = phongHocRepository.findById(inputs.getPhongHoc().getId());
         try {
             PhongHoc _phongHoc = _phongHocOptional.get();
             LichHoc _lichHoc = LichHoc.builder()

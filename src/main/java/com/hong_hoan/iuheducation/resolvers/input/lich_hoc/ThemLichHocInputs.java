@@ -11,7 +11,6 @@ import java.util.Date;
 @Getter
 @ToString
 public class ThemLichHocInputs {
-    private long id;
     private int ngayHocTrongTuan;
     private int nhomThucHanh;
     private Date thoiGianBatDau;

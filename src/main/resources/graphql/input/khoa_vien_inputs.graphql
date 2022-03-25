@@ -1,5 +1,0 @@
-input ThemKhoaVienInputs{
-    ten: String!
-    moTa: String
-    link: String
-}

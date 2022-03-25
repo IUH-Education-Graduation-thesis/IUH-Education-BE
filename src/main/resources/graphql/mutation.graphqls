@@ -26,4 +26,7 @@ type Mutation {
     #lich hoc
     themLichHoc(inputs: ThemLichHocInputs!): LichHocResponse!
 
+    #khoa vien
+    themKhoaVien(inputs:ThemKhoaVienInputs!):KhoaVienResponse!
+    xoaKhoaViens(ids:[ID!]):KhoaVienResponse!
 }

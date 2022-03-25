@@ -1,5 +1,4 @@
 input ThemLichHocInputs{
-    id: ID
     ghiChu: String
     ngayHocTrongTuan: Int!
     nhomThuHanh: Int
