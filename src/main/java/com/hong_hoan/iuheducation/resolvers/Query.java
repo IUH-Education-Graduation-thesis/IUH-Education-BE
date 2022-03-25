@@ -8,6 +8,7 @@ import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
+import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
@@ -17,6 +18,8 @@ import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.PaginationKhoaHoc;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.FindKhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.PaginationKhoaVien;
+import com.hong_hoan.iuheducation.resolvers.response.lop.FindLopHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lop.PaginationLopHoc;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocRest;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
@@ -47,6 +50,29 @@ public class Query implements GraphQLQueryResolver {
     private KhoaVienService khoaVienService;
     @Autowired
     private GiangVienService giangVienService;
+    @Autowired
+    private LopService lopService;
+
+    @PreAuthorize("isAuthenticated()")
+    public FindLopHocResponse findLopHoc(FindLopHocInputs inputs) {
+        try {
+            PaginationLopHoc _paginationLopHoc = lopService.findLopHocPagination(inputs);
+            return FindLopHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin lớp học thành công!")
+                    .data(Arrays.asList(_paginationLopHoc))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return FindLopHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin lớp học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public FindGiangVienResponse findGiangVien(FindGiangVienInputs inputs) {
@@ -73,7 +99,6 @@ public class Query implements GraphQLQueryResolver {
                     .build();
         }
     }
-
 
     @PreAuthorize("isAuthenticated()")
     public FindKhoaVienResponse findKhoaVien(FindKhoaVienInputs inputs) {
