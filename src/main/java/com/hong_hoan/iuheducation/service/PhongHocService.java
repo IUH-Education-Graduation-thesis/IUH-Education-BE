@@ -8,6 +8,7 @@ import com.hong_hoan.iuheducation.repository.DayNhaRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class PhongHocService {
         phongHocRepository.deleteById(id);
     }
 
-    public PhongHoc themPhongHoc(ThemPhongHocInputs inputs) {
+    public PhongHoc themPhongHoc(@NotNull ThemPhongHocInputs inputs) {
         boolean _isExistDayNha = dayNhaRepository.existsById(inputs.getDayNhaId());
 
         if(!_isExistDayNha) {

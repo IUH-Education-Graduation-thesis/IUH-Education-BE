@@ -29,4 +29,8 @@ type Mutation {
     #khoa vien
     themKhoaVien(inputs:ThemKhoaVienInputs!):KhoaVienResponse!
     xoaKhoaViens(ids:[ID!]):KhoaVienResponse!
+
+    # chuyen nganh
+    themChuyenNganh(inputs: ThemChuyenNganhInputs!): ChuyenNganhResponse!
+    xoaChuyenNganhs(ids:[ID!]):ChuyenNganhResponse!
 }
