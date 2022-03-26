@@ -3,6 +3,8 @@ package com.hong_hoan.iuheducation.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,9 +24,11 @@ public class MonHoc {
     private int soTinChiLyThuyet;
     private int soTinChiThucHanh;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "hoc_phan_id")
-    private HocPhan hocPhan;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "mon_hoc_chuyen_nganhs",
+            joinColumns = @JoinColumn(name = "mon_hoc_id"),
+            inverseJoinColumns = @JoinColumn(name = "chuyen_nganhs_id"))
+    private Set<ChuyenNganh> chuyenNganhs = new LinkedHashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "khoa_vien_id")

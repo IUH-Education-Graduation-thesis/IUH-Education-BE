@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,13 +33,21 @@ public class HocPhan {
     @JoinColumn(name = "mon_hoc_id")
     private MonHoc monHoc;
 
-    @OneToMany(mappedBy = "hocPhan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MonHoc> monHocTienQuyet = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "hoc_phan_mon_hoc_tien_quyets",
+            joinColumns = @JoinColumn(name = "hoc_phan_id"),
+            inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
+    private Set<MonHoc> monHocTienQuyets = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "hocPhan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MonHoc> monHocSongHanh = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "hoc_phan_mon_hoc_song_hanhs",
+            joinColumns = @JoinColumn(name = "hoc_phan_id"),
+            inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
+    private Set<MonHoc> monHocSongHanhs = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "hocPhan", orphanRemoval = true)
-    private List<MonHoc> monHocTruoc = new ArrayList<>();
-
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "hoc_phan_mon_hoc_truocs",
+            joinColumns = @JoinColumn(name = "hoc_phan_id"),
+            inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
+    private Set<MonHoc> monHocTruocs = new LinkedHashSet<>();
 }
