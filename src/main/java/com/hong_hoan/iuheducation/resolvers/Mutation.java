@@ -5,6 +5,7 @@ import com.hong_hoan.iuheducation.exception.*;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
+import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.ThemChuyenNganhInputs;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
@@ -14,6 +15,7 @@ import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
+import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.NamHocResponse;
@@ -25,6 +27,7 @@ import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,7 +62,60 @@ public class Mutation implements GraphQLMutationResolver {
     private LichHocService lichHocService;
     @Autowired
     private KhoaVienSevice khoaVienSevice;
+    @Autowired
+    private ChuyenNganhService chuyenNganhService;
 
+    /*
+        chuyen nganh
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ChuyenNganhResponse themChuyenNganh(ThemChuyenNganhInputs inputs){
+        try{
+            ChuyenNganh _chuyenNganhInput = chuyenNganhService.themChuyenNganh(inputs);
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm chuyên ngành thành công!")
+                    .data(List.of(_chuyenNganhInput))
+                    .build();
+        }
+        catch (KhoaVienIsNotExistException ex){
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm chuyên ngành không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("khoaVienID"))
+                            .message("Khoa viện không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm chuyên ngành không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ChuyenNganhResponse xoaChuyenNganhs(Set<Long> ids){
+        try{
+            List<ChuyenNganh> _idChuyenNganh = chuyenNganhService.xoaChuyenNganhs(ids);
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa chuyên ngành thành công")
+                    .data(_idChuyenNganh)
+                    .build();
+        }catch (Exception exception){
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa chuyên ngành không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Chuyên ngành không tồn tại!").build()))
+                    .build();
+        }
+    }
     /*
         khoa vien
         ======================================================================
@@ -96,7 +152,7 @@ public class Mutation implements GraphQLMutationResolver {
         }catch (Exception exception){
             return KhoaVienResponse.builder()
                     .status(ResponseStatus.ERROR)
-                    .message("Xóa khoa viện không thánh công")
+                    .message("Xóa khoa viện không thành công")
                     .errors(Arrays.asList(ErrorResponse.builder().message("Khoa viện không tồn tại!").build()))
                     .build();
         }
