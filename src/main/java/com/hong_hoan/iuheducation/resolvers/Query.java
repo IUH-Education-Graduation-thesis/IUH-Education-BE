@@ -6,6 +6,7 @@ import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
@@ -14,6 +15,8 @@ import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.FindHocPhanResponse;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.FindKhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.PaginationKhoaHoc;
@@ -55,6 +58,29 @@ public class Query implements GraphQLQueryResolver {
     private LopService lopService;
     @Autowired
     private ChuyenNganhService chuyenNganhService;
+    @Autowired HocPhanService hocPhanService;
+
+    @PreAuthorize("isAuthenticated()")
+    public FindHocPhanResponse findHocPhans(FindHocPhanInputs inputs) {
+        try {
+            PaginationHocPhan _paginationHocPhan = hocPhanService.findHocPhanWithPagination(inputs);
+
+            return FindHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm học phần thành công.")
+                    .data(Arrays.asList(_paginationHocPhan))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return FindHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm học phần thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public FindChuyenNganhResponse findChuyenNganh(String id) {
