@@ -11,6 +11,7 @@ import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
+import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.FindKhoaHocResponse;
@@ -52,6 +53,30 @@ public class Query implements GraphQLQueryResolver {
     private GiangVienService giangVienService;
     @Autowired
     private LopService lopService;
+    @Autowired
+    private ChuyenNganhService chuyenNganhService;
+
+    @PreAuthorize("isAuthenticated()")
+    public FindChuyenNganhResponse findChuyenNganh(String id) {
+        try {
+            List<ChuyenNganh> _listChuyenNganh = chuyenNganhService.findListChuyeNganh(id);
+            return FindChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm chuyên ngành thành công.")
+                    .data(_listChuyenNganh)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return FindChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm chuyên ngành không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public FindLopHocResponse findLopHoc(FindLopHocInputs inputs) {

@@ -7,5 +7,5 @@ type GiangVien {
     avatar: String
     email: String
     soDienThoai: String
-    khoaVien: KhoaVien
+    chuyenNganh: ChuyenNganh
 }

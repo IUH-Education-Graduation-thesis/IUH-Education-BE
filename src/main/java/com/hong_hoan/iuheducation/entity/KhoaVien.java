@@ -4,9 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Builder
@@ -25,6 +23,8 @@ public class KhoaVien {
     private String link;
     private String moTa;
 
+    @OneToMany(mappedBy = "khoaVien", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MonHoc> monHocs = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "khoaVien", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ChuyenNganh> chuyenNganhs = new ArrayList<>();

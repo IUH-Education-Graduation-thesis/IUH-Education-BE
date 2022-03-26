@@ -7,4 +7,5 @@ type Query {
     findKhoaVien(inputs: FindKhoaVienInputs): FindKhoaVienResponse!
     findGiangVien(inputs: FindGiangVienInputs): FindGiangVienResponse!
     findLopHoc(inputs: FindLopHocInputs): FindLopHocResponse!
+    findChuyenNganh(id: ID): FindChuyenNganhResponse!
 }

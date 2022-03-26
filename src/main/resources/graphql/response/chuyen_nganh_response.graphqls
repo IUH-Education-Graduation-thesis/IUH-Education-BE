@@ -1,0 +1,6 @@
+type FindChuyenNganhResponse implements ResponseInterface {
+    status: ResponseStatus!
+    errors: [ErrorResponse]
+    message: String
+    data: [ChuyenNganh]
+}
