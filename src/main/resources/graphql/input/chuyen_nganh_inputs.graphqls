@@ -1,5 +1,5 @@
 input ThemChuyenNganhInputs {
     ten: String!
     moTa: String
-    khoaVienId: ID!
+    khoaVienID: ID!
 }
