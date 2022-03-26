@@ -71,6 +71,7 @@ public class Mutation implements GraphQLMutationResolver {
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ChuyenNganhResponse themChuyenNganh(ThemChuyenNganhInputs inputs){
+        System.out.println(inputs);
         try{
             ChuyenNganh _chuyenNganhInput = chuyenNganhService.themChuyenNganh(inputs);
             return ChuyenNganhResponse.builder()
