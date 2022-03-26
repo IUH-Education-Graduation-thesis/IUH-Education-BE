@@ -2,10 +2,10 @@ type GiangVien {
     id: ID
     hoTenDem: String
     ten: String
-    hocHam: HocHam
     gioiTinh: Boolean
     avatar: String
     email: String
     soDienThoai: String
     chuyenNganh: ChuyenNganh
+    hocHamString: String
 }

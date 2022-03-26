@@ -36,6 +36,10 @@ public class GiangVien {
     @JoinColumn(name = "chuyen_nganh_id")
     private ChuyenNganh chuyenNganh;
 
+    public String hocHamString() {
+        return hocHam.getName();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

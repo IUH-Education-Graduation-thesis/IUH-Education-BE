@@ -33,11 +33,11 @@ public class LichHoc {
     @Column(nullable = false)
     private String ghiChu;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "phong_hoc_id")
     private PhongHoc phongHoc;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;
 
