@@ -4,6 +4,7 @@ import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.FindChuyenNganhInputs;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
@@ -135,9 +136,9 @@ public class Query implements GraphQLQueryResolver {
     }
 
     @PreAuthorize("isAuthenticated()")
-    public FindChuyenNganhResponse findChuyenNganh(String id) {
+    public FindChuyenNganhResponse findChuyenNganh(FindChuyenNganhInputs inputs) {
         try {
-            List<ChuyenNganh> _listChuyenNganh = chuyenNganhService.findListChuyeNganh(id);
+            List<ChuyenNganh> _listChuyenNganh = chuyenNganhService.findListChuyeNganh(inputs);
             return FindChuyenNganhResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Tìm kiếm chuyên ngành thành công.")

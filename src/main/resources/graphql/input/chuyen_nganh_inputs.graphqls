@@ -4,3 +4,8 @@ input ThemChuyenNganhInputs {
     khoaVienID: ID!
 }
 
+input FindChuyenNganhInputs {
+    id: ID
+    khoaVienIds: [ID]
+}
+
