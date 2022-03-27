@@ -8,6 +8,7 @@ import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
 import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.ThemChuyenNganhInputs;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
+import com.hong_hoan.iuheducation.resolvers.input.giang_vien.ThemGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
@@ -17,6 +18,7 @@ import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
+import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.mon_hoc.MonHocRespone;
@@ -68,7 +70,60 @@ public class Mutation implements GraphQLMutationResolver {
     private ChuyenNganhService chuyenNganhService;
     @Autowired
     private MonHocService monHocService;
+    @Autowired
+    private GiangVienService giangVienService;
 
+    /*
+        giang vien
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public GiangVienResponse themGiangVien(ThemGiangVienInputs inputs){
+        try{
+            GiangVien _giangVienInput = giangVienService.themGiangVien(inputs);
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm giảng viên thành công!")
+                    .data(List.of(_giangVienInput))
+                    .build();
+        }
+        catch (ChuyenNganhIsNotExistExcepton ex){
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm giảng viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("chuyenNganhID"))
+                            .message("Chuyên ngành không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm giảng viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public GiangVienResponse xoaGiangViens(Set<Long> ids){
+        try{
+            List<GiangVien> _idGiangVien = giangVienService.xoaGiangViens(ids);
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa giảng viên thành công")
+                    .data(_idGiangVien)
+                    .build();
+        }catch (Exception exception){
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa giảng viên không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Giảng viên không tồn tại!").build()))
+                    .build();
+        }
+    }
     /*
         mon hoc
         ======================================================================
