@@ -26,12 +26,6 @@ public class MonHoc {
     private int soTinChiLyThuyet;
     private int soTinChiThucHanh;
 
-    @ManyToMany
-    @JoinTable(name = "mon_hoc_chuyen_nganhs",
-            joinColumns = @JoinColumn(name = "mon_hoc_id"),
-            inverseJoinColumns = @JoinColumn(name = "chuyen_nganhs_id"))
-    private Set<ChuyenNganh> chuyenNganhs = new LinkedHashSet<>();
-
     @ManyToOne
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;

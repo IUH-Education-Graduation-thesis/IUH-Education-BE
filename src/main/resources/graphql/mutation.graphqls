@@ -33,4 +33,8 @@ type Mutation {
     # chuyen nganh
     themChuyenNganh(inputs: ThemChuyenNganhInputs!): ChuyenNganhResponse!
     xoaChuyenNganhs(ids:[ID!]):ChuyenNganhResponse!
+
+    #mon hoc
+    themMonHoc(inputs: ThemMonHocInputs!): MonHocResponse!
+    xoaMonHocs(ids:[ID!]): MonHocResponse!
 }
