@@ -5,4 +5,7 @@ input ThemKhoaHocInputs {
 
 input FindKhoaHocInputs {
     id: ID
+    tenKhoaHoc: Int
+    page: Int!
+    size: Int!
 }

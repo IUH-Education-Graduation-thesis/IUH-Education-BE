@@ -3,6 +3,11 @@ input ThemDayNhaInput {
     moTa: String
 }
 
+input FindDayNhaInputs {
+    id: ID
+    tenDayNha: String
+}
+
 input SuaDayNhaInput {
     id: ID!
     tenDayNha: String!

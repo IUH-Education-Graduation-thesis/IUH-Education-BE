@@ -1,0 +1,6 @@
+input ThemChuyenNganhInputs {
+    ten: String!
+    moTa: String
+    khoaVienID: ID!
+}
+

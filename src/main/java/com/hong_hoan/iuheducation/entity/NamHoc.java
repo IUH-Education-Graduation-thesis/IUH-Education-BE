@@ -26,7 +26,7 @@ public class NamHoc {
     private String moTa;
 
 
-    @OneToMany(mappedBy = "namHoc")
-    private List<HocKy> hocKies = new ArrayList<>();
+    @OneToMany(mappedBy = "namHoc", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<HocKy> hocKys = new ArrayList<>();
 
 }

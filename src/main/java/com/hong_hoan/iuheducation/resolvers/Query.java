@@ -2,17 +2,37 @@ package com.hong_hoan.iuheducation.resolvers;
 
 import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
-import com.hong_hoan.iuheducation.repository.DayNhaRepository;
-import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
+import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
+import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
-import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
-import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
+import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.FindSinhVienInputs;
+import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
+import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.FindHocPhanResponse;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.FindKhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.PaginationKhoaHoc;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.FindKhoaVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.PaginationKhoaVien;
+import com.hong_hoan.iuheducation.resolvers.response.lop.FindLopHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lop.PaginationLopHoc;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.GetLopHocPhanResponse;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocRest;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.FindSinhVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.PaginationSinhVien;
 import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +54,191 @@ public class Query implements GraphQLQueryResolver {
     private AccountService accountService;
     @Autowired
     private NamHocService namHocService;
+    @Autowired
+    private KhoaVienService khoaVienService;
+    @Autowired
+    private GiangVienService giangVienService;
+    @Autowired
+    private LopService lopService;
+    @Autowired
+    private ChuyenNganhService chuyenNganhService;
+    @Autowired
+    private HocPhanService hocPhanService;
+    @Autowired
+    private LopHocPhanService lopHocPhanService;
+    @Autowired
+    private SinhVienService sinhVienService;
 
     @PreAuthorize("isAuthenticated()")
-    public NamHocResponse findNamHoc(String id) {
+    public FindSinhVienResponse findSinhVien(FindSinhVienInputs inputs) {
         try {
-            List<NamHoc> _listNamHoc = namHocService.findNamHoc(id);
+            PaginationSinhVien _paginationSinhVien = sinhVienService.findSinhVienWithFilter(inputs);
 
-            return NamHocResponse.builder()
+            return FindSinhVienResponse.builder()
                     .status(ResponseStatus.OK)
-                    .message("Lấy danh sách lớp học thành công!")
-                    .data(_listNamHoc)
+                    .message("Tìm kiếm sinh viên thành công.")
+                    .data(Arrays.asList(_paginationSinhVien))
+                    .build();
+
+        } catch (Exception ex) {
+            return FindSinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm sinh viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public GetLopHocPhanResponse getLopHocPhan(String id) {
+        try {
+            List<LopHocPhan> _listLopHocPhan = lopHocPhanService.getLopHocPhanWithId(id);
+
+            return GetLopHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm lớp học phần thành công.")
+                    .data(_listLopHocPhan)
                     .build();
         } catch (Exception ex) {
-            return NamHocResponse.builder()
+            return GetLopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm lớp học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public FindHocPhanResponse findHocPhans(FindHocPhanInputs inputs) {
+        try {
+            PaginationHocPhan _paginationHocPhan = hocPhanService.findHocPhanWithPagination(inputs);
+
+            return FindHocPhanResponse.builder()
                     .status(ResponseStatus.OK)
+                    .message("Tìm kiếm học phần thành công.")
+                    .data(Arrays.asList(_paginationHocPhan))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return FindHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm học phần thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public FindChuyenNganhResponse findChuyenNganh(String id) {
+        try {
+            List<ChuyenNganh> _listChuyenNganh = chuyenNganhService.findListChuyeNganh(id);
+            return FindChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm chuyên ngành thành công.")
+                    .data(_listChuyenNganh)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return FindChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm chuyên ngành không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public FindLopHocResponse findLopHoc(FindLopHocInputs inputs) {
+        try {
+            PaginationLopHoc _paginationLopHoc = lopService.findLopHocPagination(inputs);
+            return FindLopHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin lớp học thành công!")
+                    .data(Arrays.asList(_paginationLopHoc))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return FindLopHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin lớp học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public FindGiangVienResponse findGiangVien(FindGiangVienInputs inputs) {
+        try {
+            PaginationGiangVien _paginationGiangVien = giangVienService.findGiangVienPagination(inputs);
+
+            return FindGiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm giảng viên thành công.")
+                    .data(Arrays.asList(_paginationGiangVien))
+                    .build();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return FindGiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm khoa viện không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public FindKhoaVienResponse findKhoaVien(FindKhoaVienInputs inputs) {
+        try {
+            PaginationKhoaVien _paginationKhoaVien = khoaVienService.getListKhoaVienPagination(inputs);
+            return FindKhoaVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm khoa viện thành công.")
+                    .data(Arrays.asList(_paginationKhoaVien))
+                    .build();
+        } catch (Exception ex) {
+            return FindKhoaVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm khoa viện không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public FindNamHocResponse findNamHoc(FindNamHocInputs inputs) {
+        try {
+            FindNamHocRest _findNamHocRest = namHocService.findNamHocs(inputs);
+
+            return FindNamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy danh sách lớp học thành công!")
+                    .data(Arrays.asList(_findNamHocRest))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return FindNamHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
                     .message("Lấy danh sách lớp học không thành công!")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Lỗi hệ thống!")
@@ -79,63 +270,14 @@ public class Query implements GraphQLQueryResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STUDENT', 'TEACHER')")
-    public KhoaHocResponse findKhoaHocs(String id) {
-        try {
-            if (id.isEmpty()) {
+    public FindKhoaHocResponse findKhoaHocs(FindKhoaHocInputs inputs) {
+        PaginationKhoaHoc _paginationKhoaHoc = khoaHocService.findKhoaHocs(inputs);
 
-                List<Khoa> _khoas = khoaHocService.findAllKhoaHoc();
-                return KhoaHocResponse.builder()
-                        .status(ResponseStatus.OK)
-                        .message("Lấy thông tin khóa học thành công!")
-                        .data(_khoas)
-                        .build();
-            }
-
-            Khoa _khoa = khoaHocService.findById(id);
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Lấy thông tin khóa học thành công!")
-                    .data(Arrays.asList(_khoa))
-                    .build();
-
-        } catch (NullPointerException ex) {
-            List<Khoa> _khoas = khoaHocService.findAllKhoaHoc();
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Lấy thông tin khóa học thành công!")
-                    .data(_khoas)
-                    .build();
-
-        } catch (NumberFormatException ex) {
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Lấy thông tin lớp học không thành công!")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .error_fields(Arrays.asList("id"))
-                                    .message("Định dạng id không đúng format!")
-                                    .build()
-                    ))
-                    .build();
-        } catch (KhoaHocIsNotExist ex) {
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Lấy thông tin khóa học thành công!")
-                    .data(Arrays.asList())
-                    .build();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Lấy thông tin lớp học không thành công!")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .message("Lỗi hệ thống!")
-                                    .build()
-                    ))
-                    .build();
-        }
+        return FindKhoaHocResponse.builder()
+                .status(ResponseStatus.OK)
+                .message("Lấy thông tin khóa học thành công!")
+                .data(Arrays.asList(_paginationKhoaHoc))
+                .build();
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -243,8 +385,8 @@ public class Query implements GraphQLQueryResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public DayNhaResponse findDayNha() {
-        List<DayNha> _listDayNha = dayNhaService.getListDayNha();
+    public DayNhaResponse findDayNha(FindDayNhaInputs inputs) {
+        List<DayNha> _listDayNha = dayNhaService.getListDayNha(inputs);
 
         return DayNhaResponse.builder()
                 .status(ResponseStatus.OK)

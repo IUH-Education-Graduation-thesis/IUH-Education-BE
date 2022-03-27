@@ -5,22 +5,33 @@ import com.hong_hoan.iuheducation.exception.*;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.CreateAccountInput;
+import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.ThemChuyenNganhInputs;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
+import com.hong_hoan.iuheducation.resolvers.input.giang_vien.ThemGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
+import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
-import com.hong_hoan.iuheducation.resolvers.response.KhoaHocResponse;
-import com.hong_hoan.iuheducation.resolvers.response.NamHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
+import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.mon_hoc.MonHocRespone;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +42,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Configuration
 public class Mutation implements GraphQLMutationResolver {
@@ -49,7 +62,246 @@ public class Mutation implements GraphQLMutationResolver {
     private NamHocService namHocService;
     @Autowired
     private HocKyService hocKyService;
+    @Autowired
+    private LichHocService lichHocService;
+    @Autowired
+    private KhoaVienSevice khoaVienSevice;
+    @Autowired
+    private ChuyenNganhService chuyenNganhService;
+    @Autowired
+    private MonHocService monHocService;
+    @Autowired
+    private GiangVienService giangVienService;
 
+    /*
+        giang vien
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public GiangVienResponse themGiangVien(ThemGiangVienInputs inputs){
+        try{
+            GiangVien _giangVienInput = giangVienService.themGiangVien(inputs);
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm giảng viên thành công!")
+                    .data(List.of(_giangVienInput))
+                    .build();
+        }
+        catch (ChuyenNganhIsNotExistExcepton ex){
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm giảng viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("chuyenNganhID"))
+                            .message("Chuyên ngành không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm giảng viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public GiangVienResponse xoaGiangViens(Set<Long> ids){
+        try{
+            List<GiangVien> _idGiangVien = giangVienService.xoaGiangViens(ids);
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa giảng viên thành công")
+                    .data(_idGiangVien)
+                    .build();
+        }catch (Exception exception){
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa giảng viên không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Giảng viên không tồn tại!").build()))
+                    .build();
+        }
+    }
+    /*
+        mon hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public MonHocRespone themMonHoc(ThemMonHocInputs inputs){
+        try{
+            MonHoc _monHocInput = monHocService.themMonHoc(inputs);
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm môn học thành công!")
+                    .data(List.of(_monHocInput))
+                    .build();
+        }
+        catch (KhoaVienIsNotExistException ex){
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm môn học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("khoaVienID"))
+                            .message("Khoa viện không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm môn học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public MonHocRespone xoaMonHocs(Set<Long> ids){
+        try{
+            List<MonHoc> _idMonHoc = monHocService.xoaMonHocs(ids);
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa môn học thành công")
+                    .data(_idMonHoc)
+                    .build();
+        }catch (Exception exception){
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa môn học không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Môn học không tồn tại!").build()))
+                    .build();
+        }
+    }
+    /*
+        chuyen nganh
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ChuyenNganhResponse themChuyenNganh(ThemChuyenNganhInputs inputs){
+        System.out.println(inputs);
+        try{
+            ChuyenNganh _chuyenNganhInput = chuyenNganhService.themChuyenNganh(inputs);
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm chuyên ngành thành công!")
+                    .data(List.of(_chuyenNganhInput))
+                    .build();
+        }
+        catch (KhoaVienIsNotExistException ex){
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm chuyên ngành không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                                    .error_fields(Arrays.asList("khoaVienID"))
+                            .message("Khoa viện không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm chuyên ngành không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ChuyenNganhResponse xoaChuyenNganhs(Set<Long> ids){
+        try{
+            List<ChuyenNganh> _idChuyenNganh = chuyenNganhService.xoaChuyenNganhs(ids);
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa chuyên ngành thành công")
+                    .data(_idChuyenNganh)
+                    .build();
+        }catch (Exception exception){
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa chuyên ngành không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Chuyên ngành không tồn tại!").build()))
+                    .build();
+        }
+    }
+    /*
+        khoa vien
+        ======================================================================
+     */
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaVienResponse themKhoaVien(ThemKhoaVienInputs inputs){
+        try{
+            KhoaVien _khoaVienInput = khoaVienSevice.themKhoaVien(inputs);
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm khoa viện thành công")
+                    .data(List.of(_khoaVienInput))
+                    .build();
+        }catch(Exception ex){
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm khoa viện không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaVienResponse xoaKhoaViens(Set<Long> ids){
+        try{
+            List<KhoaVien> _idKhoaVien = khoaVienSevice.xoaKhoaViens(ids);
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa khoa viện thành công")
+                    .data(_idKhoaVien)
+                    .build();
+        }catch (Exception exception){
+            return KhoaVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa khoa viện không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Khoa viện không tồn tại!").build()))
+                    .build();
+        }
+    }
+    /*
+        lich hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LichHocResponse themLichHoc(ThemLichHocInputs inputs){
+        try {
+            LichHoc _lichHoc = lichHocService.themLichHoc(inputs);
+
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm lịch học thành công")
+                    .data(Arrays.asList(_lichHoc))
+                    .build();
+        }
+        catch (PhongHocIsNotExist ex){
+            return  LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Phòng học không tồn tại")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
     /*
         hoc ky
         ======================================================================
@@ -368,13 +620,14 @@ public class Mutation implements GraphQLMutationResolver {
      */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public DayNhaResponse xoaDayNha(long id) {
+    public DayNhaResponse xoaDayNha(Set<Long> ids) {
         try {
-            dayNhaService.deleteDayNha(id);
+            List<DayNha> _dayNhaDeleted = dayNhaService.deleteDayNhas(ids);
 
             return DayNhaResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Xóa dãy nhà thành công.")
+                    .data(_dayNhaDeleted)
                     .build();
         } catch (DayNhaIsNotExistException ex) {
             return DayNhaResponse.builder()

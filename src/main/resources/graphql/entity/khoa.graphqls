@@ -2,4 +2,6 @@ type Khoa {
     id: ID
     khoa: String
     moTa: String
+    thoiGianBatDau: Date
+    thoiGianKetThuc: Date
 }

@@ -32,9 +32,13 @@ public class GiangVien {
     @Column(name = "hoc_ham")
     private HocHam hocHam;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "khoa_vien_id")
-    private KhoaVien khoaVien;
+    @ManyToOne
+    @JoinColumn(name = "chuyen_nganh_id")
+    private ChuyenNganh chuyenNganh;
+
+    public String hocHamString() {
+        return hocHam.getName();
+    }
 
     @Override
     public boolean equals(Object o) {

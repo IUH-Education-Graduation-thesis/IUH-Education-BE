@@ -23,7 +23,7 @@ public class PhongHoc {
     private int sucChua;
     private String moTa;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "day_nha_id")
     private DayNha dayNha;
 

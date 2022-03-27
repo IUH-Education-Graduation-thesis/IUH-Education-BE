@@ -1,7 +1,14 @@
 type Query {
-    findNamHoc(id: ID): NamHocResponse!
-    findDayNha: DayNhaResponse!
+    findNamHoc(inputs: FindNamHocInputs): FindNamHocResponse!
+    findDayNha(inputs: FindDayNhaInputs): DayNhaResponse!
     findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
-    findKhoaHocs(id: ID): KhoaHocResponse!
+    findKhoaHocs(inputs: FindKhoaHocInputs): FindKhoaHocResponse!
     getProfile: ProfileResponse!
+    findKhoaVien(inputs: FindKhoaVienInputs): FindKhoaVienResponse!
+    findGiangVien(inputs: FindGiangVienInputs): FindGiangVienResponse!
+    findLopHoc(inputs: FindLopHocInputs): FindLopHocResponse!
+    findChuyenNganh(id: ID): FindChuyenNganhResponse!
+    findHocPhans(inputs: FindHocPhanInputs): FindHocPhanResponse!
+    getLopHocPhan(id: ID): GetLopHocPhanResponse!
+    findSinhVien(inputs: FindSinhVienInputs): FindSinhVienResponse!
 }

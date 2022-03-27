@@ -7,7 +7,7 @@ type Mutation {
     xoaHocKy(id: ID!): HocKyResponse!
 
     # nam hoc
-    themNamHoc(inputs: ThemNamHocInputs): NamHocResponse!
+    themNamHoc(inputs: ThemNamHocInputs!): NamHocResponse!
     xoaNamHoc(id: ID!): NamHocResponse!
 
     # khoa
@@ -17,9 +17,28 @@ type Mutation {
     # day nha
     themDayNha(inputs: ThemDayNhaInput!): DayNhaResponse!
     suaDayNha(inputs: SuaDayNhaInput!): DayNhaResponse!
-    xoaDayNha(id: ID!): DayNhaResponse!
+    xoaDayNha(ids: [ID!]): DayNhaResponse!
 
     # phong hoc
     themPhongHoc(inputs: ThemPhongHocInputs!): PhongHocResponse!
     xoaPhongHoc(phongHocId: ID!): PhongHocResponse!
+
+    #lich hoc
+    themLichHoc(inputs: ThemLichHocInputs!): LichHocResponse!
+
+    #khoa vien
+    themKhoaVien(inputs:ThemKhoaVienInputs!):KhoaVienResponse!
+    xoaKhoaViens(ids:[ID!]):KhoaVienResponse!
+
+    # chuyen nganh
+    themChuyenNganh(inputs: ThemChuyenNganhInputs!): ChuyenNganhResponse!
+    xoaChuyenNganhs(ids:[ID!]):ChuyenNganhResponse!
+
+    #mon hoc
+    themMonHoc(inputs: ThemMonHocInputs!): MonHocResponse!
+    xoaMonHocs(ids:[ID!]): MonHocResponse!
+
+    #giang vien
+    themGiangVien(inputs: ThemGiaoVienInputs!): GiangVienResponse!
+    xoaGiangViens(ids:[ID!]): GiangVienResponse!
 }

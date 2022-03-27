@@ -1,0 +1,17 @@
+input ThemGiaoVienInputs{
+    hoTenDem: String!
+    ten: String!
+    gioiTinh: Boolean!
+    avatar: String
+    email: String
+    soDienThoai: String
+    chuyenNganhID: ID!
+    hocHam: HocHam!
+}
+input FindGiangVienInputs {
+    id: ID
+    hoVaTen: String
+    khoaVienIds: [ID]
+    page: Int!
+    size: Int!
+}

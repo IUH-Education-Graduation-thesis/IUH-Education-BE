@@ -1,0 +1,7 @@
+input ThemMonHocInputs{
+    moTa: String
+    soTinChiLyThuyet: Int!
+    soTinChiThucHanh: Int
+    ten: String!
+    khoaVienID:ID!
+}

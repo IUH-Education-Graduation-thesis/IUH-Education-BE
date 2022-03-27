@@ -1,0 +1,10 @@
+input FindHocPhanInputs {
+    id: ID
+    maHocPhan: String
+    namHocIds: [ID]
+    hocKyIds: [ID]
+    khoaVienIds: [ID]
+    monHocIds: [ID]
+    page: Int
+    size: Int
+}

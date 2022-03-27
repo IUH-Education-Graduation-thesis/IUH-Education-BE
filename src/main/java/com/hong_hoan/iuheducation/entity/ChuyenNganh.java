@@ -28,13 +28,16 @@ public class ChuyenNganh {
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 
-    @OneToMany(mappedBy = "chuyenNganh")
+    @OneToMany(mappedBy = "chuyenNganh", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Lop> lops = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "chuyen_nganh_mon_hocs",
             joinColumns = @JoinColumn(name = "chuyen_nganh_id"),
             inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
     private Set<MonHoc> monHocs = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "chuyenNganh", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<GiangVien> giangViens = new LinkedHashSet<>();
 
 }

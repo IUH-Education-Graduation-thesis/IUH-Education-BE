@@ -1,4 +1,4 @@
-package com.hong_hoan.iuheducation.resolvers.response;
+package com.hong_hoan.iuheducation.resolvers.response.nam_hoc;
 
 import com.hong_hoan.iuheducation.entity.NamHoc;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;

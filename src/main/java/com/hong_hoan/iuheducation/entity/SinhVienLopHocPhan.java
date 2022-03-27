@@ -32,12 +32,12 @@ public class SinhVienLopHocPhan {
     private double diemCuoiKy;
     private String ghiChu;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("sinhVienId")
     @JoinColumn(name = "sinh_vien_id")
     private SinhVien sinhVien;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("lopHocPhanId")
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;

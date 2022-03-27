@@ -5,7 +5,7 @@ type HocPhan {
     batBuoc: Boolean
     hocKy: HocKy
     monHoc: MonHoc
-    monHocTienQuyet: [MonHoc]
-    monHocSongHanh: [MonHoc]
-    monHocTruoc: [MonHoc]
+    monHocTienQuyets: [MonHoc]
+    monHocSongHanhs: [MonHoc]
+    monHocTruocs: [MonHoc]
 }
