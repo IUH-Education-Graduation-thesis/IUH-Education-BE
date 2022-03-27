@@ -12,6 +12,7 @@ import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.FindSinhVienInputs;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
@@ -30,6 +31,8 @@ import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.FindSinhVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.PaginationSinhVien;
 import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +66,30 @@ public class Query implements GraphQLQueryResolver {
     private HocPhanService hocPhanService;
     @Autowired
     private LopHocPhanService lopHocPhanService;
+    @Autowired
+    private SinhVienService sinhVienService;
+
+    @PreAuthorize("isAuthenticated()")
+    public FindSinhVienResponse findSinhVien(FindSinhVienInputs inputs) {
+        try {
+            PaginationSinhVien _paginationSinhVien = sinhVienService.findSinhVienWithFilter(inputs);
+
+            return FindSinhVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Tìm kiếm sinh viên thành công.")
+                    .data(Arrays.asList(_paginationSinhVien))
+                    .build();
+
+        } catch (Exception ex) {
+            return FindSinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Tìm kiếm sinh viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public GetLopHocPhanResponse getLopHocPhan(String id) {
@@ -79,7 +106,7 @@ public class Query implements GraphQLQueryResolver {
                     .status(ResponseStatus.ERROR)
                     .message("Tìm kiếm lớp học phần không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
-                                    .message("Lỗi hệ thống!")
+                            .message("Lỗi hệ thống!")
                             .build()))
                     .build();
         }
@@ -101,7 +128,7 @@ public class Query implements GraphQLQueryResolver {
                     .status(ResponseStatus.ERROR)
                     .message("Tìm kiếm học phần thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
-                                    .message("Lỗi hệ thống!")
+                            .message("Lỗi hệ thống!")
                             .build()))
                     .build();
         }

@@ -1,0 +1,11 @@
+input FindSinhVienInputs {
+    id: ID
+    maSinhVien: String
+    tenSinhVien: String
+    khoaVienIds: [ID]
+    chuyenNganhIds: [ID]
+    khoaHocIds: [ID]
+    lopIds: [ID]
+    page: Int
+    size: Int
+}
