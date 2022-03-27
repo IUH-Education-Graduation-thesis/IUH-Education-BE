@@ -1,5 +1,6 @@
 package com.hong_hoan.iuheducation.service;
 
+import com.hong_hoan.iuheducation.entity.Khoa;
 import com.hong_hoan.iuheducation.entity.KhoaVien;
 import com.hong_hoan.iuheducation.repository.KhoaVienRepository;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
@@ -35,7 +36,7 @@ public class KhoaVienService {
     public PaginationKhoaVien getListKhoaVienPagination(FindKhoaVienInputs inputs) {
         boolean _isInputsEmpty = ObjectUtils.isEmpty(inputs);
 
-        if(_isInputsEmpty) {
+        if (_isInputsEmpty) {
             List<KhoaVien> _listKhoaVien = khoaVienRepository.findAll();
 
             return PaginationKhoaVien.builder()
@@ -44,33 +45,24 @@ public class KhoaVienService {
                     .build();
         }
 
-        Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
+        String _tenInputs = inputs.getTen() == null ? null : inputs.getTen();
 
-        if(inputs.checkBaseDateEmpty()) {
-            Page<KhoaVien> _pageKhoaVien = khoaVienRepository.findAll(_pageable);
-
-            return PaginationKhoaVien.builder()
-                    .count(_pageKhoaVien.getNumberOfElements())
-                    .data(_pageKhoaVien.getContent())
-                    .build();
-        }
-
-        try {
-            boolean _isIdInputsNull = inputs.getId().isEmpty();
-            List<KhoaVien> _listKhoaVien = findListKhoaVienById(inputs.getId());
-
+        if (inputs.checkPaginationEmpty()) {
+            List<KhoaVien> _listKhoaVien = khoaVienRepository.findKhoaVienFilter(inputs.getId(), _tenInputs);
             return PaginationKhoaVien.builder()
                     .count(_listKhoaVien.size())
                     .data(_listKhoaVien)
                     .build();
-        } catch (NullPointerException ex) {
-            Page<KhoaVien> _pageKhoaVien = khoaVienRepository.findByTenContaining(inputs.getTen(), _pageable);
-
-            return PaginationKhoaVien.builder()
-                    .count(_pageKhoaVien.getNumberOfElements())
-                    .data(_pageKhoaVien.getContent())
-                    .build();
         }
+
+        Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
+
+        Page<KhoaVien> _khoaVienPage = khoaVienRepository.findKhoaVienFilter(inputs.getId(), _tenInputs, _pageable);
+
+        return PaginationKhoaVien.builder()
+                .count(_khoaVienPage.getNumberOfElements())
+                .data(_khoaVienPage.getContent())
+                .build();
     }
 
 }

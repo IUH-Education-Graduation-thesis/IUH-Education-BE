@@ -1,8 +1,8 @@
 input FindKhoaVienInputs {
     id: ID
     ten: String
-    page: Int!
-    size: Int!
+    page: Int
+    size: Int
 }
 input ThemKhoaVienInputs{
     ten: String!
