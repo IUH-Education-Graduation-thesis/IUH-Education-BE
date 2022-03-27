@@ -14,4 +14,5 @@ type KhoaVienResponse implements ResponseInterface{
     errors: [ErrorResponse]
     message: String
     data: [KhoaVien]
+
 }
