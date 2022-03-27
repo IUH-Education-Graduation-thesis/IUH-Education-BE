@@ -10,4 +10,5 @@ type Query {
     findChuyenNganh(id: ID): FindChuyenNganhResponse!
     findHocPhans(inputs: FindHocPhanInputs): FindHocPhanResponse!
     getLopHocPhan(id: ID): GetLopHocPhanResponse!
+    findSinhVien(inputs: FindSinhVienInputs): FindSinhVienResponse!
 }
