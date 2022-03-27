@@ -4,3 +4,8 @@ input FindKhoaVienInputs {
     page: Int!
     size: Int!
 }
+input ThemKhoaVienInputs{
+    ten: String!
+    moTa: String
+    link: String
+}

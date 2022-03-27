@@ -22,4 +22,15 @@ type Mutation {
     # phong hoc
     themPhongHoc(inputs: ThemPhongHocInputs!): PhongHocResponse!
     xoaPhongHoc(phongHocId: ID!): PhongHocResponse!
+
+    #lich hoc
+    themLichHoc(inputs: ThemLichHocInputs!): LichHocResponse!
+
+    #khoa vien
+    themKhoaVien(inputs:ThemKhoaVienInputs!):KhoaVienResponse!
+    xoaKhoaViens(ids:[ID!]):KhoaVienResponse!
+
+    # chuyen nganh
+    themChuyenNganh(inputs: ThemChuyenNganhInputs!): ChuyenNganhResponse!
+    xoaChuyenNganhs(ids:[ID!]):ChuyenNganhResponse!
 }

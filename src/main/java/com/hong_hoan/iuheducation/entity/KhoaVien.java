@@ -1,8 +1,6 @@
 package com.hong_hoan.iuheducation.entity;
 
 import lombok.*;
-import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.util.*;
 
