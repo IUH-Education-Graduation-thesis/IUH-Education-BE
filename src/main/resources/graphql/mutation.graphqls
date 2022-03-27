@@ -37,4 +37,8 @@ type Mutation {
     #mon hoc
     themMonHoc(inputs: ThemMonHocInputs!): MonHocResponse!
     xoaMonHocs(ids:[ID!]): MonHocResponse!
+
+    #giang vien
+    themGiangVien(inputs: ThemGiaoVienInputs!): GiangVienResponse!
+    xoaGiangViens(ids:[ID!]): GiangVienResponse!
 }
