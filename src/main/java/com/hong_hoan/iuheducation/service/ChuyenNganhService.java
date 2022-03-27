@@ -73,4 +73,5 @@ public class ChuyenNganhService {
         chuyenNganhRepository.deleteAllById(_ids);
         return _chuyenNganhs;
     }
+
 }

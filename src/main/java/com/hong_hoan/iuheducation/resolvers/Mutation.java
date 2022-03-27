@@ -12,12 +12,14 @@ import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.mon_hoc.MonHocRespone;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
@@ -64,7 +66,60 @@ public class Mutation implements GraphQLMutationResolver {
     private KhoaVienSevice khoaVienSevice;
     @Autowired
     private ChuyenNganhService chuyenNganhService;
+    @Autowired
+    private MonHocService monHocService;
 
+    /*
+        mon hoc
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public MonHocRespone themMonHoc(ThemMonHocInputs inputs){
+        try{
+            MonHoc _monHocInput = monHocService.themMonHoc(inputs);
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm môn học thành công!")
+                    .data(List.of(_monHocInput))
+                    .build();
+        }
+        catch (KhoaVienIsNotExistException ex){
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm môn học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .error_fields(Arrays.asList("khoaVienID"))
+                            .message("Khoa viện không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex){
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm môn học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public MonHocRespone xoaMonHocs(Set<Long> ids){
+        try{
+            List<MonHoc> _idMonHoc = monHocService.xoaMonHocs(ids);
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa môn học thành công")
+                    .data(_idMonHoc)
+                    .build();
+        }catch (Exception exception){
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa môn học không thành công")
+                    .errors(Arrays.asList(ErrorResponse.builder().message("Môn học không tồn tại!").build()))
+                    .build();
+        }
+    }
     /*
         chuyen nganh
         ======================================================================

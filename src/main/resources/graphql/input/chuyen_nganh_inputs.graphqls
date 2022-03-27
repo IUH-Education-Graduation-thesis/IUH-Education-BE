@@ -3,3 +3,4 @@ input ThemChuyenNganhInputs {
     moTa: String
     khoaVienID: ID!
 }
+
