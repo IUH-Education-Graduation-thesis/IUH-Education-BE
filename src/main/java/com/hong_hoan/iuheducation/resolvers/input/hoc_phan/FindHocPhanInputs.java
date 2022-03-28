@@ -12,14 +12,18 @@ import java.util.stream.Stream;
 @Getter
 @ToString
 public class FindHocPhanInputs {
-    private long id;
+    private String id;
     private String maHocPhan;
     private List<Long> namHocIds;
     private List<Long> hocKyIds;
     private List<Long> khoaVienIds;
     private List<Long> monHocIds;
-    private int page;
-    private int size;
+    private Integer page;
+    private Integer size;
+
+    public boolean checkAllDataIsNull() {
+        return Stream.of(id, maHocPhan, namHocIds, hocKyIds, khoaVienIds, monHocIds, page, size).allMatch(Objects::isNull);
+    }
 
     public boolean checkPaginationIsNull() {
         return Stream.of(page, size).anyMatch(Objects::isNull);

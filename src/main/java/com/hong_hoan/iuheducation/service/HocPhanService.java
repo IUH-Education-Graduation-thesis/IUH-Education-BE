@@ -31,6 +31,15 @@ public class HocPhanService {
                     .build();
         }
 
+        if(inputs.checkAllDataIsNull()) {
+            List<HocPhan> _listHocPhan = hocPhanRepository.findAll();
+
+            return PaginationHocPhan.builder()
+                    .count(_listHocPhan.size())
+                    .data(_listHocPhan)
+                    .build();
+        }
+
         if (inputs.checkPaginationIsNull()) {
             List<HocPhan> _listHocPhan = hocPhanRepository.filterHocPhan(inputs.getId(), inputs.getMaHocPhan(), inputs.getNamHocIds(), inputs.getHocKyIds(), inputs.getMonHocIds(), inputs.getKhoaVienIds());
             return PaginationHocPhan.builder()
