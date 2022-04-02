@@ -1,7 +1,0 @@
-type NamHoc {
-    id: ID
-    moTa: String
-    ngayBatDau: Date
-    ngayKetThuc: Date
-    hocKys: [HocKy]
-}

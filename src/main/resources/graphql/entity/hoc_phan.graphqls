@@ -8,4 +8,5 @@ type HocPhan {
     monHocTienQuyets: [MonHoc]
     monHocSongHanhs: [MonHoc]
     monHocTruocs: [MonHoc]
+    lopHocPhans: [LopHocPhan]
 }

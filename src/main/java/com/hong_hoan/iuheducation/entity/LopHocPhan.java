@@ -22,6 +22,7 @@ public class LopHocPhan {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column
     private String maLopHocPhan;
     private String tenLopHocPhan;
     private int soNhomThucHanh;

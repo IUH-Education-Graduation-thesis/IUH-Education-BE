@@ -17,6 +17,7 @@ public class KhoaVien {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String ten;
     private String link;
     private String moTa;

@@ -1,5 +1,4 @@
 type Query {
-    findNamHoc(inputs: FindNamHocInputs): FindNamHocResponse!
     findDayNha(inputs: FindDayNhaInputs): DayNhaResponse!
     findPhongHocs(inputs: FindPhongHocInputs): PhongHocResponse!
     findKhoaHocs(inputs: FindKhoaHocInputs): FindKhoaHocResponse!

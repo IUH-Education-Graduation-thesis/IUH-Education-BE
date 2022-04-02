@@ -14,7 +14,6 @@ import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
-import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
@@ -22,7 +21,6 @@ import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienRespons
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.mon_hoc.MonHocRespone;
-import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
@@ -58,8 +56,6 @@ public class Mutation implements GraphQLMutationResolver {
     private PhongHocService phongHocService;
     @Autowired
     private KhoaHocService khoaHocService;
-    @Autowired
-    private NamHocService namHocService;
     @Autowired
     private HocKyService hocKyService;
     @Autowired
@@ -383,80 +379,6 @@ public class Mutation implements GraphQLMutationResolver {
         }
     }
 
-    /*
-        nam hoc
-        ======================================================================
-     */
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public NamHocResponse xoaNamHoc(String id) {
-        try {
-            namHocService.xoaNamHocById(id);
-
-            return NamHocResponse.builder()
-                    .message("Xóa năm học thành công!")
-                    .status(ResponseStatus.OK)
-                    .build();
-        } catch (NumberFormatException ex) {
-            return NamHocResponse.builder()
-                    .message("Xóa năm học không thành công!")
-                    .status(ResponseStatus.ERROR)
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("id"))
-                            .message("id nhập không đúng format!")
-                            .build()))
-                    .build();
-        } catch (NamHocIsNotExist ex) {
-            return NamHocResponse.builder()
-                    .message("Xóa năm học không thành công!")
-                    .status(ResponseStatus.ERROR)
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("id"))
-                            .message("Năm học không tồn tại!")
-                            .build()))
-                    .build();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return NamHocResponse.builder()
-                    .message("Xóa năm học không thành công!")
-                    .status(ResponseStatus.ERROR)
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
-        }
-    }
-
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public NamHocResponse themNamHoc(ThemNamHocInputs inputs) {
-        try {
-            NamHoc _namHoc = namHocService.themNamHoc(inputs);
-
-            return NamHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm năm học thành công.")
-                    .data(Arrays.asList(_namHoc))
-                    .build();
-        } catch (NgayBatDauSauNgayKetThucException ex) {
-            return NamHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm năm học không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("ngayBatDau"))
-                            .message("Ngày bắt đầu nhỏ hơn ngày kết thúc!")
-                            .build()))
-                    .build();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return NamHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm năm học không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
-        }
-
-    }
 
     /*
         phong hoc

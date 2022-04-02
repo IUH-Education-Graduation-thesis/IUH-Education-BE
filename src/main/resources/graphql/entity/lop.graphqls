@@ -3,6 +3,6 @@ type Lop {
     ten: String
     moTa: String
     khoa: Khoa
-    chuyenNganh: ChuyenNganh
     sinhViens: [SinhVien]
+    giangVien: GiangVien
 }

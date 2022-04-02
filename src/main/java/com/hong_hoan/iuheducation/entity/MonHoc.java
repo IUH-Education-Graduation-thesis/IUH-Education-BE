@@ -23,23 +23,12 @@ public class MonHoc {
 
     private String ten;
     private String moTa;
-    private int soTinChiLyThuyet;
-    private int soTinChiThucHanh;
 
     @ManyToOne
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        MonHoc monHoc = (MonHoc) o;
-        return id != null && Objects.equals(id, monHoc.id);
-    }
+    @OneToMany(mappedBy = "monHoc", orphanRemoval = true)
+    private Set<GiangVien> giangViens = new LinkedHashSet<>();
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

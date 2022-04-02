@@ -3,7 +3,6 @@ type ChuyenNganh {
     moTa: String
     ten: String
     khoaVien: KhoaVien
-    monHocs: [MonHoc]
     giangViens: [GiangVien]
-    lops: [Lop]
+    khoas: [Khoa]
 }
