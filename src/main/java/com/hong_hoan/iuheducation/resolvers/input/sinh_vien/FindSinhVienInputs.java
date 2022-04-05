@@ -19,8 +19,12 @@ public class FindSinhVienInputs {
     private List<Long> chuyenNganhIds;
     private List<Long> khoaHocIds;
     private List<Long> lopIds;
-    private int page;
-    private int size;
+    private Integer page;
+    private Integer size;
+
+    public boolean allDataIsEmpty() {
+        return Stream.of(id, maSinhVien, tenSinhVien, khoaVienIds, chuyenNganhIds, khoaHocIds, lopIds, page, size).allMatch(Objects::isNull);
+    }
 
     public boolean checkPaginationEmpty() {
         return Stream.of(page, size).anyMatch(Objects::isNull);

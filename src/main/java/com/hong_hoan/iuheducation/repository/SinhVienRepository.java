@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface SinhVienRepository extends JpaRepository<SinhVien, Long> {
+    @Query(value = "SELECT MAX(sv.id) as max_id  FROM sinh_vien sv", nativeQuery = true)
+    Integer getMaxId();
+
     @Query(value = "SELECT sv.* FROM sinh_vien sv " +
             "JOIN lop l on l.id = sv.lop_id " +
             "JOIN chuyen_nganh cn on cn.id = l.chuyen_nganh_id " +

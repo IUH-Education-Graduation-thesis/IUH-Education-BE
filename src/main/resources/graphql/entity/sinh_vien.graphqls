@@ -1,7 +1,7 @@
 type SinhVien {
-    id: Int
-    maSinhVien: Int
-    maHoSo: Int
+    id: ID
+    maSinhVien: ID
+    maHoSo: ID
     hoTenDem: String
     ten: String
     avatar: String
@@ -16,9 +16,14 @@ type SinhVien {
     email: String
     soCMND: String
     bacDaoTao: BacDaoTao
+    bacDaoTaoString: String
     trangThai: TrangThai
+    trangThaiString: String
     danToc: DanToc
+    danTocString: String
     tonGiao: TonGiao
+    tonGiaoString: String
     loaiHinhDaoTao: LoaiHinhDaoTao
+    loaiHinhDaoTaoString: String
     lop: Lop
 }
