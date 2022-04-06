@@ -21,9 +21,15 @@ public class HocPhan {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String maHocPhan;
     private String moTa;
     private boolean batBuoc;
+
+    @Column(nullable = false)
+    private int soTinChiLyThuyet;
+    @Column(nullable = false)
+    private int soTinChiThucHanh;
 
     @ManyToOne
     @JoinColumn(name = "hoc_ky_id")
@@ -32,6 +38,9 @@ public class HocPhan {
     @ManyToOne
     @JoinColumn(name = "mon_hoc_id")
     private MonHoc monHoc;
+
+    @OneToMany(mappedBy = "hocPhan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LopHocPhan> lopHocPhans = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "hoc_phan_mon_hoc_tien_quyets",
@@ -50,4 +59,5 @@ public class HocPhan {
             joinColumns = @JoinColumn(name = "hoc_phan_id"),
             inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
     private Set<MonHoc> monHocTruocs = new LinkedHashSet<>();
+
 }

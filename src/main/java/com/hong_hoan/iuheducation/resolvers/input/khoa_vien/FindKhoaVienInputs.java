@@ -19,4 +19,8 @@ public class FindKhoaVienInputs {
     public boolean checkBaseDateEmpty() {
         return Stream.of(id, ten).allMatch(Objects::isNull);
     }
+
+    public boolean checkPaginationEmpty() {
+        return Stream.of(page, size).anyMatch(Objects::isNull);
+    }
 }

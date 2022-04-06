@@ -9,3 +9,25 @@ input FindSinhVienInputs {
     page: Int
     size: Int
 }
+
+input SinhVienInputs {
+    hoTenDem: String!
+    ten: String!
+    avatar: String
+    gioiTinh: Boolean
+    ngayVaoDang: Date
+    ngayVaoTruong: Date
+    ngayVaoDoan: Date
+    ngaySinh: Date
+    soDienThoai: String
+    diaChi: String
+    noiSinh: String
+    email: String
+    soCMND: String
+    bacDaoTao: BacDaoTao
+    trangThai: TrangThai
+    danToc: DanToc
+    tonGiao: TonGiao
+    loaiHinhDaoTao: LoaiHinhDaoTao
+    lopId: ID!
+}

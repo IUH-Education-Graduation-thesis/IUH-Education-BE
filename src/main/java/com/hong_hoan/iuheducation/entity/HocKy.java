@@ -19,15 +19,15 @@ public class HocKy {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private int thuTu;
     private String moTa;
 
-    @ManyToOne
-    @JoinColumn(name = "nam_hoc_id")
-    private NamHoc namHoc;
-
-
     @OneToMany(mappedBy = "hocKy")
     private List<HocPhan> hocPhans = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "khoa_id")
+    private Khoa khoa;
 
 }

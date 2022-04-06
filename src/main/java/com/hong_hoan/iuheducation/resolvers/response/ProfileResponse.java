@@ -1,7 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers.response;
 
 import com.hong_hoan.iuheducation.entity.Account;
-import com.hong_hoan.iuheducation.entity.NamHoc;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseInterface;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;

@@ -36,6 +36,10 @@ public class GiangVien {
     @JoinColumn(name = "chuyen_nganh_id")
     private ChuyenNganh chuyenNganh;
 
+    @ManyToOne
+    @JoinColumn(name = "mon_hoc_id")
+    private MonHoc monHoc;
+
     public String hocHamString() {
         return hocHam.getName();
     }

@@ -19,6 +19,8 @@ public class DayNha implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Column(nullable = false)
     private String tenDayNha;
     private String moTa;
 

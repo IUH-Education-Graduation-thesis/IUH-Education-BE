@@ -17,11 +17,12 @@ public class KhoaVien {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String ten;
     private String link;
     private String moTa;
 
-    @OneToMany(mappedBy = "khoaVien", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "khoaVien", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<MonHoc> monHocs = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "khoaVien", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

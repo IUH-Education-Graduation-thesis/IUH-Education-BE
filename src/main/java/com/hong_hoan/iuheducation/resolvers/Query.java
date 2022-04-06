@@ -4,13 +4,13 @@ import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.FindChuyenNganhInputs;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
-import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FindNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.FindPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.FindSinhVienInputs;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
@@ -26,8 +26,6 @@ import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.PaginationKhoaVie
 import com.hong_hoan.iuheducation.resolvers.response.lop.FindLopHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lop.PaginationLopHoc;
 import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.GetLopHocPhanResponse;
-import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocRest;
-import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.FindNamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
@@ -52,8 +50,6 @@ public class Query implements GraphQLQueryResolver {
     private KhoaHocService khoaHocService;
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private NamHocService namHocService;
     @Autowired
     private KhoaVienService khoaVienService;
     @Autowired
@@ -135,9 +131,9 @@ public class Query implements GraphQLQueryResolver {
     }
 
     @PreAuthorize("isAuthenticated()")
-    public FindChuyenNganhResponse findChuyenNganh(String id) {
+    public FindChuyenNganhResponse findChuyenNganh(FindChuyenNganhInputs inputs) {
         try {
-            List<ChuyenNganh> _listChuyenNganh = chuyenNganhService.findListChuyeNganh(id);
+            List<ChuyenNganh> _listChuyenNganh = chuyenNganhService.findListChuyeNganh(inputs);
             return FindChuyenNganhResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Tìm kiếm chuyên ngành thành công.")
@@ -221,28 +217,6 @@ public class Query implements GraphQLQueryResolver {
                                     .message("Lỗi hệ thống!")
                                     .build()
                     ))
-                    .build();
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    public FindNamHocResponse findNamHoc(FindNamHocInputs inputs) {
-        try {
-            FindNamHocRest _findNamHocRest = namHocService.findNamHocs(inputs);
-
-            return FindNamHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Lấy danh sách lớp học thành công!")
-                    .data(Arrays.asList(_findNamHocRest))
-                    .build();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return FindNamHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Lấy danh sách lớp học không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
                     .build();
         }
     }

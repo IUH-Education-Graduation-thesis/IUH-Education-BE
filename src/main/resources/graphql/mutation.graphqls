@@ -6,10 +6,6 @@ type Mutation {
     themHocKy(inputs: ThemHocKyInputs!): HocKyResponse!
     xoaHocKy(id: ID!): HocKyResponse!
 
-    # nam hoc
-    themNamHoc(inputs: ThemNamHocInputs!): NamHocResponse!
-    xoaNamHoc(id: ID!): NamHocResponse!
-
     # khoa
     themKhoaHoc(inputs: ThemKhoaHocInputs!): KhoaHocResponse!
     xoaKhoaHoc(id: ID!): KhoaHocResponse!
@@ -41,4 +37,7 @@ type Mutation {
     #giang vien
     themGiangVien(inputs: ThemGiaoVienInputs!): GiangVienResponse!
     xoaGiangViens(ids:[ID!]): GiangVienResponse!
+
+    #sinh vien
+    themSinhVien(inputs: SinhVienInputs!): SinhVienResponse!
 }

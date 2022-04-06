@@ -19,7 +19,9 @@ public class PhongHoc {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String tenPhongHoc;
+    @Column(nullable = false)
     private int sucChua;
     private String moTa;
 

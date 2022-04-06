@@ -36,8 +36,6 @@ public class MonHocService {
             MonHoc _monHoc = MonHoc.builder()
                     .ten(inputs.getTen())
                     .moTa(inputs.getMoTa())
-                    .soTinChiLyThuyet(inputs.getSoTinChiLyThuyet())
-                    .soTinChiThucHanh(inputs.getSoTinChiThucHanh())
                     .khoaVien(_khoaVien)
                     .build();
             MonHoc _monHocRes = monHocRepository.saveAndFlush(_monHoc);

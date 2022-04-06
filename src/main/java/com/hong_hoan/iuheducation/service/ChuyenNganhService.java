@@ -6,8 +6,10 @@ import com.hong_hoan.iuheducation.exception.ChuyenNganhIsNotExistExcepton;
 import com.hong_hoan.iuheducation.exception.KhoaVienIsNotExistException;
 import com.hong_hoan.iuheducation.repository.ChuyenNganhRepository;
 import com.hong_hoan.iuheducation.repository.KhoaVienRepository;
+import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.FindChuyenNganhInputs;
 import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.ThemChuyenNganhInputs;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,22 +28,18 @@ public class ChuyenNganhService {
     @Autowired
     private KhoaVienRepository khoaVienRepository;
 
-    public List<ChuyenNganh> findListChuyeNganh(String id) {
-        try {
-            boolean _idIsEmpty = id.isEmpty();
-            long _idLong = Long.valueOf(id);
+    public List<ChuyenNganh> findListChuyeNganh(FindChuyenNganhInputs inputs) {
+        boolean _isInputsEmpty = ObjectUtils.isEmpty(inputs);
 
-            ChuyenNganh _chuyenNganh = chuyenNganhRepository.getById(_idLong);
-
-            return Arrays.asList(_chuyenNganh);
-
-        } catch (NullPointerException ex) {
+        if (_isInputsEmpty) {
             List<ChuyenNganh> _listChuyenNganh = chuyenNganhRepository.findAll();
 
             return _listChuyenNganh;
-        } catch (NumberFormatException ex) {
-            return Arrays.asList();
         }
+
+        List<ChuyenNganh> _chuyenNganhs = chuyenNganhRepository.findChuyenNGanhWithFilter(inputs.getId(), inputs.getKhoaVienIds());
+
+        return _chuyenNganhs;
     }
 
     public ChuyenNganh themChuyenNganh(@NotNull ThemChuyenNganhInputs inputs) {

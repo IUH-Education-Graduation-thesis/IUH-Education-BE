@@ -19,13 +19,9 @@ public class Lop {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String ten;
     private String moTa;
-
-    @ManyToOne
-    @JoinColumn(name = "chuyen_nganh_id")
-    private ChuyenNganh chuyenNganh;
-
 
     @ManyToOne
     @JoinColumn(name = "giang_vien_id")
