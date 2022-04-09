@@ -31,7 +31,7 @@ public class ChuyenNganh {
     @OneToMany(mappedBy = "chuyenNganh", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<GiangVien> giangViens = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "chuyenNganh", orphanRemoval = true)
+    @OneToMany(mappedBy = "chuyenNganh", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Khoa> khoas = new ArrayList<>();
 
 }

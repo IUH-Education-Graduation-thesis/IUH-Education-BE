@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.config;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import graphql.kickstart.servlet.apollo.ApolloScalars;
 import graphql.kickstart.tools.SchemaParserOptions;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
@@ -19,6 +20,10 @@ public class ScalarConfig {
         return ExtendedScalars.DateTime;
     }
 
+    @Bean
+    public GraphQLScalarType uploadScalar() {
+        return ApolloScalars.Upload;
+    }
 
     @Bean
     public SchemaParserOptions schemaParserOptions() {
