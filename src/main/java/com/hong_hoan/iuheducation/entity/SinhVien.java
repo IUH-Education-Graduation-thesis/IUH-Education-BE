@@ -48,7 +48,11 @@ public class SinhVien {
     private BacDaoTao bacDaoTao;
 
     public String bacDaoTaoString() {
-        return bacDaoTao.getName();
+        try {
+            return bacDaoTao.getName();
+        } catch (NullPointerException ex) {
+            return "";
+        }
     }
 
     @Enumerated(EnumType.STRING)
@@ -56,7 +60,12 @@ public class SinhVien {
     private TrangThai trangThai;
 
     public String trangThaiString() {
-        return trangThai.getName();
+        try {
+            return trangThai.getName();
+        } catch (NullPointerException ex) {
+            return "";
+        }
+
     }
 
     @Enumerated(EnumType.STRING)
@@ -64,7 +73,12 @@ public class SinhVien {
     private DanToc danToc;
 
     public String danTocString() {
-        return danToc.getName();
+        try {
+            return danToc.getName();
+        } catch (NullPointerException ex) {
+            return "";
+        }
+
     }
 
     @Enumerated(EnumType.STRING)
@@ -72,7 +86,12 @@ public class SinhVien {
     private TonGiao tonGiao;
 
     public String tonGiaoString() {
-        return tonGiao.getName();
+        try {
+            return tonGiao.getName();
+        } catch (NullPointerException ex) {
+            return "";
+        }
+
     }
 
     @Enumerated(EnumType.STRING)
@@ -80,7 +99,12 @@ public class SinhVien {
     private LoaiHinhDaoTao loaiHinhDaoTao;
 
     public String loaiHinhDaoTaoString() {
-        return loaiHinhDaoTao.getName();
+        try {
+            return loaiHinhDaoTao.getName();
+
+        } catch (NullPointerException ex) {
+            return "";
+        }
     }
 
     @ManyToOne(cascade = {CascadeType.MERGE})

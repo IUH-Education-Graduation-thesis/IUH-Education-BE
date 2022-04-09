@@ -1,14 +1,15 @@
 package com.hong_hoan.iuheducation.resolvers.input.sinh_vien;
 
 import com.hong_hoan.iuheducation.entity.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
 @Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
 @ToString
 public class SinhVienInputs {
     private String hoTenDem;

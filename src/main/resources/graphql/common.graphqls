@@ -5,6 +5,7 @@ scalar String
 scalar Int
 scalar ID
 scalar Float
+scalar Upload
 
 interface ResponseInterface {
     status: ResponseStatus!

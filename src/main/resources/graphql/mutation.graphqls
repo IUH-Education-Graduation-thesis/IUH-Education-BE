@@ -40,4 +40,5 @@ type Mutation {
 
     #sinh vien
     themSinhVien(inputs: SinhVienInputs!): SinhVienResponse!
+    themSinhViens(files: [Upload!]!): ThemSinhVienWithFileResponse!
 }
