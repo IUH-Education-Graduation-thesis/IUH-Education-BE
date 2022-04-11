@@ -22,14 +22,14 @@ public class SinhVienLopHocPhan {
     @CollectionTable(name = "sinh_vien_lop_hoc_phan_diem_thuong_ky")
     private List<Double> diemThuongKy = new ArrayList<>();
 
-    private double diemGiuaKy;
+    private Double diemGiuaKy;
 
     @ElementCollection
     @Column(name = "diem_thuc_hanh")
     @CollectionTable(name = "sinh_vien_lop_hoc_phan_diem_thuc_hanh")
     private List<Double> diemThucHanh = new ArrayList<>();
 
-    private double diemCuoiKy;
+    private Double diemCuoiKy;
     private String ghiChu;
 
     @ManyToOne(fetch = FetchType.EAGER)

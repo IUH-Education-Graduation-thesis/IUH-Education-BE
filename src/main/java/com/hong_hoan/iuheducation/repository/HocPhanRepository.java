@@ -19,4 +19,21 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
     @Transactional
     Page<HocPhan> filterHocPhan(@Param("id") String id, @Param("maHocPhan") String maHocPhan, @Param("namHocIds") List<Long> namHocIds, @Param("hocKyIds") List<Long> hocKyIds, @Param("monHocIds") List<Long> monHocIds, @Param("khoaVienIds") List<Long> khoaVienIds, Pageable pageable);
 
+    @Query(value = "SELECT * FROM hoc_phan hp WHERE hp.hoc_ky_id = ?1 AND hp.id not in(" +
+            "SELECT lhp.hoc_phan_id as hocPhanId FROM sinh_vien_lop_hoc_phan svlhp " +
+            "join lop_hoc_phan lhp ON lhp.id = svlhp.lop_hoc_phan_id " +
+            "WHERE svlhp.sinh_vien_id = ?2 " +
+            ")", nativeQuery = true)
+    List<HocPhan> getListHocPhanByHocKyForDKHP(Long hocPhanId, Long sinhVienId);
+
+
+    @Query(value = "SELECT hp.* FROM hoc_phan hp " +
+            "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " +
+            "JOIN khoa k on k.id = hk.khoa_id " +
+            "WHERE k.id = ?1 AND hk.thu_tu <= ?2 AND hp.id not in( " +
+            "SELECT lhp.hoc_phan_id as hocPhanId FROM sinh_vien_lop_hoc_phan svlhp " +
+            "join lop_hoc_phan lhp ON lhp.id = svlhp.lop_hoc_phan_id " +
+            "WHERE svlhp.sinh_vien_id = ?3 " +
+            ")", nativeQuery = true)
+    List<HocPhan> getListHocPhanHocMoi(Long khoaId, Integer thuTuHocKy, Long maSinhVien);
 }

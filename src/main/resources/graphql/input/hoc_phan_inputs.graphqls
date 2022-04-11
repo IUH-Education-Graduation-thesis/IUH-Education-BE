@@ -8,3 +8,7 @@ input FindHocPhanInputs {
     page: Int
     size: Int
 }
+
+input GetHocPhanDKHP {
+    hocKiId: ID!
+}
