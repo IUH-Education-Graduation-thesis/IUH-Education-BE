@@ -5,4 +5,5 @@ type Khoa {
     thoiGianBatDau: Date
     thoiGianKetThuc: Date
     lops: [Lop]
+    hocKies: [HocKy]
 }
