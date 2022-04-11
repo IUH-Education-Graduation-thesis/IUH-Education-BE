@@ -9,4 +9,6 @@ type LichHoc {
     tietHocKetThuc: Int
     lopHocPhan: LopHocPhan
     phongHoc: PhongHoc
+    isLyThuyet: Boolean
+    isLichThi: Boolean
 }

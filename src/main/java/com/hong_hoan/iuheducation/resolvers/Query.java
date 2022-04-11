@@ -8,6 +8,7 @@ import com.hong_hoan.iuheducation.resolvers.input.chuyen_nganh.FindChuyenNganhIn
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.FindDayNhaInputs;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.FindGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.KieuDangKy;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.FindKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.FindKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
@@ -17,6 +18,7 @@ import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNgan
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.FindHocPhanResponse;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.FindKhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
@@ -64,6 +66,27 @@ public class Query implements GraphQLQueryResolver {
     private LopHocPhanService lopHocPhanService;
     @Autowired
     private SinhVienService sinhVienService;
+
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public HocPhanResponse getListHocPhanDKHP(Integer hocKyDangKy, KieuDangKy kieuDangKy) {
+        try {
+            Account _account = accountService.getCurrentAccount();
+
+            List<HocPhan> _listHocPhan = hocPhanService.getListHocPhanForDKHP(hocKyDangKy, kieuDangKy,_account);
+
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin học phần thành công!")
+                    .data(_listHocPhan)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin học phần không thành công!")
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public FindSinhVienResponse findSinhVien(FindSinhVienInputs inputs) {

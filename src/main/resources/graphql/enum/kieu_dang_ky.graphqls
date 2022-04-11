@@ -1,0 +1,5 @@
+enum KieuDangKy {
+    HOC_MOI,
+    HOC_LAI,
+    HOC_CAI_THIEN
+}

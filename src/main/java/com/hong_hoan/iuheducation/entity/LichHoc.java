@@ -3,7 +3,10 @@ package com.hong_hoan.iuheducation.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -19,19 +22,29 @@ public class LichHoc {
     private Long id;
 
     @Column(name = "ngay_hoc_trong_tuan", nullable = false)
-    private int ngayHocTrongTuan;
-    @Column(name = "nhom_thuc_hanh", nullable = false)
-    private int nhomThucHanh;
+    private Integer ngayHocTrongTuan;
+    @Column(name = "nhom_thuc_hanh")
+    private Integer nhomThucHanh;
     @Column(nullable = false)
     private Date thoiGianBatDau;
     @Column(nullable = false)
-    private Date thoiGianKetThuc;
+    private Integer lapLai;
+    private boolean isLichThi;
+
+    @Column(name = "cancels")
+    @ElementCollection
+    @JoinTable(name = "lich_hoc_cancels", joinColumns = @JoinColumn(name = "lich_hoc_id"))
+    private List<Integer> cancels = new ArrayList<>();
+
+
     @Column(nullable = false)
     private int tietHocBatDau;
     @Column(nullable = false)
     private int tietHocKetThuc;
     @Column(nullable = false)
     private String ghiChu;
+
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "phong_hoc_id")
@@ -40,5 +53,22 @@ public class LichHoc {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;
+
+    public boolean isLyThuyet() {
+        if(this.nhomThucHanh == null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public Date getThoiGianKetThuc() {
+        Calendar _calendar = Calendar.getInstance();
+        _calendar.setTime(this.thoiGianBatDau);
+
+        _calendar.add(Calendar.DATE, this.lapLai * 7);
+
+        return _calendar.getTime();
+    }
 
 }

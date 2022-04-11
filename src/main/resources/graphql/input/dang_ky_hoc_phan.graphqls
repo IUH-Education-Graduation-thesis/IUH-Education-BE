@@ -1,0 +1,4 @@
+input DangKyHocPhanInputs {
+    lopHocPhanId: ID!
+    nhomThucHanh: Int
+}

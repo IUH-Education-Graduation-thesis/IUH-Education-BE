@@ -10,12 +10,14 @@ import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.ThemGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.SinhVienInputs;
+import com.hong_hoan.iuheducation.resolvers.response.DangKyHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienResponse;
@@ -32,9 +34,11 @@ import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SinhVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.ThemSinhVienWithFileResponse;
 import com.hong_hoan.iuheducation.service.*;
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import graphql.kickstart.servlet.context.DefaultGraphQLServletContext;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.schema.DataFetchingEnvironment;
+import org.apache.commons.math3.analysis.function.Sinh;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -54,6 +58,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Configuration
 public class Mutation implements GraphQLMutationResolver {
@@ -83,6 +88,32 @@ public class Mutation implements GraphQLMutationResolver {
     private GiangVienService giangVienService;
     @Autowired
     private SinhVienService sinhVienService;
+    @Autowired
+    private SinhVienLopHocPhanService sinhVienLopHocPhanService;
+
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public DangKyHocPhanResponse dangKyHocPhan(List<DangKyHocPhanInputs> inputs) {
+        Account _account = accountService.getCurrentAccount();
+
+        try {
+            List<SinhVienLopHocPhan> _sinhVienLopHocPhans = sinhVienLopHocPhanService.themSinhVienLopHocPhan(inputs, _account);
+
+            List<HocPhan> _hocPhans = _sinhVienLopHocPhans.stream().map(i -> i.getLopHocPhan().getHocPhan()).collect(Collectors.toList());
+
+            return DangKyHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Đăng ký học phần thành công.")
+                    .data(_hocPhans)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return DangKyHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Đăng ký học phần Không thành công.")
+                    .build();
+        }
+
+    }
 
     /*
      * Sinh vien

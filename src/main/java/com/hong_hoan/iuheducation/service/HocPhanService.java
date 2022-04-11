@@ -1,8 +1,11 @@
 package com.hong_hoan.iuheducation.service;
 
+import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.HocPhan;
 import com.hong_hoan.iuheducation.repository.HocPhanRepository;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.GetHocPhanDKHP;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.KieuDangKy;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,17 @@ import java.util.List;
 public class HocPhanService {
     @Autowired
     private HocPhanRepository hocPhanRepository;
+
+    public List<HocPhan> getListHocPhanForDKHP(Integer hocKyDangKy, KieuDangKy kieuDangKy, Account account) {
+
+        if (kieuDangKy == KieuDangKy.HOC_MOI) {
+            List<HocPhan> _hocPhans = hocPhanRepository.getListHocPhanHocMoi(account.getSinhVien().getLop().getKhoa().getId(), hocKyDangKy, account.getSinhVien().getId());
+            return _hocPhans;
+        }
+
+
+        return Arrays.asList();
+    }
 
     public PaginationHocPhan findHocPhanWithPagination(FindHocPhanInputs inputs) {
         boolean _isInputsEmpty = ObjectUtils.isEmpty(inputs);
