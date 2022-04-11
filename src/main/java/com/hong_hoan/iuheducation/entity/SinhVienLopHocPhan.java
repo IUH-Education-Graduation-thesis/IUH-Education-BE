@@ -31,6 +31,7 @@ public class SinhVienLopHocPhan {
 
     private Double diemCuoiKy;
     private String ghiChu;
+    private Integer nhomThucHanh;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("sinhVienId")

@@ -35,7 +35,6 @@ public class LichHocService {
                     .ngayHocTrongTuan(inputs.getNgayHocTrongTuan())
                     .nhomThucHanh(inputs.getNhomThucHanh())
                     .thoiGianBatDau(inputs.getThoiGianBatDau())
-                    .thoiGianKetThuc(inputs.getThoiGianKetThuc())
                     .tietHocBatDau(inputs.getTietHocBatDau())
                     .tietHocKetThuc(inputs.getTietHocKetThuc())
                     .ghiChu(inputs.getGhiChu())
