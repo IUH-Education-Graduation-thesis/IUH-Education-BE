@@ -33,12 +33,12 @@ public class SinhVienLopHocPhan {
     private String ghiChu;
     private Integer nhomThucHanh;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @MapsId("sinhVienId")
     @JoinColumn(name = "sinh_vien_id")
     private SinhVien sinhVien;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @MapsId("lopHocPhanId")
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;
