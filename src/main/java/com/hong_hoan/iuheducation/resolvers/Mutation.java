@@ -101,6 +101,14 @@ public class Mutation implements GraphQLMutationResolver {
                     .message("Thêm sinh viên thành công.")
                     .data(Arrays.asList(_successAndFailSinhVien))
                     .build();
+        } catch (IndexOutOfBoundsException ex) {
+            return ThemSinhVienWithFileResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm sinh viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Không tìm thấy file được thêm!")
+                            .build()))
+                    .build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return ThemSinhVienWithFileResponse.builder()

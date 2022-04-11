@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,12 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Part;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SinhVienService {
@@ -40,6 +43,8 @@ public class SinhVienService {
     private LopRepository lopRepository;
     @Autowired
     private HelperComponent helperComponent;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public SuccessAndFailSinhVien addSinhVienWithFile(Part path) throws Throwable {
         InputStream _inputStream = path.getInputStream();
@@ -153,6 +158,12 @@ public class SinhVienService {
 
         String _maSinhVien = Integer.toString(_lop.getKhoa().getKhoa()) + _maKhoa + helperComponent.byPaddingZeros(_maxIdExist, 3);
 
+        Account _account = Account.builder()
+                .userName(_maSinhVien)
+                .password(passwordEncoder.encode("123456"))
+                .roles(Set.of("STUDENT"))
+                .build();
+
         SinhVien _sinhVien = SinhVien.builder()
                 .maSinhVien(_maSinhVien)
                 .maHoSo(_maSinhVien)
@@ -175,6 +186,7 @@ public class SinhVienService {
                 .tonGiao(inputs.getTonGiao())
                 .loaiHinhDaoTao(inputs.getLoaiHinhDaoTao())
                 .lop(_lop)
+                .account(_account)
                 .build();
 
         SinhVien _sinhVienRes = sinhVienRepository.saveAndFlush(_sinhVien);

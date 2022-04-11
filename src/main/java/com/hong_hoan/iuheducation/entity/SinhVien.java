@@ -114,4 +114,8 @@ public class SinhVien {
     @OneToMany(mappedBy = "sinhVien", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SinhVienLopHocPhan> sinhVienLopHocPhans = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
 }
