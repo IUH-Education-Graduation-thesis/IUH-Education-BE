@@ -25,8 +25,7 @@ public class Account {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "account_id"))
     private Set<String> roles;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "sinh_vien_id")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private SinhVien sinhVien;
 
 }

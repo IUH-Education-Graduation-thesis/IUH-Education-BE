@@ -22,22 +22,23 @@ public class SinhVienLopHocPhan {
     @CollectionTable(name = "sinh_vien_lop_hoc_phan_diem_thuong_ky")
     private List<Double> diemThuongKy = new ArrayList<>();
 
-    private double diemGiuaKy;
+    private Double diemGiuaKy;
 
     @ElementCollection
     @Column(name = "diem_thuc_hanh")
     @CollectionTable(name = "sinh_vien_lop_hoc_phan_diem_thuc_hanh")
     private List<Double> diemThucHanh = new ArrayList<>();
 
-    private double diemCuoiKy;
+    private Double diemCuoiKy;
     private String ghiChu;
+    private Integer nhomThucHanh;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @MapsId("sinhVienId")
     @JoinColumn(name = "sinh_vien_id")
     private SinhVien sinhVien;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @MapsId("lopHocPhanId")
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;

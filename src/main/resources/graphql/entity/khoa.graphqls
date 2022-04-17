@@ -4,4 +4,6 @@ type Khoa {
     moTa: String
     thoiGianBatDau: Date
     thoiGianKetThuc: Date
+    lops: [Lop]
+    hocKies: [HocKy]
 }

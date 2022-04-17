@@ -1,5 +1,17 @@
 package com.hong_hoan.iuheducation.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
+import com.hong_hoan.iuheducation.entity.Account;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.hong_hoan.iuheducation.entity.Lop;
 import com.hong_hoan.iuheducation.entity.SinhVien;
 import com.hong_hoan.iuheducation.exception.LopIsNotExist;
@@ -14,9 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Part;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SinhVienService {
@@ -26,6 +43,77 @@ public class SinhVienService {
     private LopRepository lopRepository;
     @Autowired
     private HelperComponent helperComponent;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public SuccessAndFailSinhVien addSinhVienWithFile(Part path) throws Throwable {
+        InputStream _inputStream = path.getInputStream();
+        Gson _gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
+
+        Workbook _workbook = new XSSFWorkbook(_inputStream);
+
+        XSSFSheet _sheet = (XSSFSheet) _workbook.getSheetAt(0);
+
+        List<JsonObject> _listDataJson = new ArrayList<>();
+
+        Row _header = _sheet.getRow(0);
+
+        for (int i = 1; i < _sheet.getPhysicalNumberOfRows(); i++) {
+            XSSFRow _row = _sheet.getRow(i);
+            JsonObject _rowJsonObject = new JsonObject();
+            for (int j = 0; j < _header.getPhysicalNumberOfCells(); j++) {
+                String _columnName = _header.getCell(j).toString();
+                Cell _cell = _row.getCell(j);
+                try {
+                    switch (_cell.getCellType()) {
+                        case BOOLEAN:
+                            boolean _columnValue = _cell.getBooleanCellValue();
+                            _rowJsonObject.addProperty(_columnName, _columnValue);
+                            break;
+                        case NUMERIC:
+                            Double _number = _cell.getNumericCellValue();
+                            _rowJsonObject.addProperty(_columnName, _number);
+                            break;
+                        default:
+                            String _value = _cell.toString();
+                            _rowJsonObject.addProperty(_columnName, _value);
+                            break;
+                    }
+                } catch (NullPointerException ex) {
+                    try {
+                        String _columnValue = _cell.toString();
+                        _rowJsonObject.addProperty(_columnName, _columnValue);
+
+                    } catch (NullPointerException _ex) {
+                        _rowJsonObject.addProperty(_columnName, (String) null);
+                    }
+                }
+            }
+            _listDataJson.add(_rowJsonObject);
+        }
+
+        List<SinhVien> _listSinhVien = new ArrayList<>();
+        List<SinhVien> _listSinhVienFail = new ArrayList<>();
+
+
+
+        _listDataJson.forEach(i -> {
+            SinhVienInputs _sinhVienInputs = _gson.fromJson(i, SinhVienInputs.class);
+            try {
+                SinhVien _sinhVien = addSinhVien(_sinhVienInputs);
+                _listSinhVien.add(_sinhVien);
+            } catch (LopIsNotExist e) {
+                e.printStackTrace();
+                _listSinhVienFail.add(e.get_sinhVien());
+            }
+
+        });
+
+        return SuccessAndFailSinhVien.builder()
+                .sinhVienSuccess(_listSinhVien)
+                .sinhVienFailure(_listSinhVienFail)
+                .build();
+    }
 
     public SinhVien addSinhVien(SinhVienInputs inputs) throws NumberFormatException, LopIsNotExist {
 
@@ -33,7 +121,30 @@ public class SinhVienService {
         Lop _lop = lopRepository.getById(_lopId);
 
         if (_lop == null) {
-            throw new LopIsNotExist();
+
+            SinhVien _sinhVien = SinhVien.builder()
+                    .hoTenDem(inputs.getHoTenDem())
+                    .ten(inputs.getTen())
+                    .avatar(inputs.getAvatar())
+                    .gioiTinh(inputs.isGioiTinh())
+                    .ngayVaoDang(inputs.getNgayVaoDang())
+                    .ngayVaoTruong(inputs.getNgayVaoTruong())
+                    .ngayVaoDoan(inputs.getNgayVaoDoan())
+                    .ngaySinh(inputs.getNgaySinh())
+                    .soDienThoai(inputs.getSoDienThoai())
+                    .diaChi(inputs.getDiaChi())
+                    .noiSinh(inputs.getNoiSinh())
+                    .email(inputs.getEmail())
+                    .soCMND(inputs.getSoCMND())
+                    .bacDaoTao(inputs.getBacDaoTao())
+                    .trangThai(inputs.getTrangThai())
+                    .danToc(inputs.getDanToc())
+                    .tonGiao(inputs.getTonGiao())
+                    .loaiHinhDaoTao(inputs.getLoaiHinhDaoTao())
+                    .lop(_lop)
+                    .build();
+
+            throw new LopIsNotExist(_sinhVien);
         }
 
         Integer _maxIdExist = 0;
@@ -46,6 +157,12 @@ public class SinhVienService {
         }
 
         String _maSinhVien = Integer.toString(_lop.getKhoa().getKhoa()) + _maKhoa + helperComponent.byPaddingZeros(_maxIdExist, 3);
+
+        Account _account = Account.builder()
+                .userName(_maSinhVien)
+                .password(passwordEncoder.encode("123456"))
+                .roles(Set.of("STUDENT"))
+                .build();
 
         SinhVien _sinhVien = SinhVien.builder()
                 .maSinhVien(_maSinhVien)
@@ -69,6 +186,7 @@ public class SinhVienService {
                 .tonGiao(inputs.getTonGiao())
                 .loaiHinhDaoTao(inputs.getLoaiHinhDaoTao())
                 .lop(_lop)
+                .account(_account)
                 .build();
 
         SinhVien _sinhVienRes = sinhVienRepository.saveAndFlush(_sinhVien);

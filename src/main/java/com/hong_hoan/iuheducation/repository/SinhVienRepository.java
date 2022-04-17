@@ -16,12 +16,13 @@ public interface SinhVienRepository extends JpaRepository<SinhVien, Long> {
 
     @Query(value = "SELECT sv.* FROM sinh_vien sv " +
             "JOIN lop l on l.id = sv.lop_id " +
-            "JOIN chuyen_nganh cn on cn.id = l.chuyen_nganh_id " +
+            "JOIN khoa k on k.id = l.khoa_id " +
+            "JOIN chuyen_nganh cn on cn.id = k.chuyen_nganh_id " +
             "WHERE (:id IS NULL OR sv.id = :id) " +
             "AND (:maSinhVien IS NULL OR sv.ma_sinh_vien like :maSinhVien) " +
-            "AND (:tenSinhVien IS NULL OR sv.ma_sinh_vien like :tenSinhVien) " +
+            "AND (:tenSinhVien IS NULL OR CONCAT(sv.ho_ten_dem, ' ', sv.ten) like :tenSinhVien) " +
             "AND (COALESCE(:lopIds) IS NULL OR sv.lop_id IN (:lopIds)) " +
-            "AND (COALESCE(:chuyenNganhIds) IS NULL OR l.chuyen_nganh_id IN (:chuyenNganhIds)) " +
+            "AND (COALESCE(:chuyenNganhIds) IS NULL OR k.chuyen_nganh_id IN (:chuyenNganhIds)) " +
             "AND (COALESCE(:khoaVienIds) IS NULL OR cn.khoa_vien_id IN (:khoaVienIds)) " +
             "AND (COALESCE(:khoaHocIds) IS NULL OR l.khoa_id IN (:khoaHocIds))", nativeQuery = true)
     @Transactional
@@ -29,12 +30,13 @@ public interface SinhVienRepository extends JpaRepository<SinhVien, Long> {
 
     @Query(value = "SELECT sv.* FROM sinh_vien sv " +
             "JOIN lop l on l.id = sv.lop_id " +
-            "JOIN chuyen_nganh cn on cn.id = l.chuyen_nganh_id " +
+            "JOIN khoa k on k.id = l.khoa_id " +
+            "JOIN chuyen_nganh cn on cn.id = k.chuyen_nganh_id " +
             "WHERE (:id IS NULL OR sv.id = :id) " +
             "AND (:maSinhVien IS NULL OR sv.ma_sinh_vien like :maSinhVien) " +
-            "AND (:tenSinhVien IS NULL OR sv.ma_sinh_vien like :tenSinhVien) " +
+            "AND (:tenSinhVien IS NULL OR CONCAT(sv.ho_ten_dem, ' ', sv.ten) like :tenSinhVien) " +
             "AND (COALESCE(:lopIds) IS NULL OR sv.lop_id IN (:lopIds)) " +
-            "AND (COALESCE(:chuyenNganhIds) IS NULL OR l.chuyen_nganh_id IN (:chuyenNganhIds)) " +
+            "AND (COALESCE(:chuyenNganhIds) IS NULL OR k.chuyen_nganh_id IN (:chuyenNganhIds)) " +
             "AND (COALESCE(:khoaVienIds) IS NULL OR cn.khoa_vien_id IN (:khoaVienIds)) " +
             "AND (COALESCE(:khoaHocIds) IS NULL OR l.khoa_id IN (:khoaHocIds))", nativeQuery = true)
     @Transactional

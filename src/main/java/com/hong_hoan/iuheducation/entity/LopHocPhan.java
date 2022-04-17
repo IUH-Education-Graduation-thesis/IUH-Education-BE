@@ -22,12 +22,15 @@ public class LopHocPhan {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String maLopHocPhan;
     private String tenLopHocPhan;
     private int soNhomThucHanh;
+    @Column(nullable = false)
     private int soLuongToiDa;
     private String moTa;
+
+    private String lopDuKien;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai_lop_hoc_phan")
@@ -55,5 +58,21 @@ public class LopHocPhan {
     @OneToMany(mappedBy = "lopHocPhan", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private Set<LichHoc> lichHocs = new HashSet<>();
+
+    public String getTenLopHocPhan() {
+        if(tenLopHocPhan != null) {
+            return tenLopHocPhan;
+        }
+
+        return hocPhan.getMonHoc().getTen();
+    }
+
+    public Integer getSoLuongHienTai() {
+        return sinhVienLopHocPhans.size();
+    }
+
+    public String getTrangThaiLopHocPhan() {
+        return this.trangThaiLopHocPhan.getName();
+    }
 
 }

@@ -10,12 +10,14 @@ import com.hong_hoan.iuheducation.resolvers.input.day_nha.SuaDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.ThemGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.SinhVienInputs;
+import com.hong_hoan.iuheducation.resolvers.response.DangKyHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienResponse;
@@ -29,24 +31,38 @@ import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SinhVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.ThemSinhVienWithFileResponse;
 import com.hong_hoan.iuheducation.service.*;
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
+import graphql.kickstart.servlet.context.DefaultGraphQLServletContext;
 import graphql.kickstart.tools.GraphQLMutationResolver;
-import org.jetbrains.annotations.NotNull;
+import graphql.schema.DataFetchingEnvironment;
+import org.apache.commons.math3.analysis.function.Sinh;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import reactor.core.scheduler.Schedulers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Configuration
 public class Mutation implements GraphQLMutationResolver {
+
 
     @Autowired
     private DayNhaService dayNhaService;
@@ -72,7 +88,32 @@ public class Mutation implements GraphQLMutationResolver {
     private GiangVienService giangVienService;
     @Autowired
     private SinhVienService sinhVienService;
+    @Autowired
+    private SinhVienLopHocPhanService sinhVienLopHocPhanService;
 
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public DangKyHocPhanResponse dangKyHocPhan(List<DangKyHocPhanInputs> inputs) {
+        Account _account = accountService.getCurrentAccount();
+
+        try {
+            List<SinhVienLopHocPhan> _sinhVienLopHocPhans = sinhVienLopHocPhanService.themSinhVienLopHocPhan(inputs, _account);
+
+            List<HocPhan> _hocPhans = _sinhVienLopHocPhans.stream().map(i -> i.getLopHocPhan().getHocPhan()).collect(Collectors.toList());
+
+            return DangKyHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Đăng ký học phần thành công.")
+                    .data(_hocPhans)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return DangKyHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Đăng ký học phần Không thành công.")
+                    .build();
+        }
+
+    }
 
     /*
      * Sinh vien
@@ -80,43 +121,60 @@ public class Mutation implements GraphQLMutationResolver {
      * */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public SinhVienResponse themSinhVien(SinhVienInputs inputs) {
-        try {
-            SinhVien _sinhVien = sinhVienService.addSinhVien(inputs);
+    public ThemSinhVienWithFileResponse themSinhViens(List<Part> files, DataFetchingEnvironment env) throws IOException {
+        DefaultGraphQLServletContext _context = env.getContext();
 
-            return SinhVienResponse.builder()
+        try {
+            Part _part = _context.getFileParts().get(0);
+            SuccessAndFailSinhVien _successAndFailSinhVien = sinhVienService.addSinhVienWithFile(_part);
+            return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Thêm sinh viên thành công.")
-                    .data(Arrays.asList(_sinhVien))
+                    .data(Arrays.asList(_successAndFailSinhVien))
                     .build();
-
-        } catch (NumberFormatException ex) {
-            return SinhVienResponse.builder()
+        } catch (IndexOutOfBoundsException ex) {
+            return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Thêm sinh viên không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lớp học không tồn tại!")
-                            .error_fields(Arrays.asList("lopId"))
-                            .build()))
-                    .build();
-        } catch (LopIsNotExist ex) {
-            return SinhVienResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm sinh viên không thành công.")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lớp học không tồn tại!")
-                            .error_fields(Arrays.asList("lopId"))
+                            .message("Không tìm thấy file được thêm!")
                             .build()))
                     .build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return SinhVienResponse.builder()
+            return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Thêm sinh viên không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Lỗi hệ thống!")
                             .build()))
                     .build();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return ThemSinhVienWithFileResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm sinh viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public SinhVienResponse themSinhVien(SinhVienInputs inputs) {
+        try {
+            SinhVien _sinhVien = sinhVienService.addSinhVien(inputs);
+
+            return SinhVienResponse.builder().status(ResponseStatus.OK).message("Thêm sinh viên thành công.").data(Arrays.asList(_sinhVien)).build();
+
+        } catch (NumberFormatException ex) {
+            return SinhVienResponse.builder().status(ResponseStatus.OK).message("Thêm sinh viên không thành công.").errors(Arrays.asList(ErrorResponse.builder().message("Lớp học không tồn tại!").error_fields(Arrays.asList("lopId")).build())).build();
+        } catch (LopIsNotExist ex) {
+            return SinhVienResponse.builder().status(ResponseStatus.OK).message("Thêm sinh viên không thành công.").errors(Arrays.asList(ErrorResponse.builder().message("Lớp học không tồn tại!").error_fields(Arrays.asList("lopId")).build())).build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return SinhVienResponse.builder().status(ResponseStatus.OK).message("Thêm sinh viên không thành công.").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -128,28 +186,11 @@ public class Mutation implements GraphQLMutationResolver {
     public GiangVienResponse themGiangVien(ThemGiangVienInputs inputs) {
         try {
             GiangVien _giangVienInput = giangVienService.themGiangVien(inputs);
-            return GiangVienResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm giảng viên thành công!")
-                    .data(List.of(_giangVienInput))
-                    .build();
+            return GiangVienResponse.builder().status(ResponseStatus.OK).message("Thêm giảng viên thành công!").data(List.of(_giangVienInput)).build();
         } catch (ChuyenNganhIsNotExistExcepton ex) {
-            return GiangVienResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm giảng viên không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("chuyenNganhID"))
-                            .message("Chuyên ngành không tồn tại!")
-                            .build()))
-                    .build();
+            return GiangVienResponse.builder().status(ResponseStatus.ERROR).message("Thêm giảng viên không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("chuyenNganhID")).message("Chuyên ngành không tồn tại!").build())).build();
         } catch (Exception ex) {
-            return GiangVienResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm giảng viên không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return GiangVienResponse.builder().status(ResponseStatus.ERROR).message("Thêm giảng viên không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -157,17 +198,9 @@ public class Mutation implements GraphQLMutationResolver {
     public GiangVienResponse xoaGiangViens(Set<Long> ids) {
         try {
             List<GiangVien> _idGiangVien = giangVienService.xoaGiangViens(ids);
-            return GiangVienResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa giảng viên thành công")
-                    .data(_idGiangVien)
-                    .build();
+            return GiangVienResponse.builder().status(ResponseStatus.OK).message("Xóa giảng viên thành công").data(_idGiangVien).build();
         } catch (Exception exception) {
-            return GiangVienResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa giảng viên không thành công")
-                    .errors(Arrays.asList(ErrorResponse.builder().message("Giảng viên không tồn tại!").build()))
-                    .build();
+            return GiangVienResponse.builder().status(ResponseStatus.ERROR).message("Xóa giảng viên không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Giảng viên không tồn tại!").build())).build();
         }
     }
 
@@ -179,28 +212,11 @@ public class Mutation implements GraphQLMutationResolver {
     public MonHocRespone themMonHoc(ThemMonHocInputs inputs) {
         try {
             MonHoc _monHocInput = monHocService.themMonHoc(inputs);
-            return MonHocRespone.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm môn học thành công!")
-                    .data(List.of(_monHocInput))
-                    .build();
+            return MonHocRespone.builder().status(ResponseStatus.OK).message("Thêm môn học thành công!").data(List.of(_monHocInput)).build();
         } catch (KhoaVienIsNotExistException ex) {
-            return MonHocRespone.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm môn học không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("khoaVienID"))
-                            .message("Khoa viện không tồn tại!")
-                            .build()))
-                    .build();
+            return MonHocRespone.builder().status(ResponseStatus.ERROR).message("Thêm môn học không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("khoaVienID")).message("Khoa viện không tồn tại!").build())).build();
         } catch (Exception ex) {
-            return MonHocRespone.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm môn học không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return MonHocRespone.builder().status(ResponseStatus.ERROR).message("Thêm môn học không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -208,17 +224,9 @@ public class Mutation implements GraphQLMutationResolver {
     public MonHocRespone xoaMonHocs(Set<Long> ids) {
         try {
             List<MonHoc> _idMonHoc = monHocService.xoaMonHocs(ids);
-            return MonHocRespone.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa môn học thành công")
-                    .data(_idMonHoc)
-                    .build();
+            return MonHocRespone.builder().status(ResponseStatus.OK).message("Xóa môn học thành công").data(_idMonHoc).build();
         } catch (Exception exception) {
-            return MonHocRespone.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa môn học không thành công")
-                    .errors(Arrays.asList(ErrorResponse.builder().message("Môn học không tồn tại!").build()))
-                    .build();
+            return MonHocRespone.builder().status(ResponseStatus.ERROR).message("Xóa môn học không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Môn học không tồn tại!").build())).build();
         }
     }
 
@@ -231,28 +239,11 @@ public class Mutation implements GraphQLMutationResolver {
         System.out.println(inputs);
         try {
             ChuyenNganh _chuyenNganhInput = chuyenNganhService.themChuyenNganh(inputs);
-            return ChuyenNganhResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm chuyên ngành thành công!")
-                    .data(List.of(_chuyenNganhInput))
-                    .build();
+            return ChuyenNganhResponse.builder().status(ResponseStatus.OK).message("Thêm chuyên ngành thành công!").data(List.of(_chuyenNganhInput)).build();
         } catch (KhoaVienIsNotExistException ex) {
-            return ChuyenNganhResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm chuyên ngành không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("khoaVienID"))
-                            .message("Khoa viện không tồn tại!")
-                            .build()))
-                    .build();
+            return ChuyenNganhResponse.builder().status(ResponseStatus.ERROR).message("Thêm chuyên ngành không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("khoaVienID")).message("Khoa viện không tồn tại!").build())).build();
         } catch (Exception ex) {
-            return ChuyenNganhResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm chuyên ngành không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return ChuyenNganhResponse.builder().status(ResponseStatus.ERROR).message("Thêm chuyên ngành không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -260,17 +251,9 @@ public class Mutation implements GraphQLMutationResolver {
     public ChuyenNganhResponse xoaChuyenNganhs(Set<Long> ids) {
         try {
             List<ChuyenNganh> _idChuyenNganh = chuyenNganhService.xoaChuyenNganhs(ids);
-            return ChuyenNganhResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa chuyên ngành thành công")
-                    .data(_idChuyenNganh)
-                    .build();
+            return ChuyenNganhResponse.builder().status(ResponseStatus.OK).message("Xóa chuyên ngành thành công").data(_idChuyenNganh).build();
         } catch (Exception exception) {
-            return ChuyenNganhResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa chuyên ngành không thành công")
-                    .errors(Arrays.asList(ErrorResponse.builder().message("Chuyên ngành không tồn tại!").build()))
-                    .build();
+            return ChuyenNganhResponse.builder().status(ResponseStatus.ERROR).message("Xóa chuyên ngành không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Chuyên ngành không tồn tại!").build())).build();
         }
     }
     /*
@@ -282,19 +265,9 @@ public class Mutation implements GraphQLMutationResolver {
     public KhoaVienResponse themKhoaVien(ThemKhoaVienInputs inputs) {
         try {
             KhoaVien _khoaVienInput = khoaVienSevice.themKhoaVien(inputs);
-            return KhoaVienResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm khoa viện thành công")
-                    .data(List.of(_khoaVienInput))
-                    .build();
+            return KhoaVienResponse.builder().status(ResponseStatus.OK).message("Thêm khoa viện thành công").data(List.of(_khoaVienInput)).build();
         } catch (Exception ex) {
-            return KhoaVienResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm khoa viện không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return KhoaVienResponse.builder().status(ResponseStatus.ERROR).message("Thêm khoa viện không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -302,17 +275,9 @@ public class Mutation implements GraphQLMutationResolver {
     public KhoaVienResponse xoaKhoaViens(Set<Long> ids) {
         try {
             List<KhoaVien> _idKhoaVien = khoaVienSevice.xoaKhoaViens(ids);
-            return KhoaVienResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa khoa viện thành công")
-                    .data(_idKhoaVien)
-                    .build();
+            return KhoaVienResponse.builder().status(ResponseStatus.OK).message("Xóa khoa viện thành công").data(_idKhoaVien).build();
         } catch (Exception exception) {
-            return KhoaVienResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa khoa viện không thành công")
-                    .errors(Arrays.asList(ErrorResponse.builder().message("Khoa viện không tồn tại!").build()))
-                    .build();
+            return KhoaVienResponse.builder().status(ResponseStatus.ERROR).message("Xóa khoa viện không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Khoa viện không tồn tại!").build())).build();
         }
     }
 
@@ -325,27 +290,11 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             LichHoc _lichHoc = lichHocService.themLichHoc(inputs);
 
-            return LichHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm lịch học thành công")
-                    .data(Arrays.asList(_lichHoc))
-                    .build();
+            return LichHocResponse.builder().status(ResponseStatus.OK).message("Thêm lịch học thành công").data(Arrays.asList(_lichHoc)).build();
         } catch (PhongHocIsNotExist ex) {
-            return LichHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm lịch học không thành công")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Phòng học không tồn tại")
-                            .build()))
-                    .build();
+            return LichHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm lịch học không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Phòng học không tồn tại").build())).build();
         } catch (Exception ex) {
-            return LichHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm lịch học không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return LichHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm lịch học không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -357,37 +306,14 @@ public class Mutation implements GraphQLMutationResolver {
     public HocKyResponse xoaHocKy(String id) {
         try {
             hocKyService.xoaHocKy(id);
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa học kỳ thành công.")
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.OK).message("Xóa học kỳ thành công.").build();
         } catch (NumberFormatException ex) {
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa học kỳ không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("id"))
-                            .message("Hoc ky không tồn tại!")
-                            .build()))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Xóa học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Hoc ky không tồn tại!").build())).build();
         } catch (HocKyIsNotExist ex) {
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa học kỳ không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("id"))
-                            .message("Hoc ky không tồn tại!")
-                            .build()))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Xóa học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Hoc ky không tồn tại!").build())).build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa học kỳ không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Xóa học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -396,37 +322,13 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             HocKy _hocKy = hocKyService.themHocKy(inputs);
 
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm học kỳ thành công!")
-                    .data(Arrays.asList(_hocKy))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.OK).message("Thêm học kỳ thành công!").data(Arrays.asList(_hocKy)).build();
         } catch (NumberFormatException ex) {
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm học kỳ không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("namHocId"))
-                            .message("Năm học không tồn tại!")
-                            .build()))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Thêm học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("namHocId")).message("Năm học không tồn tại!").build())).build();
         } catch (NamHocIsNotExist ex) {
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm học kỳ không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .error_fields(Arrays.asList("namHocId"))
-                            .message("Năm học không tồn tại!")
-                            .build()))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Thêm học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("namHocId")).message("Năm học không tồn tại!").build())).build();
         } catch (Exception ex) {
-            return HocKyResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm học kỳ không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Thêm học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -441,22 +343,10 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             Khoa _khoa = khoaHocService.createKhoaHoc(inputs);
 
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm khóa học thành công.")
-                    .data(Arrays.asList(_khoa))
-                    .build();
+            return KhoaHocResponse.builder().status(ResponseStatus.OK).message("Thêm khóa học thành công.").data(Arrays.asList(_khoa)).build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm khóa học không thành công!")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .message("Lỗi hệ thống!")
-                                    .build()
-                    ))
-                    .build();
+            return KhoaHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm khóa học không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
 
 
@@ -467,45 +357,16 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             khoaHocService.deleteKhoaHoc(id);
 
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa khóa học thành công.")
-                    .build();
+            return KhoaHocResponse.builder().status(ResponseStatus.OK).message("Xóa khóa học thành công.").build();
 
         } catch (NumberFormatException ex) {
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa khóa học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .error_fields(Arrays.asList("id"))
-                                    .message("Id nhập không đúng format!")
-                                    .build()
-                    ))
-                    .build();
+            return KhoaHocResponse.builder().status(ResponseStatus.ERROR).message("Xóa khóa học không thành công.").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Id nhập không đúng format!").build())).build();
 
         } catch (KhoaHocIsNotExist ex) {
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa khóa học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .error_fields(Arrays.asList("id"))
-                                    .message("Khóa học không tồn tại")
-                                    .build()
-                    ))
-                    .build();
+            return KhoaHocResponse.builder().status(ResponseStatus.ERROR).message("Xóa khóa học không thành công.").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Khóa học không tồn tại").build())).build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return KhoaHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa khóa học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .message("Lỗi hệ thống!")
-                                    .build()
-                    ))
-                    .build();
+            return KhoaHocResponse.builder().status(ResponseStatus.ERROR).message("Xóa khóa học không thành công.").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
@@ -520,32 +381,11 @@ public class Mutation implements GraphQLMutationResolver {
 
             phongHocService.xoaPhongHoc(_id);
 
-            return PhongHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa phòng học thành công.")
-                    .build();
+            return PhongHocResponse.builder().status(ResponseStatus.OK).message("Xóa phòng học thành công.").build();
         } catch (PhongHocIsNotExist ex) {
-            return PhongHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa phòng học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .error_fields(Arrays.asList("id"))
-                                    .message("Phòng học không tồn tại!")
-                                    .build()
-                    ))
-                    .build();
+            return PhongHocResponse.builder().status(ResponseStatus.ERROR).message("Xóa phòng học không thành công.").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Phòng học không tồn tại!").build())).build();
         } catch (NumberFormatException ex) {
-            return PhongHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa phòng học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .error_fields(Arrays.asList("id"))
-                                    .message("Phòng hoc ID không đúng format!")
-                                    .build()
-                    ))
-                    .build();
+            return PhongHocResponse.builder().status(ResponseStatus.ERROR).message("Xóa phòng học không thành công.").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Phòng hoc ID không đúng format!").build())).build();
         }
     }
 
@@ -555,34 +395,13 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             PhongHoc _phongHoc = phongHocService.themPhongHoc(inputs);
 
-            return PhongHocResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm phòng học thành công.")
-                    .data(Arrays.asList(_phongHoc))
-                    .build();
+            return PhongHocResponse.builder().status(ResponseStatus.OK).message("Thêm phòng học thành công.").data(Arrays.asList(_phongHoc)).build();
         } catch (DayNhaIsNotExistException ex) {
-            return PhongHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm phòng học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .error_fields(Arrays.asList("dayNhaId"))
-                                    .message("Dãy nhà không tồn tại!")
-                                    .build()
-                    ))
-                    .build();
+            return PhongHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm phòng học không thành công.").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("dayNhaId")).message("Dãy nhà không tồn tại!").build())).build();
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return PhongHocResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Thêm phòng học không thành công.")
-                    .errors(Arrays.asList(
-                            ErrorResponse.builder()
-                                    .message("Lỗi hệ thống!")
-                                    .build()
-                    ))
-                    .build();
+            return PhongHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm phòng học không thành công.").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
 
     }
@@ -597,17 +416,9 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             List<DayNha> _dayNhaDeleted = dayNhaService.deleteDayNhas(ids);
 
-            return DayNhaResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Xóa dãy nhà thành công.")
-                    .data(_dayNhaDeleted)
-                    .build();
+            return DayNhaResponse.builder().status(ResponseStatus.OK).message("Xóa dãy nhà thành công.").data(_dayNhaDeleted).build();
         } catch (DayNhaIsNotExistException ex) {
-            return DayNhaResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Xóa dãy nhà không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder().message("Dãy nhà không tồn tại!").build()))
-                    .build();
+            return DayNhaResponse.builder().status(ResponseStatus.ERROR).message("Xóa dãy nhà không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Dãy nhà không tồn tại!").build())).build();
         }
     }
 
@@ -615,54 +426,27 @@ public class Mutation implements GraphQLMutationResolver {
     public DayNhaResponse suaDayNha(SuaDayNhaInput inputs) {
 
 
-        DayNha _dayNhaInput = DayNha.builder()
-                .id(inputs.getId())
-                .tenDayNha(inputs.getTenDayNha())
-                .moTa(inputs.getMoTa())
-                .build();
+        DayNha _dayNhaInput = DayNha.builder().id(inputs.getId()).tenDayNha(inputs.getTenDayNha()).moTa(inputs.getMoTa()).build();
 
         try {
             DayNha _dayNhaResponse = dayNhaService.updateDayNha(_dayNhaInput);
 
-            return DayNhaResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Sửa dãy nhà thành công!")
-                    .data(Arrays.asList(_dayNhaResponse))
-                    .build();
+            return DayNhaResponse.builder().status(ResponseStatus.OK).message("Sửa dãy nhà thành công!").data(Arrays.asList(_dayNhaResponse)).build();
         } catch (DayNhaIsNotExistException ex) {
-            return DayNhaResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Sửa dãy nhà không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Dãy nhà không tồn tại trong hệ thống!")
-                            .build()))
-                    .build();
+            return DayNhaResponse.builder().status(ResponseStatus.ERROR).message("Sửa dãy nhà không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Dãy nhà không tồn tại trong hệ thống!").build())).build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return DayNhaResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Sửa dãy nhà không thành công!")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
+            return DayNhaResponse.builder().status(ResponseStatus.ERROR).message("Sửa dãy nhà không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public DayNhaResponse themDayNha(ThemDayNhaInput inputs) {
-        DayNha _dayNhaInput = DayNha.builder()
-                .tenDayNha(inputs.getTenDayNha())
-                .moTa(inputs.getMoTa())
-                .build();
+        DayNha _dayNhaInput = DayNha.builder().tenDayNha(inputs.getTenDayNha()).moTa(inputs.getMoTa()).build();
 
         DayNha _dayNhaResponse = dayNhaService.themDayNha(_dayNhaInput);
 
-        return DayNhaResponse.builder()
-                .status(ResponseStatus.OK)
-                .message("Thêm dãy nhà thành công!")
-                .data(Arrays.asList(_dayNhaResponse))
-                .build();
+        return DayNhaResponse.builder().status(ResponseStatus.OK).message("Thêm dãy nhà thành công!").data(Arrays.asList(_dayNhaResponse)).build();
     }
 
     /*
@@ -681,27 +465,16 @@ public class Mutation implements GraphQLMutationResolver {
             SinhVien _sinhVien = _account.getSinhVien();
             String _token = accountService.getToken(_account);
 
-            LoginData _loginData = LoginData.builder()
-                    .token(_token)
-                    .sinhVien(_sinhVien)
-                    .build();
+            LoginData _loginData = LoginData.builder().token(_token).sinhVien(_sinhVien).build();
 
-            return LoginResponse.builder()
-                    .data(_loginData)
-                    .status(ResponseStatus.OK)
-                    .message("Đăng nhập thành công.")
-                    .build();
+            return LoginResponse.builder().data(_loginData).status(ResponseStatus.OK).message("Đăng nhập thành công.").build();
         } catch (AuthenticationException ex) {
             ex.printStackTrace();
-            return LoginResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Đăng nhập không thành công!")
-                    .errors(new ArrayList<>() {
-                        {
-                            add(ErrorResponse.builder().message("Tên tài khoản hoặc mật khẩu không đúng!").build());
-                        }
-                    })
-                    .build();
+            return LoginResponse.builder().status(ResponseStatus.ERROR).message("Đăng nhập không thành công!").errors(new ArrayList<>() {
+                {
+                    add(ErrorResponse.builder().message("Tên tài khoản hoặc mật khẩu không đúng!").build());
+                }
+            }).build();
         }
 
     }
@@ -711,33 +484,15 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             Account _account = accountService.createAccount(null, inputs);
 
-            return RegisterResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Tạo tài khoản thành công!")
-                    .data(_account)
-                    .build();
+            return RegisterResponse.builder().status(ResponseStatus.OK).message("Tạo tài khoản thành công!").data(_account).build();
         } catch (UserAlreadyExistsException UAEexp) {
-            return RegisterResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Tạo tài khoản không thành công!")
-                    .errors(new ArrayList<>() {{
-                        add(ErrorResponse.builder()
-                                .message("Tên tài khoản đã tồn tại!")
-                                .error_fields(new ArrayList<>(Arrays.asList("username")))
-                                .build());
-                    }})
-                    .build();
+            return RegisterResponse.builder().status(ResponseStatus.ERROR).message("Tạo tài khoản không thành công!").errors(new ArrayList<>() {{
+                add(ErrorResponse.builder().message("Tên tài khoản đã tồn tại!").error_fields(new ArrayList<>(Arrays.asList("username"))).build());
+            }}).build();
         } catch (Exception exp) {
-            return RegisterResponse.builder()
-                    .status(ResponseStatus.ERROR)
-                    .message("Tạo tài khoản không thành công!")
-                    .errors(new ArrayList<>() {{
-                        add(ErrorResponse.builder()
-                                .message("Tên tài khoản đã tồn tại!")
-                                .error_fields(new ArrayList<>(Arrays.asList("username")))
-                                .build());
-                    }})
-                    .build();
+            return RegisterResponse.builder().status(ResponseStatus.ERROR).message("Tạo tài khoản không thành công!").errors(new ArrayList<>() {{
+                add(ErrorResponse.builder().message("Tên tài khoản đã tồn tại!").error_fields(new ArrayList<>(Arrays.asList("username"))).build());
+            }}).build();
         }
     }
 }
