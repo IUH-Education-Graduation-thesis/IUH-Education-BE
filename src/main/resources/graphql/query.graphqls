@@ -11,4 +11,5 @@ type Query {
     getLopHocPhan(id: ID): GetLopHocPhanResponse!
     findSinhVien(inputs: FindSinhVienInputs): FindSinhVienResponse!
     getListHocPhanDKHP(hocKyDangKy: Int!, kieu: KieuDangKy!): HocPhanResponse!
+    getLichHoc(ngay: Date!): GetLichHocResponse!
 }

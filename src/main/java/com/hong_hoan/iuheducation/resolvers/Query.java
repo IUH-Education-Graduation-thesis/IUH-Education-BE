@@ -25,6 +25,8 @@ import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.PaginationKhoaHoc;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.FindKhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.PaginationKhoaVien;
+import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.GetLichHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocFormat;
 import com.hong_hoan.iuheducation.resolvers.response.lop.FindLopHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lop.PaginationLopHoc;
 import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.GetLopHocPhanResponse;
@@ -40,6 +42,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -66,13 +69,40 @@ public class Query implements GraphQLQueryResolver {
     private LopHocPhanService lopHocPhanService;
     @Autowired
     private SinhVienService sinhVienService;
+    @Autowired
+    private LichHocService lichHocService;
+
+    @PreAuthorize("isAuthenticated()")
+    public GetLichHocResponse getLichHoc(Date ngay) {
+        Account _account = accountService.getCurrentAccount();
+
+        try {
+            List<LichHocFormat> _lichHocFormats = lichHocService.getLichHoc(ngay, _account);
+
+            return GetLichHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin lịch học thành công.")
+                    .data(_lichHocFormats)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return GetLichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
     public HocPhanResponse getListHocPhanDKHP(Integer hocKyDangKy, KieuDangKy kieuDangKy) {
         try {
             Account _account = accountService.getCurrentAccount();
 
-            List<HocPhan> _listHocPhan = hocPhanService.getListHocPhanForDKHP(hocKyDangKy, kieuDangKy,_account);
+            List<HocPhan> _listHocPhan = hocPhanService.getListHocPhanForDKHP(hocKyDangKy, kieuDangKy, _account);
 
             return HocPhanResponse.builder()
                     .status(ResponseStatus.OK)
