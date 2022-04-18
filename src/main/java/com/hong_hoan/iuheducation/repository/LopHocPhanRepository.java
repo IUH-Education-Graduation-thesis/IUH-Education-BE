@@ -17,7 +17,7 @@ public interface LopHocPhanRepository extends JpaRepository<LopHocPhan, Long> {
             "JOIN lop_hoc_phan lhp on lhp.hoc_phan_id = hp.id " +
             "JOIN sinh_vien_lop_hoc_phan svlhp on svlhp.lop_hoc_phan_id = lhp.id " +
             "JOIN sinh_vien sv on sv.id = svlhp.sinh_vien_id " +
-            "JOIN hoc_ky hk on hk.id = hp.hoc_ky_id " +
-            "WHERE sv.id = ?1 AND hk.id = ?2", nativeQuery = true)
+            "JOIN hoc_ky_normal hkn on hkn.id = lhp.hoc_ky_normal_id " +
+            "WHERE sv.id = ?1 AND hkn.id = ?2", nativeQuery = true)
     List<LopHocPhan> getListLopHocPhanDangKyByHocKyAndSinhVien(Long sinhVienId, Long hocKyId);
 }

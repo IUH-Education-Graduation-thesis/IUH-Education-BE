@@ -13,4 +13,6 @@ type Query {
     getListHocPhanDKHP(hocKyDangKy: Int!, kieu: KieuDangKy!): HocPhanResponse!
     getLichHoc(ngay: Date!): GetLichHocResponse!
     getLopHocPhanDaDangKy(hocKyId: ID!): GetLopHocPhanResponse!
+    getListHocKy: HocKyNormalResponse!
+    getDiem: DiemResponse!
 }
