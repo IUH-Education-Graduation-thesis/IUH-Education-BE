@@ -17,6 +17,7 @@ import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.FindSinhVienInputs;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky_normal.HocKyNormalResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.FindHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
@@ -35,12 +36,15 @@ import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.FindSinhVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.PaginationSinhVien;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien_lop_hoc_phan.DiemResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien_lop_hoc_phan.HocKyItem;
 import com.hong_hoan.iuheducation.service.*;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -71,6 +75,82 @@ public class Query implements GraphQLQueryResolver {
     private SinhVienService sinhVienService;
     @Autowired
     private LichHocService lichHocService;
+    @Autowired
+    private HocKyNormalService hocKyNormalService;
+    @Autowired
+    private SinhVienLopHocPhanService sinhVienLopHocPhanService;
+
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public DiemResponse getDiem() {
+        try {
+            Account _account = accountService.getCurrentAccount();
+            List<HocKyItem> _listHocKyItem = sinhVienLopHocPhanService.getSinhVienLopHocPhanOfSinhVien(_account);
+
+            return DiemResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin điểm thành công!")
+                    .data(_listHocKyItem)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return DiemResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin điểm thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public HocKyNormalResponse getListHocKy() {
+        try {
+            Account _account = accountService.getCurrentAccount();
+            List<HocKyNormal> _listHocKyNormal = hocKyNormalService.getListHocKyNormalOfSinhVien(_account);
+
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin học kỳ thành công.")
+                    .data(_listHocKyNormal)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public GetLopHocPhanResponse getLopHocPhanDaDangKy(Long hocKyId) {
+
+        try {
+            Account _account = accountService.getCurrentAccount();
+            List<LopHocPhan> _lopHocPhans = lopHocPhanService.getLopHocPhanDaDangKy(hocKyId, _account);
+
+
+            return GetLopHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy danh sách lớp học phần thành công.")
+                    .data(_lopHocPhans)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return GetLopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy danh sách lớp học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public GetLichHocResponse getLichHoc(Date ngay) {

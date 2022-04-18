@@ -1,0 +1,6 @@
+type NamHoc {
+    id: ID
+    namBatDau: Int
+    namKetThuc: Int
+    ghiChu: String
+}

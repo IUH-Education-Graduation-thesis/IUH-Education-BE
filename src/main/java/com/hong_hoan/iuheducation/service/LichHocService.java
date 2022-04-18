@@ -56,9 +56,6 @@ public class LichHocService {
             _lichHocFormatList.add(_lichHocFormat);
         }
 
-        System.out.println("dateInput = " + dateInput );
-        System.out.println("_dateInWeek = " + _dateInWeek + ", _listLichHoc = " + _listLichHoc);
-
         return _lichHocFormatList;
     }
 

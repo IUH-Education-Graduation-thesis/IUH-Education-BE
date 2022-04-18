@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -128,7 +129,7 @@ public class SinhVienService {
                     .avatar(inputs.getAvatar())
                     .gioiTinh(inputs.isGioiTinh())
                     .ngayVaoDang(inputs.getNgayVaoDang())
-                    .ngayVaoTruong(inputs.getNgayVaoTruong())
+                    .ngayVaoTruong(new Date())
                     .ngayVaoDoan(inputs.getNgayVaoDoan())
                     .ngaySinh(inputs.getNgaySinh())
                     .soDienThoai(inputs.getSoDienThoai())
@@ -172,7 +173,7 @@ public class SinhVienService {
                 .avatar(inputs.getAvatar())
                 .gioiTinh(inputs.isGioiTinh())
                 .ngayVaoDang(inputs.getNgayVaoDang())
-                .ngayVaoTruong(inputs.getNgayVaoTruong())
+                .ngayVaoTruong(new Date())
                 .ngayVaoDoan(inputs.getNgayVaoDoan())
                 .ngaySinh(inputs.getNgaySinh())
                 .soDienThoai(inputs.getSoDienThoai())
