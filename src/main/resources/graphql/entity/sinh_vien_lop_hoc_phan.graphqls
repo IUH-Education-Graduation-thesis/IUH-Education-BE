@@ -7,4 +7,5 @@ type SinhVienLopHocPhan {
     diemCuoiKy: Float
     sinhVien: SinhVien
     lopHocPhan: LopHocPhan
+    diemTrungBinh: Float
 }

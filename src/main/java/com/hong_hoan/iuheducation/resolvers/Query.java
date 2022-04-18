@@ -178,11 +178,11 @@ public class Query implements GraphQLQueryResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
-    public HocPhanResponse getListHocPhanDKHP(Integer hocKyDangKy, KieuDangKy kieuDangKy) {
+    public HocPhanResponse getListHocPhanDKHP(Long hocKyNormalId, KieuDangKy kieuDangKy) {
         try {
             Account _account = accountService.getCurrentAccount();
 
-            List<HocPhan> _listHocPhan = hocPhanService.getListHocPhanForDKHP(hocKyDangKy, kieuDangKy, _account);
+            List<HocPhan> _listHocPhan = hocPhanService.getListHocPhanForDKHP(hocKyNormalId, kieuDangKy, _account);
 
             return HocPhanResponse.builder()
                     .status(ResponseStatus.OK)

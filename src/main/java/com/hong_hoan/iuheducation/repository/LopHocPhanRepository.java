@@ -20,4 +20,9 @@ public interface LopHocPhanRepository extends JpaRepository<LopHocPhan, Long> {
             "JOIN hoc_ky_normal hkn on hkn.id = lhp.hoc_ky_normal_id " +
             "WHERE sv.id = ?1 AND hkn.id = ?2", nativeQuery = true)
     List<LopHocPhan> getListLopHocPhanDangKyByHocKyAndSinhVien(Long sinhVienId, Long hocKyId);
+
+    @Query(value = "SELECT * FROM lop_hoc_phan lhp " +
+            "WHERE lhp.hoc_phan_id = ?1 " +
+            "AND lhp.hoc_ky_normal_id = ?2", nativeQuery = true)
+    List<LopHocPhan> getLopHocPhanByLopHocPhanDangKy(Long hocPhanId, Long hocKyNormalId);
 }
