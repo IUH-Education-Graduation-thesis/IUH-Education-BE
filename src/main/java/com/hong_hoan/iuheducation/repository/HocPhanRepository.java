@@ -26,6 +26,11 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
             ")", nativeQuery = true)
     List<HocPhan> getListHocPhanByHocKyForDKHP(Long hocPhanId, Long sinhVienId);
 
+    @Query(value = "SELECT hp.* FROM hoc_phan hp " +
+            "JOIN hoc_ky hk on hk.id = hp.hoc_ky_id " +
+            "WHERE (SELECT COUNT(*) as SoLopHocPhan from lop_hoc_phan lhp WHERE lhp.hoc_phan_id = hp.id AND lhp.hoc_ky_normal_id = ?1) > 0 " +
+            "AND hk.thu_tu <= ?2", nativeQuery = true)
+    List<HocPhan> getListHocPhanForDangKy(Long hocKyNormalId, Integer thuTuHocKy);
 
     @Query(value = "SELECT hp.* FROM hoc_phan hp " +
             "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " +

@@ -1,8 +1,12 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.Account;
+import com.hong_hoan.iuheducation.entity.HocKyNormal;
 import com.hong_hoan.iuheducation.entity.HocPhan;
+import com.hong_hoan.iuheducation.entity.LopHocPhan;
+import com.hong_hoan.iuheducation.repository.HocKyNormalRepository;
 import com.hong_hoan.iuheducation.repository.HocPhanRepository;
+import com.hong_hoan.iuheducation.repository.LopHocPhanRepository;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.FindHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.GetHocPhanDKHP;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.KieuDangKy;
@@ -21,12 +25,31 @@ import java.util.List;
 public class HocPhanService {
     @Autowired
     private HocPhanRepository hocPhanRepository;
+    @Autowired
+    private HocKyNormalRepository hocKyNormalRepository;
+    @Autowired
+    private LopHocPhanRepository lopHocPhanRepository;
 
-    public List<HocPhan> getListHocPhanForDKHP(Integer hocKyDangKy, KieuDangKy kieuDangKy, Account account) {
+    public List<HocPhan> getListHocPhanForDKHP(Long hocKyNormalId, KieuDangKy kieuDangKy, Account account) {
+        HocKyNormal _hocKyNormal = hocKyNormalRepository.getById(hocKyNormalId);
+
+        Integer _namNhapHoc = account.getSinhVien().getNgayVaoTruong().getYear() + 1900;
+        Integer _namDangHoc = _hocKyNormal.getNamHoc().getNamKetThuc() - _namNhapHoc;
+        Integer _thuTuHocKyMaper = _namDangHoc + _hocKyNormal.getThuTuHocKy();
+
+        System.out.println("_namNhapHoc = " + _namNhapHoc + ", _namDangHoc = " + _namDangHoc + ", _thuTuHocKyMaper = " + _thuTuHocKyMaper);
 
         if (kieuDangKy == KieuDangKy.HOC_MOI) {
-            List<HocPhan> _hocPhans = hocPhanRepository.getListHocPhanHocMoi(account.getSinhVien().getLop().getKhoa().getId(), hocKyDangKy, account.getSinhVien().getId());
-            return _hocPhans;
+//            List<HocPhan> _hocPhahanRepository.getListHocPhanHocMoi(account.getSinhVien().getLop().getKhoa().getId(), hocKyDangKy, account.getSinhVien().getId());
+//            return _hocPhans;
+
+            List<HocPhan> _listHocPhan = hocPhanRepository.getListHocPhanForDangKy(hocKyNormalId, _thuTuHocKyMaper);
+            for (int i = 0; i < _listHocPhan.size(); i++) {
+                List<LopHocPhan> _listLopHocPhan = lopHocPhanRepository.getLopHocPhanByLopHocPhanDangKy(_listHocPhan.get(i).getId(), hocKyNormalId);
+                _listHocPhan.get(i).setLopHocPhans(_listLopHocPhan);
+            }
+
+            return _listHocPhan;
         }
 
 
