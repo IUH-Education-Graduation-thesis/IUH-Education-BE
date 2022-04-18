@@ -23,15 +23,11 @@ public class HelperComponent {
         int _offset = calendar.get(Calendar.DAY_OF_WEEK) - 2;
 
         calendar.add(Calendar.DATE, -_offset);
-//        calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-//        calendar.set(Calendar.WEEK_OF_YEAR, calendar.get(Calendar.WEEK_OF_YEAR) - 1);
-        List<Date> dates = new ArrayList<>();
 
-        System.out.println("refDate = " + refDate + ", calendar = " + calendar.getTime());
+        List<Date> dates = new ArrayList<>();
 
         for (int i = 0; i < 7; i++) {
             dates.add(calendar.getTime());
-//            calendar.add(Calendar.DAY_OF_MONTH, 1);
             calendar.add(Calendar.DATE, 1);
         }
         return dates;

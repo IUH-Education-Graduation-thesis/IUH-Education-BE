@@ -73,6 +73,32 @@ public class Query implements GraphQLQueryResolver {
     private LichHocService lichHocService;
 
     @PreAuthorize("isAuthenticated()")
+    public GetLopHocPhanResponse getLopHocPhanDaDangKy(Long hocKyId) {
+
+        try {
+            Account _account = accountService.getCurrentAccount();
+            List<LopHocPhan> _lopHocPhans = lopHocPhanService.getLopHocPhanDaDangKy(hocKyId, _account);
+
+
+            return GetLopHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy danh sách lớp học phần thành công.")
+                    .data(_lopHocPhans)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return GetLopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy danh sách lớp học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
     public GetLichHocResponse getLichHoc(Date ngay) {
         Account _account = accountService.getCurrentAccount();
 
