@@ -1,0 +1,6 @@
+type HocKyNormal {
+    id: ID
+    thuTuHocKy: Int
+    ghiChu: String
+    namHoc: NamHoc
+}

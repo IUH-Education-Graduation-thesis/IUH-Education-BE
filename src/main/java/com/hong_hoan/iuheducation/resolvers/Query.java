@@ -17,6 +17,7 @@ import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.FindSinhVienInputs;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky_normal.HocKyNormalResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.FindHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
@@ -71,6 +72,31 @@ public class Query implements GraphQLQueryResolver {
     private SinhVienService sinhVienService;
     @Autowired
     private LichHocService lichHocService;
+    @Autowired
+    private HocKyNormalService hocKyNormalService;
+
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public HocKyNormalResponse getListHocKy() {
+        try {
+            Account _account = accountService.getCurrentAccount();
+            List<HocKyNormal> _listHocKyNormal = hocKyNormalService.getListHocKyNormalOfSinhVien(_account);
+
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin học kỳ thành công.")
+                    .data(_listHocKyNormal)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("isAuthenticated()")
     public GetLopHocPhanResponse getLopHocPhanDaDangKy(Long hocKyId) {

@@ -59,6 +59,10 @@ public class LopHocPhan {
     @LazyCollection(LazyCollectionOption.FALSE)
     private Set<LichHoc> lichHocs = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "hoc_ky_normal_id", nullable = false)
+    private HocKyNormal hocKyNormal;
+
     public String getTenLopHocPhan() {
         if(tenLopHocPhan != null) {
             return tenLopHocPhan;
