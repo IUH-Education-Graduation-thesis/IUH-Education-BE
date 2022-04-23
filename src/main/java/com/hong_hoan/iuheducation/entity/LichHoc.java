@@ -36,6 +36,9 @@ public class LichHoc {
     @JoinTable(name = "lich_hoc_cancels", joinColumns = @JoinColumn(name = "lich_hoc_id"))
     private List<Integer> cancels = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "giang_vien_id")
+    private GiangVien giangVien;
 
     @Column(nullable = false)
     private int tietHocBatDau;
@@ -43,7 +46,6 @@ public class LichHoc {
     private int tietHocKetThuc;
     @Column(nullable = false)
     private String ghiChu;
-
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -55,11 +57,19 @@ public class LichHoc {
     private LopHocPhan lopHocPhan;
 
     public boolean isLyThuyet() {
-        if(this.nhomThucHanh == null) {
+        if (this.nhomThucHanh == null) {
             return true;
         }
 
         return false;
+    }
+
+    public GiangVien getGiangVien() {
+        if (this.giangVien == null) {
+            return lopHocPhan.getGiangViens().iterator().next();
+        }
+
+        return this.giangVien;
     }
 
     public Date getThoiGianKetThuc() {

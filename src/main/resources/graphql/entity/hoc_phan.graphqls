@@ -9,4 +9,6 @@ type HocPhan {
     monHocSongHanhs: [MonHoc]
     monHocTruocs: [MonHoc]
     lopHocPhans: [LopHocPhan]
+    soTinChiLyThuyet: Int
+    soTinChiThucHanh: Int
 }

@@ -43,7 +43,7 @@ public class HocPhanService {
 //            List<HocPhan> _hocPhahanRepository.getListHocPhanHocMoi(account.getSinhVien().getLop().getKhoa().getId(), hocKyDangKy, account.getSinhVien().getId());
 //            return _hocPhans;
 
-            List<HocPhan> _listHocPhan = hocPhanRepository.getListHocPhanForDangKy(hocKyNormalId, _thuTuHocKyMaper);
+            List<HocPhan> _listHocPhan = hocPhanRepository.getListHocPhanForDangKy(hocKyNormalId, _thuTuHocKyMaper, account.getSinhVien().getId());
             for (int i = 0; i < _listHocPhan.size(); i++) {
                 List<LopHocPhan> _listLopHocPhan = lopHocPhanRepository.getLopHocPhanByLopHocPhanDangKy(_listHocPhan.get(i).getId(), hocKyNormalId);
                 _listHocPhan.get(i).setLopHocPhans(_listLopHocPhan);

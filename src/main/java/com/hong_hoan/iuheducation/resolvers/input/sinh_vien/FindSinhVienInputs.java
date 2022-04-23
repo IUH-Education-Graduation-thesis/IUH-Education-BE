@@ -1,14 +1,14 @@
 package com.hong_hoan.iuheducation.resolvers.input.sinh_vien;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @ToString
 public class FindSinhVienInputs {

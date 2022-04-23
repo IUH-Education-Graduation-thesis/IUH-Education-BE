@@ -79,4 +79,13 @@ public class LopHocPhan {
         return this.trangThaiLopHocPhan.getName();
     }
 
+    public String getLopDuKien() {
+        if(this.lopDuKien != null) return lopDuKien;
+
+        try {
+            return this.lop.getTen();
+        } catch (NullPointerException ex) {
+            return null;
+        }
+    }
 }
