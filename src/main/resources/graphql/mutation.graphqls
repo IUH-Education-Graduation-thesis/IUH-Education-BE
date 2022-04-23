@@ -41,6 +41,7 @@ type Mutation {
     #sinh vien
     themSinhVien(inputs: SinhVienInputs!): SinhVienResponse!
     themSinhViens(files: [Upload!]!): ThemSinhVienWithFileResponse!
+    xoaSinhViens(ids: [ID!]): SinhVienResponse!
 
     dangKyHocPhan(inputs: [DangKyHocPhanInputs!]!): DangKyHocPhanResponse!
 }

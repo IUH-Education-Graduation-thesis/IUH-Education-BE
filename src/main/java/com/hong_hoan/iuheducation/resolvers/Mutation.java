@@ -121,6 +121,42 @@ public class Mutation implements GraphQLMutationResolver {
      * */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public SinhVienResponse xoaSinhViens(List<Long> ids) {
+        try {
+            List<SinhVien> _listSinhVien = sinhVienService.xoaSinhViens(ids);
+
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa sinh viên thành công!")
+                    .data(_listSinhVien)
+                    .build();
+        } catch (SinhVienIsNotExist ex) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa sinh viên không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Sinh viên không tồn tại!")
+                                    .build()
+                    ))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa sinh viên không thành công!")
+                    .errors(Arrays.asList(
+                            ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                                    .build()
+                    ))
+                    .build();
+        }
+
+
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ThemSinhVienWithFileResponse themSinhViens(List<Part> files, DataFetchingEnvironment env) throws IOException {
         DefaultGraphQLServletContext _context = env.getContext();
 

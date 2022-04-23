@@ -4,6 +4,7 @@ import com.hong_hoan.iuheducation.entity.SinhVien;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface SinhVienRepository extends JpaRepository<SinhVien, Long> {
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM sinh_vien WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)
+    void xoaSinhViens(List<Long> ids);
+
     @Query(value = "SELECT MAX(sv.id) as max_id  FROM sinh_vien sv", nativeQuery = true)
     Integer getMaxId();
 
