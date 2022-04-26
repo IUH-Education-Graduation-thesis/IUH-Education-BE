@@ -284,6 +284,44 @@ public class Mutation implements GraphQLMutationResolver {
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public MonHocRespone suaMonHoc(ThemMonHocInputs inputs, Long id) {
+        try {
+            MonHoc _monHoc = monHocService.suaMonHoc(inputs, id);
+
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa môn học hành công.")
+                    .data(Arrays.asList(_monHoc))
+                    .build();
+        } catch (MonHocIsExistException ex) {
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa môn học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Môn học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (KhoaVienIsNotExistException ex) {
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa môn học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Khoa viện không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return MonHocRespone.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa môn học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public MonHocRespone themMonHoc(ThemMonHocInputs inputs) {
         try {
             MonHoc _monHocInput = monHocService.themMonHoc(inputs);
