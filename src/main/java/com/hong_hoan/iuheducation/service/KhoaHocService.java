@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -101,15 +102,18 @@ public class KhoaHocService {
         }
     }
 
-    public void deleteKhoaHoc(String id) throws NumberFormatException {
-        long _idLong = Long.valueOf(id);
-        boolean _isExistKhoaHoc = khoaRepository.existsById(_idLong);
+    public List<Khoa> deleteKhoaHoc(List<Long> ids) {
+        List<Khoa> _listKhoa = khoaRepository.findAllById(ids);
 
-        if (!_isExistKhoaHoc) {
+        if(_listKhoa.size() <= 0) {
             throw new KhoaHocIsNotExist();
         }
 
-        khoaRepository.deleteById(_idLong);
+        List<Long> _ids = _listKhoa.stream().map(i -> i.getId()).collect(Collectors.toList());
+
+        khoaRepository.xoaKhoaHocs(_ids);
+
+        return _listKhoa;
     }
 
     public Khoa suaKhoaHoc(ThemKhoaHocInputs inputs, Long id) {

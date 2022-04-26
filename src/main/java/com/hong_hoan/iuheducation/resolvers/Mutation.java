@@ -601,11 +601,13 @@ public class Mutation implements GraphQLMutationResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public KhoaHocResponse xoaKhoaHoc(String id) {
+    public KhoaHocResponse xoaKhoaHocs(List<Long> ids) {
         try {
-            khoaHocService.deleteKhoaHoc(id);
+            List<Khoa> _listKhoa = khoaHocService.deleteKhoaHoc(ids);
 
-            return KhoaHocResponse.builder().status(ResponseStatus.OK).message("Xóa khóa học thành công.").build();
+            return KhoaHocResponse.builder().status(ResponseStatus.OK)
+                    .data(_listKhoa)
+                    .message("Xóa khóa học thành công.").build();
 
         } catch (NumberFormatException ex) {
             return KhoaHocResponse.builder().status(ResponseStatus.ERROR).message("Xóa khóa học không thành công.").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Id nhập không đúng format!").build())).build();

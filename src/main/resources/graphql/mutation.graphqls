@@ -8,7 +8,7 @@ type Mutation {
 
     # khoa
     themKhoaHoc(inputs: ThemKhoaHocInputs!): KhoaHocResponse!
-    xoaKhoaHoc(id: ID!): KhoaHocResponse!
+    xoaKhoaHocs(ids: [ID!]): KhoaHocResponse!
     suaKhoaHoc(inputs: ThemKhoaHocInputs!, id: ID!): KhoaHocResponse!
 
     # day nha
