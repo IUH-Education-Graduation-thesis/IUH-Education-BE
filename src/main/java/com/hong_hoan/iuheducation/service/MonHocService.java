@@ -44,6 +44,7 @@ public class MonHocService {
             throw new KhoaVienIsNotExistException();
         }
     }
+
     public List<MonHoc> xoaMonHocs(Set<Long> ids) {
         List<MonHoc> _monHocs = monHocRepository.findAllById(ids);
         if (_monHocs.isEmpty())

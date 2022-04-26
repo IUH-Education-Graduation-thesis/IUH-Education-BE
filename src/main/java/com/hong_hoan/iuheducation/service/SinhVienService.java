@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.exception.SinhVienIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
+import org.apache.commons.math3.analysis.function.Sinh;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -48,6 +49,45 @@ public class SinhVienService {
     private HelperComponent helperComponent;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public SinhVien suaSinhVien(SinhVienInputs inputs, Long sinhVienId) throws LopIsNotExist {
+        SinhVien _sinhVien = sinhVienRepository.getById(sinhVienId);
+
+
+        if (_sinhVien == null) {
+            throw new SinhVienIsNotExist();
+        }
+
+        Lop _lop = lopRepository.getById(inputs.getLopId());
+
+        if (_lop == null) {
+            throw new LopIsNotExist();
+        }
+
+        _sinhVien.setBacDaoTao(inputs.getBacDaoTao());
+        _sinhVien.setNgaySinh(inputs.getNgaySinh());
+        _sinhVien.setDanToc(inputs.getDanToc());
+        _sinhVien.setDiaChi(inputs.getDiaChi());
+        _sinhVien.setEmail(inputs.getEmail());
+        _sinhVien.setGioiTinh(inputs.isGioiTinh());
+        _sinhVien.setHoTenDem(inputs.getHoTenDem());
+        _sinhVien.setTen(inputs.getTen());
+        _sinhVien.setLoaiHinhDaoTao(inputs.getLoaiHinhDaoTao());
+        _sinhVien.setTrangThai(inputs.getTrangThai());
+        _sinhVien.setTonGiao(inputs.getTonGiao());
+        _sinhVien.setSoDienThoai(inputs.getSoDienThoai());
+        _sinhVien.setSoCMND(inputs.getSoCMND());
+        _sinhVien.setNoiSinh(inputs.getNoiSinh());
+        _sinhVien.setNgayVaoTruong(inputs.getNgayVaoTruong());
+        _sinhVien.setNgayVaoDoan(inputs.getNgayVaoDoan());
+        _sinhVien.setNgayVaoDang(inputs.getNgayVaoDang());
+        _sinhVien.setLop(_lop);
+        _sinhVien.setAvatar(inputs.getAvatar());
+
+        SinhVien _sinhVienSave = sinhVienRepository.saveAndFlush(_sinhVien);
+
+        return _sinhVienSave;
+    }
 
     public List<SinhVien> xoaSinhViens(List<Long> ids) {
         List<SinhVien> _listSinhVien = sinhVienRepository.findAllById(ids);

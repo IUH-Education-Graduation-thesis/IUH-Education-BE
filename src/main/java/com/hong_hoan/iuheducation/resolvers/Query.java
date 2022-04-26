@@ -342,6 +342,7 @@ public class Query implements GraphQLQueryResolver {
                     .data(Arrays.asList(_paginationKhoaVien))
                     .build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return FindKhoaVienResponse.builder()
                     .status(ResponseStatus.ERROR)
                     .message("Tìm kiếm khoa viện không thành công!")

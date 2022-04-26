@@ -28,6 +28,30 @@ public class ChuyenNganhService {
     @Autowired
     private KhoaVienRepository khoaVienRepository;
 
+    public ChuyenNganh suaChuyenNganh(ThemChuyenNganhInputs inputs, Long id) {
+        ChuyenNganh _chuyenNganh = chuyenNganhRepository.getById(id);
+
+        if(_chuyenNganh == null) {
+            throw new ChuyenNganhIsNotExistExcepton();
+        }
+
+        boolean _isKhoaVienExist = khoaVienRepository.existsById(inputs.getKhoaVienID());
+
+        if(!_isKhoaVienExist) {
+            throw new KhoaVienIsNotExistException();
+        }
+
+        KhoaVien _khoaVien = khoaVienRepository.getById(inputs.getKhoaVienID());
+
+        _chuyenNganh.setTen(inputs.getTen());
+        _chuyenNganh.setMoTa(inputs.getMoTa());
+        _chuyenNganh.setKhoaVien(_khoaVien);
+
+        ChuyenNganh _chuyenNganhRes = chuyenNganhRepository.saveAndFlush(_chuyenNganh);
+
+        return _chuyenNganhRes;
+    }
+
     public List<ChuyenNganh> findListChuyeNganh(FindChuyenNganhInputs inputs) {
         boolean _isInputsEmpty = ObjectUtils.isEmpty(inputs);
 
@@ -67,8 +91,9 @@ public class ChuyenNganhService {
         List<ChuyenNganh> _chuyenNganhs = chuyenNganhRepository.findAllById(ids);
         if (_chuyenNganhs.isEmpty())
             throw new ChuyenNganhIsNotExistExcepton();
+
         List<Long> _ids = _chuyenNganhs.stream().map(i -> i.getId()).collect(Collectors.toList());
-        chuyenNganhRepository.deleteAllById(_ids);
+        chuyenNganhRepository.xoaChuyenNganhs(_ids);
         return _chuyenNganhs;
     }
 

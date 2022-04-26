@@ -21,10 +21,11 @@ public class MonHoc {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String ten;
     private String moTa;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 

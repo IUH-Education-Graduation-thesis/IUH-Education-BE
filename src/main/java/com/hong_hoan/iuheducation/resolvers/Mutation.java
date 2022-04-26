@@ -79,7 +79,7 @@ public class Mutation implements GraphQLMutationResolver {
     @Autowired
     private LichHocService lichHocService;
     @Autowired
-    private KhoaVienSevice khoaVienSevice;
+    private KhoaVienService khoaVienService;
     @Autowired
     private ChuyenNganhService chuyenNganhService;
     @Autowired
@@ -119,6 +119,45 @@ public class Mutation implements GraphQLMutationResolver {
      * Sinh vien
      *
      * */
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public SinhVienResponse suaSinhVien(SinhVienInputs inputs, Long sinhVienId) {
+        try {
+            SinhVien _sinhVien = sinhVienService.suaSinhVien(inputs, sinhVienId);
+
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .data(Arrays.asList(_sinhVien))
+                    .message("Sửa sinh viên thành công.")
+                    .build();
+        } catch (SinhVienIsNotExist ex) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa sinh viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Không tìm thấy sinh viên!")
+                            .build()))
+                    .build();
+
+        } catch (LopIsNotExist e) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa sinh viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Không tìm thấy lớp học!")
+                            .build()))
+                    .build();
+
+        } catch (Exception ex) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa sinh viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public SinhVienResponse xoaSinhViens(List<Long> ids) {
@@ -271,6 +310,44 @@ public class Mutation implements GraphQLMutationResolver {
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ChuyenNganhResponse suaChuyenNganh(ThemChuyenNganhInputs inputs, Long id) {
+        try {
+            ChuyenNganh _chuyenNganh = chuyenNganhService.suaChuyenNganh(inputs, id);
+
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa chuyên ngành thành công.")
+                    .data(Arrays.asList(_chuyenNganh))
+                    .build();
+        } catch (KhoaVienIsNotExistException ex) {
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa chuyên ngành không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Khoa viện không tồn tại.")
+                            .build()))
+                    .build();
+        } catch (ChuyenNganhIsNotExistExcepton ex) {
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa chuyên ngành không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Chuyên ngành không tồn tại.")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ChuyenNganhResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa chuyên ngành không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống.")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ChuyenNganhResponse themChuyenNganh(ThemChuyenNganhInputs inputs) {
         System.out.println(inputs);
         try {
@@ -298,9 +375,30 @@ public class Mutation implements GraphQLMutationResolver {
      */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaVienResponse suaKhoaVien(ThemKhoaVienInputs inputs, Long id) {
+        try {
+            KhoaVien _khoaVien = khoaVienService.suaKhoaVien(inputs, id);
+
+            return KhoaVienResponse.builder()
+                    .message("Sua khoa vien thanh cong!")
+                    .status(ResponseStatus.OK)
+                    .data(Arrays.asList(_khoaVien))
+                    .build();
+        } catch (Exception ex) {
+            return KhoaVienResponse.builder()
+                    .message("Sửa khoa viện không thành công!")
+                    .status(ResponseStatus.ERROR)
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public KhoaVienResponse themKhoaVien(ThemKhoaVienInputs inputs) {
         try {
-            KhoaVien _khoaVienInput = khoaVienSevice.themKhoaVien(inputs);
+            KhoaVien _khoaVienInput = khoaVienService.themKhoaVien(inputs);
             return KhoaVienResponse.builder().status(ResponseStatus.OK).message("Thêm khoa viện thành công").data(List.of(_khoaVienInput)).build();
         } catch (Exception ex) {
             return KhoaVienResponse.builder().status(ResponseStatus.ERROR).message("Thêm khoa viện không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
@@ -310,7 +408,7 @@ public class Mutation implements GraphQLMutationResolver {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public KhoaVienResponse xoaKhoaViens(Set<Long> ids) {
         try {
-            List<KhoaVien> _idKhoaVien = khoaVienSevice.xoaKhoaViens(ids);
+            List<KhoaVien> _idKhoaVien = khoaVienService.xoaKhoaViens(ids);
             return KhoaVienResponse.builder().status(ResponseStatus.OK).message("Xóa khoa viện thành công").data(_idKhoaVien).build();
         } catch (Exception exception) {
             return KhoaVienResponse.builder().status(ResponseStatus.ERROR).message("Xóa khoa viện không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Khoa viện không tồn tại!").build())).build();

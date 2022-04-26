@@ -24,7 +24,7 @@ public class ChuyenNganh {
     private String ten;
     private String moTa;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 
