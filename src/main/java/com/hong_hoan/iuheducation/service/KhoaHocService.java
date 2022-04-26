@@ -45,43 +45,33 @@ public class KhoaHocService {
                     .build();
         }
 
+
+        if (inputs.allDataIsEmpty()) {
+            List<Khoa> _khoas = khoaRepository.findAll();
+
+            return PaginationKhoaHoc.builder()
+                    .count(_khoas.size())
+                    .data(_khoas)
+                    .build();
+        }
+
+        if (inputs.checkPaginationEmpty()) {
+            List<Khoa> _khoas = khoaRepository.findKhoaWithFilter(inputs.getId(), inputs.getTenKhoaHoc());
+
+            return PaginationKhoaHoc.builder()
+                    .count(_khoas.size())
+                    .data(_khoas)
+                    .build();
+        }
+
         Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
 
-        if (inputs.checkBaseValuesEmpty()) {
-            Page<Khoa> _pageKhoa = khoaRepository.findAll(_pageable);
+        Page<Khoa> _khoaPage = khoaRepository.findKhoaWithFilterAndPagination(inputs.getId(), inputs.getTenKhoaHoc(), _pageable);
 
-            return PaginationKhoaHoc.builder()
-                    .count(_pageKhoa.getNumberOfElements())
-                    .data(_pageKhoa.getContent())
-                    .build();
-        }
-
-        try {
-            boolean _isNotNullId = !inputs.getId().isEmpty();
-
-            try {
-                long _id = Long.valueOf(inputs.getId());
-                Page<Khoa> _pageKhoa = khoaRepository.findById(_id, _pageable);
-
-                return PaginationKhoaHoc.builder()
-                        .count(_pageKhoa.getNumberOfElements())
-                        .data(_pageKhoa.getContent())
-                        .build();
-            } catch (NumberFormatException ex) {
-                return PaginationKhoaHoc.builder()
-                        .count(0)
-                        .data(Arrays.asList())
-                        .build();
-            }
-
-        } catch (NullPointerException ex) {
-            Page<Khoa> _pageKhoa = khoaRepository.findByKhoa(inputs.getTenKhoaHoc(), _pageable);
-
-            return PaginationKhoaHoc.builder()
-                    .count(_pageKhoa.getNumberOfElements())
-                    .data(_pageKhoa.getContent())
-                    .build();
-        }
+        return PaginationKhoaHoc.builder()
+                .count(_khoaPage.getNumberOfElements())
+                .data(_khoaPage.getContent())
+                .build();
     }
 
     public List<Khoa> findAllKhoaHoc() {
@@ -105,7 +95,7 @@ public class KhoaHocService {
     public List<Khoa> deleteKhoaHoc(List<Long> ids) {
         List<Khoa> _listKhoa = khoaRepository.findAllById(ids);
 
-        if(_listKhoa.size() <= 0) {
+        if (_listKhoa.size() <= 0) {
             throw new KhoaHocIsNotExist();
         }
 

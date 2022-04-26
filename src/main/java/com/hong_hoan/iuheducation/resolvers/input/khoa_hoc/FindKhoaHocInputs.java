@@ -9,13 +9,22 @@ import java.util.stream.Stream;
 @Getter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class FindKhoaHocInputs {
-    private String id;
-    private int tenKhoaHoc;
-    private int page;
-    private int size;
+    private Long id;
+    private Integer tenKhoaHoc;
+    private Integer page;
+    private Integer size;
 
     public boolean checkBaseValuesEmpty() {
         return Stream.of(id, tenKhoaHoc).allMatch(Objects::isNull);
+    }
+
+    public boolean checkPaginationEmpty() {
+        return Stream.of(page, size).allMatch(Objects::isNull);
+    }
+
+    public boolean allDataIsEmpty() {
+        return Stream.of(id, tenKhoaHoc, page, size).allMatch(Objects::isNull);
     }
 }

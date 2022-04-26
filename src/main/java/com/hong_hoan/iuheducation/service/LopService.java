@@ -75,7 +75,9 @@ public class LopService {
                 .khoa(_khoa)
                 .build();
 
-        return _lop;
+        Lop _lopRes = lopRepository.saveAndFlush(_lop);
+
+        return _lopRes;
     }
 
     public PaginationLopHoc findLopHocPagination(FindLopHocInputs inputs) {

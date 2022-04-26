@@ -29,7 +29,7 @@ public class Khoa {
     private Date thoiGianBatDau;
     private Date thoiGianKetThuc;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "chuyen_nganh_id")
     private ChuyenNganh chuyenNganh;
 

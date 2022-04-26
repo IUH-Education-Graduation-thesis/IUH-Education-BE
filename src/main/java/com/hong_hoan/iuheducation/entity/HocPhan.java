@@ -31,11 +31,11 @@ public class HocPhan {
     @Column(nullable = false)
     private int soTinChiThucHanh;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "hoc_ky_id")
     private HocKy hocKy;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "mon_hoc_id")
     private MonHoc monHoc;
 

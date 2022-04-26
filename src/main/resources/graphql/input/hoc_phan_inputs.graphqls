@@ -12,3 +12,13 @@ input FindHocPhanInputs {
 input GetHocPhanDKHP {
     hocKiId: ID!
 }
+
+input ThemHocPhanInputs {
+    maHocPhan: String!
+    moTa: String
+    batBuoc: Boolean!
+    hocKyId: ID!
+    monHocId: ID!
+    soTinChiLyThuyet: Int!
+    soTinChiThucHanh: Int!
+}

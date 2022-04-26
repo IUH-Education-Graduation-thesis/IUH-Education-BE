@@ -9,7 +9,8 @@ type Mutation {
 
     # hoc ky
     themHocKy(inputs: ThemHocKyInputs!): HocKyResponse!
-    xoaHocKy(id: ID!): HocKyResponse!
+    suaHocKy(inputs: ThemHocKyInputs!, id: ID!): HocKyResponse!
+    xoaHocKys(ids: [ID!]): HocKyResponse!
 
     # khoa
     themKhoaHoc(inputs: ThemKhoaHocInputs!): KhoaHocResponse!
@@ -53,6 +54,11 @@ type Mutation {
     themSinhViens(files: [Upload!]!): ThemSinhVienWithFileResponse!
     xoaSinhViens(ids: [ID!]): SinhVienResponse!
     suaSinhVien(inputs: SinhVienInputs!, sinhVienId: ID!): SinhVienResponse!
+
+    # hoc phan
+    themHocPhan(inputs: ThemHocPhanInputs!): HocPhanResponse!
+    suaHocPhan(inputs: ThemHocPhanInputs!, id: ID!): HocPhanResponse!
+    xoaHocPhans(ids: [ID!]): HocPhanResponse!
 
     dangKyHocPhan(inputs: [DangKyHocPhanInputs!]!): DangKyHocPhanResponse!
 }

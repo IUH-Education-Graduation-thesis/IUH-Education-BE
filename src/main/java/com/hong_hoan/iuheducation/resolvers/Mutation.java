@@ -11,6 +11,7 @@ import com.hong_hoan.iuheducation.resolvers.input.day_nha.ThemDayNhaInput;
 import com.hong_hoan.iuheducation.resolvers.input.giang_vien.ThemGiangVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.ThemHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
@@ -22,6 +23,7 @@ import com.hong_hoan.iuheducation.resolvers.response.DangKyHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienResponse;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lop.LopResponse;
@@ -258,6 +260,32 @@ public class Mutation implements GraphQLMutationResolver {
         }
     }
 
+
+    /*
+        hoc phan
+        ======================================================================
+     */
+
+    public HocPhanResponse themHocPhan(ThemHocPhanInputs inputs) {
+        return HocPhanResponse.builder()
+                .status(ResponseStatus.OK)
+                .message("Thêm học phần thành công.")
+                .build();
+    }
+
+    public HocPhanResponse suaHocPhan(ThemHocPhanInputs inputs, Long id) {
+        return HocPhanResponse.builder()
+                .status(ResponseStatus.OK)
+                .message("Thêm học phần thành công.")
+                .build();
+    }
+
+    public HocPhanResponse xoaHocPhans(List<Long> ids) {
+        return HocPhanResponse.builder()
+                .status(ResponseStatus.OK)
+                .message("Thêm học phần thành công.")
+                .build();
+    }
 
      /*
         lop
@@ -621,17 +649,53 @@ public class Mutation implements GraphQLMutationResolver {
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public HocKyResponse xoaHocKy(String id) {
+    public HocKyResponse xoaHocKys(List<Long> ids) {
         try {
-            hocKyService.xoaHocKy(id);
-            return HocKyResponse.builder().status(ResponseStatus.OK).message("Xóa học kỳ thành công.").build();
-        } catch (NumberFormatException ex) {
-            return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Xóa học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Hoc ky không tồn tại!").build())).build();
+            List<HocKy> _hoKys = hocKyService.xoaHocKys(ids);
+            return HocKyResponse.builder().status(ResponseStatus.OK).data(_hoKys).message("Xóa học kỳ thành công.").build();
         } catch (HocKyIsNotExist ex) {
             return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Xóa học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("id")).message("Hoc ky không tồn tại!").build())).build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return HocKyResponse.builder().status(ResponseStatus.ERROR).message("Xóa học kỳ không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public HocKyResponse suaHocKy(ThemHocKyInputs inputs, Long id) {
+        try {
+            HocKy _hocKy = hocKyService.suaHocKy(inputs, id);
+
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa học kỳ thành công.")
+                    .data(Arrays.asList(_hocKy))
+                    .build();
+        } catch (HocKyIsNotExist ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học kỳ không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (KhoaHocIsNotExist ex) {
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học kỳ không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Khóa hoc không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocKyResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học kỳ không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
         }
     }
 

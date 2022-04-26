@@ -21,4 +21,12 @@ public interface KhoaRepository extends JpaRepository<Khoa, Long> {
     @Query(value = "DELETE FROM khoa WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)
     void xoaKhoaHocs(List<Long> ids);
 
+    @Query(value = "SELECT * FROM khoa k " +
+            "WHERE (?1 IS NULL OR k.id = ?1) AND (?2 IS NULL OR k.khoa = ?2)", nativeQuery = true)
+    List<Khoa> findKhoaWithFilter(Long id, Integer khoa);
+
+    @Query(value = "SELECT * FROM khoa k " +
+            "WHERE (?1 IS NULL OR k.id = ?1) AND (?2 IS NULL OR k.khoa = ?2)", nativeQuery = true)
+    Page findKhoaWithFilterAndPagination(Long id, Integer khoa, Pageable pageable);
+
 }
