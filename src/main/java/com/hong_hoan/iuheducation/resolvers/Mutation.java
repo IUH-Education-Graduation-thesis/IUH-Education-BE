@@ -293,6 +293,43 @@ public class Mutation implements GraphQLMutationResolver {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LopResponse suaLop(ThemLopInputs inputs, Long id) {
+        try {
+            Lop _lop = lopService.suaLop(inputs, id);
+
+            return LopResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm lớp thành công.")
+                    .data(Arrays.asList(_lop))
+                    .build();
+        } catch (LopIsNotExist ex) {
+            return LopResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lớp học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (KhoaHocIsNotExist ex) {
+            return LopResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Khóa học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return LopResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
 
     /*
         giang vien

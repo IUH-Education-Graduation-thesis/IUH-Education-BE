@@ -3,6 +3,7 @@ package com.hong_hoan.iuheducation.service;
 import com.hong_hoan.iuheducation.entity.Khoa;
 import com.hong_hoan.iuheducation.entity.Lop;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
+import com.hong_hoan.iuheducation.exception.LopIsNotExist;
 import com.hong_hoan.iuheducation.repository.KhoaRepository;
 import com.hong_hoan.iuheducation.repository.LopRepository;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
@@ -23,6 +24,28 @@ public class LopService {
     private LopRepository lopRepository;
     @Autowired
     private KhoaRepository khoaRepository;
+
+    public Lop suaLop(ThemLopInputs inputs, Long id) throws LopIsNotExist {
+        Lop _lop = lopRepository.getById(id);
+
+        if(_lop == null) {
+            throw new LopIsNotExist();
+        }
+
+        Khoa _khoa = khoaRepository.getById(inputs.getKhoaId());
+
+        if(_khoa == null) {
+            throw new KhoaHocIsNotExist();
+        }
+
+        _lop.setTen(inputs.getTen());
+        _lop.setMoTa(inputs.getMoTa());
+        _lop.setKhoa(_khoa);
+
+        Lop _dataRes = lopRepository.saveAndFlush(_lop);
+
+        return _dataRes;
+    }
 
     public Lop themLop(ThemLopInputs inputs) {
         Khoa _khoa = khoaRepository.getById(inputs.getKhoaId());
