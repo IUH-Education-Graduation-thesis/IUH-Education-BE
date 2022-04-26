@@ -1,13 +1,13 @@
 package com.hong_hoan.iuheducation.resolvers.input.giang_vien;
 
 import com.hong_hoan.iuheducation.entity.HocHam;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Builder
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ThemGiangVienInputs {
     private String hoTenDem;
     private String ten;

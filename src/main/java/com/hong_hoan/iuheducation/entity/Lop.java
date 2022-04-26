@@ -1,6 +1,8 @@
 package com.hong_hoan.iuheducation.entity;
 
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,7 +33,8 @@ public class Lop {
     @JoinColumn(name = "khoa_id")
     private Khoa khoa;
 
-    @OneToMany(mappedBy = "lop", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "lop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<SinhVien> sinhViens = new ArrayList<>();
 
 }

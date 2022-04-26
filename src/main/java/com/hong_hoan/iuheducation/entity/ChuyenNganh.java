@@ -1,6 +1,8 @@
 package com.hong_hoan.iuheducation.entity;
 
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class ChuyenNganh {
     @OneToMany(mappedBy = "chuyenNganh", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<GiangVien> giangViens = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "chuyenNganh", orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "chuyenNganh", orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Khoa> khoas = new ArrayList<>();
-
 }
