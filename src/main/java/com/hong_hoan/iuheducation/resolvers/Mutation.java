@@ -258,6 +258,45 @@ public class Mutation implements GraphQLMutationResolver {
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public GiangVienResponse suaGiangVien(ThemGiangVienInputs inputs, Long id) {
+        try {
+            GiangVien _giangVien = giangVienService.suaGiangVien(inputs, id);
+
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sủa giảng viên thành công.")
+                    .data(Arrays.asList(_giangVien))
+                    .build();
+        } catch (GiangVienIsNotExistException ex) {
+
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sủa giảng viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Giảng viên không tồn tại!")
+                            .build()))
+                    .build();
+
+        } catch (ChuyenNganhIsNotExistExcepton ex) {
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sủa giảng viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Chuyên ngành không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return GiangVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sủa giảng viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public GiangVienResponse themGiangVien(ThemGiangVienInputs inputs) {
         try {
             GiangVien _giangVienInput = giangVienService.themGiangVien(inputs);

@@ -32,7 +32,7 @@ public class GiangVien {
     @Column(name = "hoc_ham")
     private HocHam hocHam;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "chuyen_nganh_id")
     private ChuyenNganh chuyenNganh;
 

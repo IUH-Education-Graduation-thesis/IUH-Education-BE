@@ -29,6 +29,32 @@ public class GiangVienService {
     @Autowired
     private ChuyenNganhRepository chuyenNganhRepository;
 
+    public GiangVien suaGiangVien(ThemGiangVienInputs inputs, Long id) {
+        GiangVien _giangVien = giangVienRepository.getById(id);
+
+        if(_giangVien == null) {
+            throw new GiangVienIsNotExistException();
+        }
+
+        ChuyenNganh _chuyenNganh = chuyenNganhRepository.getById(inputs.getChuyenNganhID());
+
+        if(_chuyenNganh == null) {
+            throw new ChuyenNganhIsNotExistExcepton();
+        }
+
+        _giangVien.setHoTenDem(inputs.getHoTenDem());
+        _giangVien.setTen(inputs.getTen());
+        _giangVien.setGioiTinh(inputs.isGioiTinh());
+        _giangVien.setEmail(inputs.getEmail());
+        _giangVien.setSoDienThoai(inputs.getSoDienThoai());
+        _giangVien.setChuyenNganh(_chuyenNganh);
+        _giangVien.setHocHam(inputs.getHocHam());
+
+        GiangVien _giangVienRes = giangVienRepository.saveAndFlush(_giangVien);
+
+        return _giangVienRes;
+    }
+
     public List<GiangVien> findGiangVienById(String id) {
         try {
             long _id = Long.valueOf(id);

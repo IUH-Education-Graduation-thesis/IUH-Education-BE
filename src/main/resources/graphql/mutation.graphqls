@@ -40,6 +40,7 @@ type Mutation {
     #giang vien
     themGiangVien(inputs: ThemGiaoVienInputs!): GiangVienResponse!
     xoaGiangViens(ids:[ID!]): GiangVienResponse!
+    suaGiangVien(inputs: ThemGiaoVienInputs!, id: ID!): GiangVienResponse!
 
     #sinh vien
     themSinhVien(inputs: SinhVienInputs!): SinhVienResponse!
