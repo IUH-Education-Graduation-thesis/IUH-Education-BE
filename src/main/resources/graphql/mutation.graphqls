@@ -5,6 +5,7 @@ type Mutation {
     # lop
     themLop(inputs: ThemLopInputs!): LopResponse!
     suaLop(inputs: ThemLopInputs!, id: ID!): LopResponse!
+    xoaLops(ids: [ID!]): LopResponse!
 
     # hoc ky
     themHocKy(inputs: ThemHocKyInputs!): HocKyResponse!

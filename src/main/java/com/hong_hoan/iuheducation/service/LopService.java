@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LopService {
@@ -24,6 +25,20 @@ public class LopService {
     private LopRepository lopRepository;
     @Autowired
     private KhoaRepository khoaRepository;
+
+    public List<Lop> xoaLops(List<Long> ids) throws LopIsNotExist {
+        List<Lop> _listLop = lopRepository.findAllById(ids);
+
+        if(_listLop.size() <= 0) {
+            throw new LopIsNotExist();
+        }
+
+        List<Long> _ids = _listLop.stream().map(i -> i.getId()).collect(Collectors.toList());
+
+        lopRepository.xoaLops(_ids);
+
+        return _listLop;
+    }
 
     public Lop suaLop(ThemLopInputs inputs, Long id) throws LopIsNotExist {
         Lop _lop = lopRepository.getById(id);

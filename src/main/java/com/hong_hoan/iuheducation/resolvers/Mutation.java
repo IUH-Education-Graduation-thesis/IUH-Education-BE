@@ -265,6 +265,35 @@ public class Mutation implements GraphQLMutationResolver {
      */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LopResponse xoaLops(List<Long> ids) {
+        try {
+            List<Lop> _lops = lopService.xoaLops(ids);
+
+            return LopResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa lớp thành công.")
+                    .data(_lops)
+                    .build();
+        } catch (LopIsNotExist e) {
+            return LopResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa lớp không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lớp học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return LopResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa lớp không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public LopResponse themLop(ThemLopInputs inputs) {
         try {
             Lop _lop = lopService.themLop(inputs);
@@ -300,13 +329,13 @@ public class Mutation implements GraphQLMutationResolver {
 
             return LopResponse.builder()
                     .status(ResponseStatus.OK)
-                    .message("Thêm lớp thành công.")
+                    .message("Sửa lớp thành công.")
                     .data(Arrays.asList(_lop))
                     .build();
         } catch (LopIsNotExist ex) {
             return LopResponse.builder()
                     .status(ResponseStatus.ERROR)
-                    .message("Thêm lớp không thành công.")
+                    .message("Sửa lớp không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Lớp học không tồn tại!")
                             .build()))
@@ -314,7 +343,7 @@ public class Mutation implements GraphQLMutationResolver {
         } catch (KhoaHocIsNotExist ex) {
             return LopResponse.builder()
                     .status(ResponseStatus.ERROR)
-                    .message("Thêm lớp không thành công.")
+                    .message("Sửa lớp không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Khóa học không tồn tại!")
                             .build()))
@@ -322,7 +351,7 @@ public class Mutation implements GraphQLMutationResolver {
         } catch (Exception ex) {
             return LopResponse.builder()
                     .status(ResponseStatus.ERROR)
-                    .message("Thêm lớp không thành công.")
+                    .message("Sửa lớp không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Lỗi hệ thống!")
                             .build()))
