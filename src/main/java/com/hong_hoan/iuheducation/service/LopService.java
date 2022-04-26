@@ -1,8 +1,12 @@
 package com.hong_hoan.iuheducation.service;
 
+import com.hong_hoan.iuheducation.entity.Khoa;
 import com.hong_hoan.iuheducation.entity.Lop;
+import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
+import com.hong_hoan.iuheducation.repository.KhoaRepository;
 import com.hong_hoan.iuheducation.repository.LopRepository;
 import com.hong_hoan.iuheducation.resolvers.input.lop.FindLopHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.lop.ThemLopInputs;
 import com.hong_hoan.iuheducation.resolvers.response.lop.PaginationLopHoc;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,24 @@ import java.util.List;
 public class LopService {
     @Autowired
     private LopRepository lopRepository;
+    @Autowired
+    private KhoaRepository khoaRepository;
+
+    public Lop themLop(ThemLopInputs inputs) {
+        Khoa _khoa = khoaRepository.getById(inputs.getKhoaId());
+
+        if(_khoa == null) {
+            throw new KhoaHocIsNotExist();
+        }
+
+        Lop _lop = Lop.builder()
+                .ten(inputs.getTen())
+                .moTa(inputs.getMoTa())
+                .khoa(_khoa)
+                .build();
+
+        return _lop;
+    }
 
     public PaginationLopHoc findLopHocPagination(FindLopHocInputs inputs) {
         boolean _isInputsEmpty = ObjectUtils.isEmpty(inputs);

@@ -29,7 +29,7 @@ public class Lop {
     @JoinColumn(name = "giang_vien_id")
     private GiangVien giangVien;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "khoa_id")
     private Khoa khoa;
 
