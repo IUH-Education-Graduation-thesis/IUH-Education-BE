@@ -141,7 +141,7 @@ public class GiangVienService {
         if (_giangViens.isEmpty())
             throw new GiangVienIsNotExistException();
         List<Long> _ids = _giangViens.stream().map(i -> i.getId()).collect(Collectors.toList());
-        giangVienRepository.deleteAllById(_ids);
+        giangVienRepository.xoaGiangViens(_ids);
         return _giangViens;
     }
 }

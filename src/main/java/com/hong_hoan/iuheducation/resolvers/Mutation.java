@@ -549,6 +549,43 @@ public class Mutation implements GraphQLMutationResolver {
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public KhoaHocResponse suaKhoaHoc(ThemKhoaHocInputs inputs, Long id) {
+        try {
+            Khoa _khoa = khoaHocService.suaKhoaHoc(inputs, id);
+
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa khóa học thành công.")
+                    .data(Arrays.asList(_khoa))
+                    .build();
+        } catch (KhoaHocIsNotExist ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa khóa học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Khóa học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (ChuyenNganhIsNotExistExcepton ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa khóa học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("chuyên ngành không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return KhoaHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa khóa học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public KhoaHocResponse themKhoaHoc(ThemKhoaHocInputs inputs) {
 
         try {
@@ -585,6 +622,7 @@ public class Mutation implements GraphQLMutationResolver {
         phong hoc
         ======================================================================
      */
+
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public PhongHocResponse xoaPhongHoc(String id) {
         try {

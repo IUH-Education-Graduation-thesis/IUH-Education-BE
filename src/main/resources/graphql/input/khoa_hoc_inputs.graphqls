@@ -1,6 +1,9 @@
 input ThemKhoaHocInputs {
     khoa: Int!
     moTa: String
+    thoiGianBatDau: Date
+    thoiGianKetThuc: Date
+    chuyenNganhId: ID!
 }
 
 input FindKhoaHocInputs {
