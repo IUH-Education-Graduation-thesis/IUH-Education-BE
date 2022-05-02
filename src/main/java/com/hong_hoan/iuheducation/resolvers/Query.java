@@ -33,6 +33,7 @@ import com.hong_hoan.iuheducation.resolvers.response.lop.PaginationLopHoc;
 import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.GetLopHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.ProfileResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
+import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.NamHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.FindSinhVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.PaginationSinhVien;
@@ -79,6 +80,8 @@ public class Query implements GraphQLQueryResolver {
     private HocKyNormalService hocKyNormalService;
     @Autowired
     private SinhVienLopHocPhanService sinhVienLopHocPhanService;
+    @Autowired
+    private NamHocService namHocService;
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
     public DiemResponse getDiem() {
@@ -501,6 +504,28 @@ public class Query implements GraphQLQueryResolver {
                 .message("lấy thông tin lớp học thành công.")
                 .data(_listDayNha)
                 .build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public NamHocResponse getNamHocs() {
+        try {
+            List<NamHoc> _listNamHoc = namHocService.getAllNamHoc();
+
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin năm học thành công.")
+                    .data(_listNamHoc)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin năm học thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
     }
 
 }

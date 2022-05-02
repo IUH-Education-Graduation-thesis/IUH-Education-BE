@@ -3,6 +3,8 @@ package com.hong_hoan.iuheducation.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -23,4 +25,8 @@ public class NamHoc {
     @Column(nullable = false)
     private Integer namKetThuc;
     private String ghiChu;
+
+    @OneToMany(mappedBy = "namHoc", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<HocKyNormal> hocKyNormals = new ArrayList<>();
+
 }

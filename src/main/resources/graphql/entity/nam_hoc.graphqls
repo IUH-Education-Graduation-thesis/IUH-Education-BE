@@ -3,4 +3,5 @@ type NamHoc {
     namBatDau: Int
     namKetThuc: Int
     ghiChu: String
+    hocKyNormals: [HocKyNormal]
 }
