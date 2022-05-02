@@ -1,12 +1,10 @@
 package com.hong_hoan.iuheducation.entity;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -31,9 +29,11 @@ public class HocPhan {
     @Column(nullable = false)
     private int soTinChiThucHanh;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "hoc_ky_id")
-    private HocKy hocKy;
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(name = "hoc_phan_hoc_ky",
+            joinColumns = @JoinColumn(name = "hoc_phan_id"),
+            inverseJoinColumns = @JoinColumn(name = "hoc_ky_id"))
+    private Set<HocKy> hocKies = new LinkedHashSet<>();
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "mon_hoc_id")
@@ -60,4 +60,16 @@ public class HocPhan {
             inverseJoinColumns = @JoinColumn(name = "mon_hocs_id"))
     private Set<MonHoc> monHocTruocs = new LinkedHashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        HocPhan hocPhan = (HocPhan) o;
+        return id != null && Objects.equals(id, hocPhan.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

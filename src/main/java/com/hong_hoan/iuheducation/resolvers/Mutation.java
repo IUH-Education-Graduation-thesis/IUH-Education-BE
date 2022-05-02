@@ -96,6 +96,8 @@ public class Mutation implements GraphQLMutationResolver {
     private SinhVienLopHocPhanService sinhVienLopHocPhanService;
     @Autowired
     private LopService lopService;
+    @Autowired
+    private HocPhanService hocPhanService;
 
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
@@ -267,24 +269,114 @@ public class Mutation implements GraphQLMutationResolver {
      */
 
     public HocPhanResponse themHocPhan(ThemHocPhanInputs inputs) {
-        return HocPhanResponse.builder()
-                .status(ResponseStatus.OK)
-                .message("Thêm học phần thành công.")
-                .build();
+        try {
+            HocPhan _hocPhan = hocPhanService.themHocPhan(inputs);
+
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm học phần thành công.")
+                    .data(Arrays.asList(_hocPhan))
+                    .build();
+        } catch (MonHocIsExistException ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Môn học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocKyIsNotExist ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+
+
     }
 
     public HocPhanResponse suaHocPhan(ThemHocPhanInputs inputs, Long id) {
-        return HocPhanResponse.builder()
-                .status(ResponseStatus.OK)
-                .message("Thêm học phần thành công.")
-                .build();
+        try {
+            HocPhan _hocPhan = hocPhanService.suaHocPhan(inputs, id);
+
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa học phần thành công.")
+                    .data(Arrays.asList(_hocPhan))
+                    .build();
+        } catch (MonHocIsExistException ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Môn học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocKyIsNotExist ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocPhanIsNotExist ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
     }
 
     public HocPhanResponse xoaHocPhans(List<Long> ids) {
-        return HocPhanResponse.builder()
-                .status(ResponseStatus.OK)
-                .message("Thêm học phần thành công.")
-                .build();
+        try {
+            List<HocPhan> _hocPhans = hocPhanService.xoaHocPhans(ids);
+
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa học phần thành công.")
+                    .data(_hocPhans)
+                    .build();
+        } catch (HocPhanIsNotExist ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            return HocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học phần không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
     }
 
      /*
