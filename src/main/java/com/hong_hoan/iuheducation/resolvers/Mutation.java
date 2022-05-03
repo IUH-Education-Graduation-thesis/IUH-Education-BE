@@ -16,6 +16,7 @@ import com.hong_hoan.iuheducation.resolvers.input.khoa_hoc.ThemKhoaHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.ThemLopInputs;
+import com.hong_hoan.iuheducation.resolvers.input.lop_hoc_phan.ThemLopHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.SinhVienInputs;
@@ -27,6 +28,7 @@ import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_hoc.KhoaHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.khoa_vien.KhoaVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lop.LopResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.LopHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.mon_hoc.MonHocRespone;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
@@ -98,6 +100,8 @@ public class Mutation implements GraphQLMutationResolver {
     private LopService lopService;
     @Autowired
     private HocPhanService hocPhanService;
+    @Autowired
+    private LopHocPhanService lopHocPhanService;
 
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
@@ -126,7 +130,7 @@ public class Mutation implements GraphQLMutationResolver {
 
     /*
      * Sinh vien
-     *
+     * ============================================================================
      * */
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -259,6 +263,49 @@ public class Mutation implements GraphQLMutationResolver {
         } catch (Exception ex) {
             ex.printStackTrace();
             return SinhVienResponse.builder().status(ResponseStatus.OK).message("Thêm sinh viên không thành công.").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
+        }
+    }
+
+    /*
+        hoc phan
+        ======================================================================
+     */
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LopHocPhanResponse themLopHocPhan(ThemLopHocPhanInputs inputs) {
+        try {
+            LopHocPhan _lopHocPhan = lopHocPhanService.themLopHocPhan(inputs);
+
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm lớp học phần thành công!")
+                    .data(Arrays.asList(_lopHocPhan))
+                    .build();
+        } catch (HocPhanIsNotExist ex) {
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocKyNormalIsNotExist ex) {
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
         }
     }
 

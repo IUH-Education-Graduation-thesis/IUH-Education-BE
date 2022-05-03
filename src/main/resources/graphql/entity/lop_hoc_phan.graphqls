@@ -12,4 +12,5 @@ type LopHocPhan {
     lichHocs: [LichHoc]
     soLuongHienTai: Int
     lopDuKien: String
+    hocKyNormal: HocKyNormal
 }

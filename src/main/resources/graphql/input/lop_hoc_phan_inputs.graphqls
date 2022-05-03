@@ -1,0 +1,9 @@
+input ThemLopHocPhanInputs {
+    maLopHocPhan: String!
+    soNhomThucHanh: Int!
+    soLuongToiDa: Int!
+    moTa: String
+    lopDuKien: String!
+    hocPhanId: ID!
+    hocKyNormalId: ID!
+}
