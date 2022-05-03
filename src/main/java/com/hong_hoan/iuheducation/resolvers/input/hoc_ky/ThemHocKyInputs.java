@@ -1,14 +1,14 @@
 package com.hong_hoan.iuheducation.resolvers.input.hoc_ky;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Builder
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ThemHocKyInputs {
-    private String namHocId;
+    private Long khoaId;
     private String moTa;
-    private int thuTu;
+    private Integer thuTu;
 }

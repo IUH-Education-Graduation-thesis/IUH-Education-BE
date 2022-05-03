@@ -2,22 +2,25 @@ package com.hong_hoan.iuheducation.resolvers.input.lich_hoc;
 
 import com.hong_hoan.iuheducation.entity.LopHocPhan;
 import com.hong_hoan.iuheducation.entity.PhongHoc;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+
 import java.util.Date;
 
 @Builder
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ThemLichHocInputs {
-    private int ngayHocTrongTuan;
-    private int nhomThucHanh;
+    private Integer ngayHocTrongTuan;
+    private Integer nhomThucHanh;
     private Date thoiGianBatDau;
-    private Date thoiGianKetThuc;
-    private int tietHocBatDau;
-    private int tietHocKetThuc;
+    private Integer tietHocBatDau;
+    private Integer tietHocKetThuc;
     private String ghiChu;
-    private PhongHoc phongHoc;
-    private LopHocPhan lopHocPhan;
+    private Long phongHocId;
+    private Long lopHocPhanId;
+    private Long giangVienId;
+    private Boolean isLichThi;
+    private Boolean isHocBu;
 }

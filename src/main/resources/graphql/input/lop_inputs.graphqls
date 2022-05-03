@@ -7,3 +7,9 @@ input FindLopHocInputs {
     page: Int!
     size: Int!
 }
+
+input ThemLopInputs {
+    ten: String!
+    moTa: String
+    khoaId: ID!
+}

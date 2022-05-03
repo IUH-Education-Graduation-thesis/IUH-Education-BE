@@ -11,4 +11,5 @@ type LichHoc {
     phongHoc: PhongHoc
     isLyThuyet: Boolean
     isLichThi: Boolean
+    giangVien: GiangVien
 }

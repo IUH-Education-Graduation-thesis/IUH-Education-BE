@@ -4,6 +4,7 @@ import com.hong_hoan.iuheducation.entity.HocPhan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,13 +12,48 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
-    @Query(value = "SELECT hp.* FROM hoc_phan hp " + "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " + "JOIN mon_hoc mh ON hp.mon_hoc_id = mh.id " + "WHERE (:id IS NULL OR hp.id = :id) " + "AND (:maHocPhan IS NULL OR hp.ma_hoc_phan like :maHocPhan) " + "AND (COALESCE(:namHocIds) IS NULL OR hk.nam_hoc_id IN (:namHocIds)) " + "AND (COALESCE(:hocKyIds) IS NULL OR hk.id IN (:hocKyIds)) " + "AND (COALESCE(:monHocIds) IS NULL OR hp.mon_hoc_id IN (:monHocIds)) " + "AND (COALESCE(:khoaVienIds) IS NULL OR mh.khoa_vien_id IN (:khoaVienIds))", nativeQuery = true)
+    @Modifying
     @Transactional
-    List<HocPhan> filterHocPhan(@Param("id") String id, @Param("maHocPhan") String maHocPhan, @Param("namHocIds") List<Long> namHocIds, @Param("hocKyIds") List<Long> hocKyIds, @Param("monHocIds") List<Long> monHocIds, @Param("khoaVienIds") List<Long> khoaVienIds);
+    @Query(value = "DELETE FROM hoc_phan WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)
+    void xoaHocPhans(List<Long> ids);
 
-    @Query(value = "SELECT hp.* FROM hoc_phan hp " + "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " + "JOIN mon_hoc mh ON hp.mon_hoc_id = mh.id " + "WHERE (:id IS NULL OR hp.id = :id) " + "AND (:maHocPhan IS NULL OR hp.ma_hoc_phan like :maHocPhan) " + "AND (COALESCE(:namHocIds) IS NULL OR hk.nam_hoc_id IN (:namHocIds)) " + "AND (COALESCE(:hocKyIds) IS NULL OR hk.id IN (:hocKyIds)) " + "AND (COALESCE(:monHocIds) IS NULL OR hp.mon_hoc_id IN (:monHocIds)) " + "AND (COALESCE(:khoaVienIds) IS NULL OR mh.khoa_vien_id IN (:khoaVienIds))", nativeQuery = true)
+    @Query(value = "SELECT hp.* FROM hoc_phan hp " +
+            "JOIN hoc_phan_hoc_ky hphk on hphk.hoc_phan_id = hp.id " +
+            "JOIN hoc_ky hk on hk.id = hphk.hoc_ky_id " +
+            "JOIN khoa k on k.id = hk.khoa_id " +
+            "JOIN chuyen_nganh cn on cn.id = k.chuyen_nganh_id " +
+            "JOIN khoa_vien kv on kv.id = cn.khoa_vien_id " +
+            "Join mon_hoc mh on mh.id = hp.mon_hoc_id " +
+            "WHERE (:id IS NULL OR hp.id = :id) " +
+            "AND (:maHocPhan IS NULL OR hp.ma_hoc_phan like :maHocPhan) " +
+            "AND (COALESCE(:hocKyIds) IS NULL OR hk.id IN (:hocKyIds)) " +
+            "AND (COALESCE(:khoaIds) IS NULL OR k.id IN (:khoaIds)) " +
+            "AND (COALESCE(:chuyenNganhIds) IS NULL OR cn.id IN (:chuyenNganhIds)) " +
+            "AND (COALESCE(:khoaVienIds) IS NULL OR kv.id IN (:khoaVienIds)) " +
+            "AND (COALESCE(:monHocIds) IS NULL OR mh.id IN (:monHocIds))", nativeQuery = true)
     @Transactional
-    Page<HocPhan> filterHocPhan(@Param("id") String id, @Param("maHocPhan") String maHocPhan, @Param("namHocIds") List<Long> namHocIds, @Param("hocKyIds") List<Long> hocKyIds, @Param("monHocIds") List<Long> monHocIds, @Param("khoaVienIds") List<Long> khoaVienIds, Pageable pageable);
+    Page<HocPhan> filterHocPhan(@Param("id") Long id, @Param("maHocPhan") String maHocPhan, @Param("hocKyIds") List<Long> hocKyIds,
+                                @Param("khoaIds") List<Long> khoaIds, @Param("chuyenNganhIds") List<Long> chuyenNganhIds,
+                                @Param("khoaVienIds") List<Long> khoaVienIds, @Param("monHocIds") List<Long> monHocIds, Pageable pageable);
+
+    @Query(value = "SELECT hp.* FROM hoc_phan hp " +
+            "JOIN hoc_phan_hoc_ky hphk on hphk.hoc_phan_id = hp.id " +
+            "JOIN hoc_ky hk on hk.id = hphk.hoc_ky_id " +
+            "JOIN khoa k on k.id = hk.khoa_id " +
+            "JOIN chuyen_nganh cn on cn.id = k.chuyen_nganh_id " +
+            "JOIN khoa_vien kv on kv.id = cn.khoa_vien_id " +
+            "Join mon_hoc mh on mh.id = hp.mon_hoc_id " +
+            "WHERE (:id IS NULL OR hp.id = :id) " +
+            "AND (:maHocPhan IS NULL OR hp.ma_hoc_phan like :maHocPhan) " +
+            "AND (COALESCE(:hocKyIds) IS NULL OR hk.id IN (:hocKyIds)) " +
+            "AND (COALESCE(:khoaIds) IS NULL OR k.id IN (:khoaIds)) " +
+            "AND (COALESCE(:chuyenNganhIds) IS NULL OR cn.id IN (:chuyenNganhIds)) " +
+            "AND (COALESCE(:khoaVienIds) IS NULL OR kv.id IN (:khoaVienIds)) " +
+            "AND (COALESCE(:monHocIds) IS NULL OR mh.id IN (:monHocIds))", nativeQuery = true)
+    @Transactional
+    List<HocPhan> filterHocPhan(@Param("id") Long id, @Param("maHocPhan") String maHocPhan, @Param("hocKyIds") List<Long> hocKyIds,
+                                @Param("khoaIds") List<Long> khoaIds, @Param("chuyenNganhIds") List<Long> chuyenNganhIds,
+                                @Param("khoaVienIds") List<Long> khoaVienIds, @Param("monHocIds") List<Long> monHocIds);
 
     @Query(value = "SELECT * FROM hoc_phan hp WHERE hp.hoc_ky_id = ?1 AND hp.id not in(" +
             "SELECT lhp.hoc_phan_id as hocPhanId FROM sinh_vien_lop_hoc_phan svlhp " +
@@ -29,8 +65,11 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
     @Query(value = "SELECT hp.* FROM hoc_phan hp " +
             "JOIN hoc_ky hk on hk.id = hp.hoc_ky_id " +
             "WHERE (SELECT COUNT(*) as SoLopHocPhan from lop_hoc_phan lhp WHERE lhp.hoc_phan_id = hp.id AND lhp.hoc_ky_normal_id = ?1) > 0 " +
-            "AND hk.thu_tu <= ?2", nativeQuery = true)
-    List<HocPhan> getListHocPhanForDangKy(Long hocKyNormalId, Integer thuTuHocKy);
+            "AND hk.thu_tu <= ?2 " +
+            "AND hp.id not in(SELECT lhp.hoc_phan_id as hocPhanId FROM sinh_vien_lop_hoc_phan svlhp " +
+            "join lop_hoc_phan lhp ON lhp.id = svlhp.lop_hoc_phan_id " +
+            "WHERE svlhp.sinh_vien_id = ?3)", nativeQuery = true)
+    List<HocPhan> getListHocPhanForDangKy(Long hocKyNormalId, Integer thuTuHocKy, Long sinhVienId);
 
     @Query(value = "SELECT hp.* FROM hoc_phan hp " +
             "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " +

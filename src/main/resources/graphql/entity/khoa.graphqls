@@ -6,4 +6,5 @@ type Khoa {
     thoiGianKetThuc: Date
     lops: [Lop]
     hocKies: [HocKy]
+    chuyenNganh: ChuyenNganh
 }

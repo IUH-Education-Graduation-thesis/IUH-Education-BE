@@ -36,30 +36,40 @@ public class LichHoc {
     @JoinTable(name = "lich_hoc_cancels", joinColumns = @JoinColumn(name = "lich_hoc_id"))
     private List<Integer> cancels = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "giang_vien_id")
+    private GiangVien giangVien;
 
     @Column(nullable = false)
     private int tietHocBatDau;
     @Column(nullable = false)
     private int tietHocKetThuc;
-    @Column(nullable = false)
-    private String ghiChu;
 
+    private String ghiChu;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "phong_hoc_id")
     private PhongHoc phongHoc;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;
 
     public boolean isLyThuyet() {
-        if(this.nhomThucHanh == null) {
+        if (this.nhomThucHanh == null) {
             return true;
         }
 
         return false;
+    }
+
+    public GiangVien getGiangVien() {
+        if (this.giangVien == null) {
+            return lopHocPhan.getGiangViens().iterator().next();
+        }
+
+        return this.giangVien;
     }
 
     public Date getThoiGianKetThuc() {

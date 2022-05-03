@@ -15,4 +15,5 @@ type Query {
     getLopHocPhanDaDangKy(hocKyId: ID!): GetLopHocPhanResponse!
     getListHocKy: HocKyNormalResponse!
     getDiem: DiemResponse!
+    getNamHocs: NamHocResponse!
 }

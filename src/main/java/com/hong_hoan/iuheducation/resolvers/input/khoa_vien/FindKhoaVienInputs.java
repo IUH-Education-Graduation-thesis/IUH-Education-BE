@@ -1,8 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers.input.khoa_vien;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -10,11 +8,13 @@ import java.util.stream.Stream;
 @Builder
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class FindKhoaVienInputs {
     private String id;
     private String ten;
-    private int page;
-    private int size;
+    private Integer page;
+    private Integer size;
 
     public boolean checkBaseDateEmpty() {
         return Stream.of(id, ten).allMatch(Objects::isNull);

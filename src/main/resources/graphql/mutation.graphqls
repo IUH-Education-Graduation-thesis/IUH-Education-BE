@@ -2,13 +2,23 @@ type Mutation {
     login(user_name: String!, password: String!): LoginResponse!
     register(inputs: CreateAccountInput!): RegisterResponse!
 
+    # lop hoc phan
+    themLopHocPhan(inputs: ThemLopHocPhanInputs!): LopHocPhanResponse!
+
+    # lop
+    themLop(inputs: ThemLopInputs!): LopResponse!
+    suaLop(inputs: ThemLopInputs!, id: ID!): LopResponse!
+    xoaLops(ids: [ID!]): LopResponse!
+
     # hoc ky
     themHocKy(inputs: ThemHocKyInputs!): HocKyResponse!
-    xoaHocKy(id: ID!): HocKyResponse!
+    suaHocKy(inputs: ThemHocKyInputs!, id: ID!): HocKyResponse!
+    xoaHocKys(ids: [ID!]): HocKyResponse!
 
     # khoa
     themKhoaHoc(inputs: ThemKhoaHocInputs!): KhoaHocResponse!
-    xoaKhoaHoc(id: ID!): KhoaHocResponse!
+    xoaKhoaHocs(ids: [ID!]): KhoaHocResponse!
+    suaKhoaHoc(inputs: ThemKhoaHocInputs!, id: ID!): KhoaHocResponse!
 
     # day nha
     themDayNha(inputs: ThemDayNhaInput!): DayNhaResponse!
@@ -25,22 +35,33 @@ type Mutation {
     #khoa vien
     themKhoaVien(inputs:ThemKhoaVienInputs!):KhoaVienResponse!
     xoaKhoaViens(ids:[ID!]):KhoaVienResponse!
+    suaKhoaVien(inputs: ThemKhoaVienInputs!, id: ID!): KhoaVienResponse!
 
     # chuyen nganh
     themChuyenNganh(inputs: ThemChuyenNganhInputs!): ChuyenNganhResponse!
     xoaChuyenNganhs(ids:[ID!]):ChuyenNganhResponse!
+    suaChuyenNganh(inputs: ThemChuyenNganhInputs!, id: ID!): ChuyenNganhResponse!
 
     #mon hoc
     themMonHoc(inputs: ThemMonHocInputs!): MonHocResponse!
     xoaMonHocs(ids:[ID!]): MonHocResponse!
+    suaMonHoc(inputs: ThemMonHocInputs!, id: ID!): MonHocResponse!
 
     #giang vien
     themGiangVien(inputs: ThemGiaoVienInputs!): GiangVienResponse!
     xoaGiangViens(ids:[ID!]): GiangVienResponse!
+    suaGiangVien(inputs: ThemGiaoVienInputs!, id: ID!): GiangVienResponse!
 
     #sinh vien
     themSinhVien(inputs: SinhVienInputs!): SinhVienResponse!
     themSinhViens(files: [Upload!]!): ThemSinhVienWithFileResponse!
+    xoaSinhViens(ids: [ID!]): SinhVienResponse!
+    suaSinhVien(inputs: SinhVienInputs!, sinhVienId: ID!): SinhVienResponse!
+
+    # hoc phan
+    themHocPhan(inputs: ThemHocPhanInputs!): HocPhanResponse!
+    suaHocPhan(inputs: ThemHocPhanInputs!, id: ID!): HocPhanResponse!
+    xoaHocPhans(ids: [ID!]): HocPhanResponse!
 
     dangKyHocPhan(inputs: [DangKyHocPhanInputs!]!): DangKyHocPhanResponse!
 }

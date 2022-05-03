@@ -72,11 +72,24 @@ public class LopHocPhan {
     }
 
     public Integer getSoLuongHienTai() {
-        return sinhVienLopHocPhans.size();
+        try {
+            return sinhVienLopHocPhans.size();
+        } catch (NullPointerException ex) {
+            return 0;
+        }
     }
 
     public String getTrangThaiLopHocPhan() {
         return this.trangThaiLopHocPhan.getName();
     }
 
+    public String getLopDuKien() {
+        if(this.lopDuKien != null) return lopDuKien;
+
+        try {
+            return this.lop.getTen();
+        } catch (NullPointerException ex) {
+            return null;
+        }
+    }
 }

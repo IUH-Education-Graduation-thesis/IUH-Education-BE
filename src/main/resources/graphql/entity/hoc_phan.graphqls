@@ -3,10 +3,12 @@ type HocPhan {
     maHocPhan: String
     moTa: String
     batBuoc: Boolean
-    hocKy: HocKy
+    hocKies: [HocKy]
     monHoc: MonHoc
     monHocTienQuyets: [MonHoc]
     monHocSongHanhs: [MonHoc]
     monHocTruocs: [MonHoc]
     lopHocPhans: [LopHocPhan]
+    soTinChiLyThuyet: Int
+    soTinChiThucHanh: Int
 }

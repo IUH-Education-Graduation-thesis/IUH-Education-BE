@@ -21,4 +21,9 @@ public interface GiangVienRepository extends JpaRepository<GiangVien, Long> {
     @Transactional
     Page<GiangVien> getGiangVienByNameAndKhoaVienId(Collection<Long> listIdKhoaVien, String name, Pageable pageable);
 
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM giang_vien WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)
+    void xoaGiangViens(List<Long> ids);
 }

@@ -1,12 +1,10 @@
 package com.hong_hoan.iuheducation.service;
 
-import com.hong_hoan.iuheducation.entity.Account;
-import com.hong_hoan.iuheducation.entity.LichHoc;
-import com.hong_hoan.iuheducation.entity.PhongHoc;
-import com.hong_hoan.iuheducation.entity.SinhVien;
-import com.hong_hoan.iuheducation.exception.DayNhaIsNotExistException;
-import com.hong_hoan.iuheducation.exception.PhongHocIsNotExist;
+import com.hong_hoan.iuheducation.entity.*;
+import com.hong_hoan.iuheducation.exception.*;
+import com.hong_hoan.iuheducation.repository.GiangVienRepository;
 import com.hong_hoan.iuheducation.repository.LichHocRepository;
+import com.hong_hoan.iuheducation.repository.LopHocPhanRepository;
 import com.hong_hoan.iuheducation.repository.PhongHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocFormat;
@@ -26,6 +24,10 @@ public class LichHocService {
     private LichHocRepository lichHocRepository;
     @Autowired
     private HelperComponent helperComponent;
+    @Autowired
+    private GiangVienRepository giangVienRepository;
+    @Autowired
+    private LopHocPhanRepository lopHocPhanRepository;
 
     public List<LichHocFormat> getLichHoc(Date dateInput, Account account) {
         SinhVien _sinhVien = account.getSinhVien();
@@ -42,7 +44,7 @@ public class LichHocService {
             List<LichHoc> _listLichHocInDay = new ArrayList<>();
 
             for (int j = 0; j < _listLichHoc.size(); j++) {
-                if(_listLichHoc.get(j).getNgayHocTrongTuan() - 2 == i) {
+                if (_listLichHoc.get(j).getNgayHocTrongTuan() - 2 == i) {
                     _listLichHocInDay.add(_listLichHoc.get(j));
                 }
             }
@@ -60,27 +62,64 @@ public class LichHocService {
     }
 
     public LichHoc themLichHoc(ThemLichHocInputs inputs) {
-        boolean _isExistPhongHoc = phongHocRepository.existsById(inputs.getPhongHoc().getId());
+        PhongHoc _phongHoc = phongHocRepository.getById(inputs.getPhongHocId());
+        GiangVien _giangVien = giangVienRepository.getById(inputs.getGiangVienId());
 
-        if(!_isExistPhongHoc) {
-            throw new PhongHocIsNotExist();
+        LopHocPhan _lopLopHocPhan = lopHocPhanRepository.getById(inputs.getLopHocPhanId());
+
+        if (_lopLopHocPhan == null) {
+            throw new LopHocPhanIsNotExist();
         }
-        Optional<PhongHoc> _phongHocOptional = phongHocRepository.findById(inputs.getPhongHoc().getId());
+
+        Integer _nhomThucHanh = null;
+
         try {
-            PhongHoc _phongHoc = _phongHocOptional.get();
-            LichHoc _lichHoc = LichHoc.builder()
-                    .ngayHocTrongTuan(inputs.getNgayHocTrongTuan())
-                    .nhomThucHanh(inputs.getNhomThucHanh())
-                    .thoiGianBatDau(inputs.getThoiGianBatDau())
-                    .tietHocBatDau(inputs.getTietHocBatDau())
-                    .tietHocKetThuc(inputs.getTietHocKetThuc())
-                    .ghiChu(inputs.getGhiChu())
-                    .build();
-            LichHoc _lichHocRes = lichHocRepository.saveAndFlush(_lichHoc);
-            return _lichHocRes;
+            Integer __nhomThucHanh = inputs.getNhomThucHanh();
+            Integer _soNhomThuHanh = _lopLopHocPhan.getSoNhomThucHanh();
+            if (__nhomThucHanh > _soNhomThuHanh) {
+                throw new GroupPraticeOver();
+            }
 
-        } catch (NoSuchElementException ex) {
-            throw new DayNhaIsNotExistException();
+            _nhomThucHanh = __nhomThucHanh;
+        } catch (NullPointerException ex) {
+            _nhomThucHanh = null;
         }
+
+        if (inputs.getTietHocBatDau() > inputs.getTietHocKetThuc()) {
+            throw new ValueOver();
+        }
+
+        Integer _soTinChiLyThuyet = _lopLopHocPhan.getHocPhan().getSoTinChiLyThuyet();
+        Integer _soTinChiThucHanh = _lopLopHocPhan.getHocPhan().getSoTinChiThucHanh();
+
+        Integer _lapLai = 0;
+
+        if (inputs.getIsLichThi() || inputs.getIsHocBu()) {
+            _lapLai = 1;
+        } else {
+            if (_nhomThucHanh == null) {
+                _lapLai = (15 * _soTinChiLyThuyet) / (inputs.getTietHocKetThuc() - inputs.getTietHocBatDau());
+            } else {
+                _lapLai = (30 * _soTinChiThucHanh) / (inputs.getTietHocKetThuc() - inputs.getTietHocBatDau());
+            }
+        }
+
+        LichHoc _lichHoc = LichHoc.builder()
+                .ghiChu(inputs.getGhiChu())
+                .ngayHocTrongTuan(inputs.getNgayHocTrongTuan())
+                .nhomThucHanh(_nhomThucHanh)
+                .thoiGianBatDau(inputs.getThoiGianBatDau())
+                .lapLai(_lapLai)
+                .tietHocBatDau(inputs.getTietHocBatDau())
+                .tietHocKetThuc(inputs.getTietHocKetThuc())
+                .lopHocPhan(_lopLopHocPhan)
+                .phongHoc(_phongHoc)
+                .giangVien(_giangVien)
+                .isLichThi(inputs.getIsLichThi())
+                .build();
+
+        LichHoc _lichHocRes = lichHocRepository.saveAndFlush(_lichHoc);
+
+        return _lichHocRes;
     }
 }

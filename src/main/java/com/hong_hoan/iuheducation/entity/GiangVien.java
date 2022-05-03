@@ -32,13 +32,15 @@ public class GiangVien {
     @Column(name = "hoc_ham")
     private HocHam hocHam;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "chuyen_nganh_id")
     private ChuyenNganh chuyenNganh;
 
-    @ManyToOne
-    @JoinColumn(name = "mon_hoc_id")
-    private MonHoc monHoc;
+    @ManyToMany
+    @JoinTable(name = "mon_hoc_giang_vien",
+            joinColumns = @JoinColumn(name = "giang_vien_id"),
+            inverseJoinColumns = @JoinColumn(name = "mon_hoc_id"))
+    private Set<MonHoc> monHocs = new LinkedHashSet<>();
 
     public String hocHamString() {
         return hocHam.getName();

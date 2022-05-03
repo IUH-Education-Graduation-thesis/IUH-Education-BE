@@ -1,11 +1,13 @@
-input ThemLichHocInputs{
+input ThemLichHocInputs {
     ghiChu: String
     ngayHocTrongTuan: Int!
-    nhomThuHanh: Int
+    nhomThucHanh: Int
     thoiGianBatDau: Date!
-    thoiGianKetThuc: Date!
     tietHocBatDau: Int!
     tietHocKetThuc: Int!
-    lopHocPhan: ID!
-    phongHoc: ID!
+    lopHocPhanId: ID!
+    phongHocId: ID
+    giangVienId: ID
+    isLichThi: Boolean!
+    isHocBu: Boolean!
 }

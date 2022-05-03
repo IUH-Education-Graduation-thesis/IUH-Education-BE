@@ -5,6 +5,7 @@ import com.hong_hoan.iuheducation.entity.KhoaVien;
 import com.hong_hoan.iuheducation.entity.MonHoc;
 import com.hong_hoan.iuheducation.exception.ChuyenNganhIsNotExistExcepton;
 import com.hong_hoan.iuheducation.exception.KhoaVienIsNotExistException;
+import com.hong_hoan.iuheducation.exception.MonHocIsExistException;
 import com.hong_hoan.iuheducation.repository.KhoaVienRepository;
 import com.hong_hoan.iuheducation.repository.MonHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
@@ -26,6 +27,28 @@ public class MonHocService {
     @Autowired
     private KhoaVienRepository khoaVienRepository;
 
+    public MonHoc suaMonHoc(ThemMonHocInputs inputs, Long id) {
+        MonHoc _monHoc = monHocRepository.getById(id);
+
+        if(_monHoc == null) {
+            throw new MonHocIsExistException();
+        }
+
+        KhoaVien _khoaVien = khoaVienRepository.getById(inputs.getKhoaVienID());
+
+        if(_khoaVien == null) {
+            throw new KhoaVienIsNotExistException();
+        }
+
+        _monHoc.setTen(inputs.getTen());
+        _monHoc.setMoTa(inputs.getMoTa());
+        _monHoc.setKhoaVien(_khoaVien);
+
+        MonHoc _monHocRes = monHocRepository.saveAndFlush(_monHoc);
+
+        return _monHocRes;
+    }
+
     public MonHoc themMonHoc(ThemMonHocInputs inputs){
         boolean _isExistKhoaVien = khoaVienRepository.existsById(inputs.getKhoaVienID());
         if(!_isExistKhoaVien) {throw new KhoaVienIsNotExistException();}
@@ -44,12 +67,13 @@ public class MonHocService {
             throw new KhoaVienIsNotExistException();
         }
     }
+
     public List<MonHoc> xoaMonHocs(Set<Long> ids) {
         List<MonHoc> _monHocs = monHocRepository.findAllById(ids);
         if (_monHocs.isEmpty())
             throw new KhoaVienIsNotExistException();
         List<Long> _ids = _monHocs.stream().map(i -> i.getId()).collect(Collectors.toList());
-        monHocRepository.deleteAllById(_ids);
+        monHocRepository.xoaMonHocs(_ids);
         return _monHocs;
     }
 }

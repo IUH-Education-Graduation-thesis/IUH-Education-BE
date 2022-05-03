@@ -1,8 +1,9 @@
 input FindHocPhanInputs {
     id: ID
     maHocPhan: String
-    namHocIds: [ID]
     hocKyIds: [ID]
+    khoaIds: [ID]
+    chuyenNganhIds: [ID]
     khoaVienIds: [ID]
     monHocIds: [ID]
     page: Int
@@ -11,4 +12,14 @@ input FindHocPhanInputs {
 
 input GetHocPhanDKHP {
     hocKiId: ID!
+}
+
+input ThemHocPhanInputs {
+    maHocPhan: String!
+    moTa: String
+    batBuoc: Boolean!
+    hocKyId: ID!
+    monHocId: ID!
+    soTinChiLyThuyet: Int!
+    soTinChiThucHanh: Int!
 }
