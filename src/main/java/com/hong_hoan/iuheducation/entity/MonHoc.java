@@ -29,7 +29,22 @@ public class MonHoc {
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 
-    @OneToMany(mappedBy = "monHoc", orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(name = "mon_hoc_giang_vien",
+            joinColumns = @JoinColumn(name = "mon_hoc_id"),
+            inverseJoinColumns = @JoinColumn(name = "giang_vien_id"))
     private Set<GiangVien> giangViens = new LinkedHashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        MonHoc monHoc = (MonHoc) o;
+        return id != null && Objects.equals(id, monHoc.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -13,4 +13,5 @@ type LopHocPhan {
     soLuongHienTai: Int
     lopDuKien: String
     hocKyNormal: HocKyNormal
+    sinhVienLopHocPhans: [SinhVienLopHocPhan]
 }

@@ -44,7 +44,7 @@ public class LichHoc {
     private int tietHocBatDau;
     @Column(nullable = false)
     private int tietHocKetThuc;
-    @Column(nullable = false)
+
     private String ghiChu;
 
 
@@ -52,7 +52,7 @@ public class LichHoc {
     @JoinColumn(name = "phong_hoc_id")
     private PhongHoc phongHoc;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;
 

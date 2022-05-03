@@ -775,11 +775,49 @@ public class Mutation implements GraphQLMutationResolver {
         try {
             LichHoc _lichHoc = lichHocService.themLichHoc(inputs);
 
-            return LichHocResponse.builder().status(ResponseStatus.OK).message("Thêm lịch học thành công").data(Arrays.asList(_lichHoc)).build();
-        } catch (PhongHocIsNotExist ex) {
-            return LichHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm lịch học không thành công").errors(Arrays.asList(ErrorResponse.builder().message("Phòng học không tồn tại").build())).build();
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm lịch học thành công.")
+                    .data(Arrays.asList(_lichHoc))
+                    .build();
+
+        } catch (LopHocPhanIsNotExist ex) {
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lớp học phần không tồn tại!")
+                            .build()))
+                    .build();
+
+        } catch (GroupPraticeOver ex) {
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Nhóm thực hành lớp hơn số nhóm thực hành!")
+                            .build()))
+                    .build();
+
+        } catch (ValueOver ex) {
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Tiết học bắt đầu lớn hơn tiết học kết thúc!")
+                            .build()))
+                    .build();
+
         } catch (Exception ex) {
-            return LichHocResponse.builder().status(ResponseStatus.ERROR).message("Thêm lịch học không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
+            ex.printStackTrace();
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+
         }
     }
 
