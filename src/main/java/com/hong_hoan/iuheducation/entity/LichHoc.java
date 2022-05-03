@@ -64,14 +64,6 @@ public class LichHoc {
         return false;
     }
 
-    public GiangVien getGiangVien() {
-        if (this.giangVien == null) {
-            return lopHocPhan.getGiangViens().iterator().next();
-        }
-
-        return this.giangVien;
-    }
-
     public Date getThoiGianKetThuc() {
         Calendar _calendar = Calendar.getInstance();
         _calendar.setTime(this.thoiGianBatDau);
