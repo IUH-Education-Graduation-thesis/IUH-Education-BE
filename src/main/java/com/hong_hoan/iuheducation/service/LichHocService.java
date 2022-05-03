@@ -62,8 +62,23 @@ public class LichHocService {
     }
 
     public LichHoc themLichHoc(ThemLichHocInputs inputs) {
-        PhongHoc _phongHoc = phongHocRepository.getById(inputs.getPhongHocId());
-        GiangVien _giangVien = giangVienRepository.getById(inputs.getGiangVienId());
+
+
+        PhongHoc _phongHoc = null;
+
+        try {
+            _phongHoc = phongHocRepository.getById(inputs.getPhongHocId());
+        } catch (Exception ex) {
+
+        }
+
+        GiangVien _giangVien = null;
+
+        try {
+            _giangVien = giangVienRepository.getById(inputs.getGiangVienId());
+        } catch (Exception ex) {
+
+        }
 
         LopHocPhan _lopLopHocPhan = lopHocPhanRepository.getById(inputs.getLopHocPhanId());
 
