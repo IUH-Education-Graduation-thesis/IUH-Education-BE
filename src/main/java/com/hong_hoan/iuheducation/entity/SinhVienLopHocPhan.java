@@ -2,6 +2,7 @@ package com.hong_hoan.iuheducation.entity;
 
 import com.hong_hoan.iuheducation.util.HelperComponent;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;

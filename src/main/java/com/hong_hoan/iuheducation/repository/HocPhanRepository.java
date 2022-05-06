@@ -63,13 +63,26 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
     List<HocPhan> getListHocPhanByHocKyForDKHP(Long hocPhanId, Long sinhVienId);
 
     @Query(value = "SELECT hp.* FROM hoc_phan hp " +
-            "JOIN hoc_ky hk on hk.id = hp.hoc_ky_id " +
-            "WHERE (SELECT COUNT(*) as SoLopHocPhan from lop_hoc_phan lhp WHERE lhp.hoc_phan_id = hp.id AND lhp.hoc_ky_normal_id = ?1) > 0 " +
-            "AND hk.thu_tu <= ?2 " +
-            "AND hp.id not in(SELECT lhp.hoc_phan_id as hocPhanId FROM sinh_vien_lop_hoc_phan svlhp " +
-            "join lop_hoc_phan lhp ON lhp.id = svlhp.lop_hoc_phan_id " +
-            "WHERE svlhp.sinh_vien_id = ?3)", nativeQuery = true)
-    List<HocPhan> getListHocPhanForDangKy(Long hocKyNormalId, Integer thuTuHocKy, Long sinhVienId);
+            "JOIN lop_hoc_phan lhp2 on lhp2.hoc_phan_id = hp.id " +
+            "WHERE ( " +
+            "SELECT COUNT(*) as soLopHocPhan FROM lop_hoc_phan lhp " +
+            "WHERE lhp.hoc_ky_normal_id = ?1 AND lhp.id = lhp2.id " +
+            ") > 0 " +
+            "AND ( " +
+            "SELECT COUNT(*) as soSinhVienLopHocPhan FROM sinh_vien_lop_hoc_phan svlhp " +
+            "JOIN lop_hoc_phan lhp3 ON lhp3.id = svlhp.lop_hoc_phan_id " +
+            "WHERE svlhp.sinh_vien_id = ?2 AND lhp3.hoc_phan_id = hp.id " +
+            ") < 1 " +
+            "AND EXISTS ( " +
+            "SELECT hp.* FROM sinh_vien sv " +
+            "JOIN lop l ON l.id = sv.lop_id " +
+            "JOIN khoa k on k.id = l.khoa_id " +
+            "JOIN hoc_ky hk on hk.khoa_id = k.id " +
+            "JOIN hoc_phan hp on hk.id = hp.hoc_ky_id " +
+            "WHERE sv.id = ?2 " +
+            ") " +
+            "GROUP BY hp.id", nativeQuery = true)
+    List<HocPhan> getListHocPhanForDangKyHocMoi(Long hocKyId, Long sinhVienId);
 
     @Query(value = "SELECT hp.* FROM hoc_phan hp " +
             "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " +
