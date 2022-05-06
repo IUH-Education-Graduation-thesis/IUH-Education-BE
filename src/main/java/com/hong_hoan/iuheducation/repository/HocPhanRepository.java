@@ -78,7 +78,8 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
             "JOIN lop l ON l.id = sv.lop_id " +
             "JOIN khoa k on k.id = l.khoa_id " +
             "JOIN hoc_ky hk on hk.khoa_id = k.id " +
-            "JOIN hoc_phan hp on hk.id = hp.hoc_ky_id " +
+            "JOIN hoc_phan_hoc_ky hphk on hphk.hoc_ky_id = k.id " +
+            "JOIN hoc_phan hp on hphk.hoc_phan_id = hp.id " +
             "WHERE sv.id = ?2 " +
             ") " +
             "GROUP BY hp.id", nativeQuery = true)
