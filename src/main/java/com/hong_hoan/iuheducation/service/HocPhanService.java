@@ -54,7 +54,7 @@ public class HocPhanService {
     public List<HocPhan> xoaHocPhans(List<Long> ids) {
         List<HocPhan> _hocPhans = hocPhanRepository.findAllById(ids);
 
-        if(_hocPhans.size() <= 0) {
+        if (_hocPhans.size() <= 0) {
             throw new HocPhanIsNotExist();
         }
 
@@ -117,15 +117,7 @@ public class HocPhanService {
             throw new HocKyIsNotExist();
         }
 
-        HocPhan _hocPhan = HocPhan.builder()
-                .maHocPhan(inputs.getMaHocPhan())
-                .moTa(inputs.getMoTa())
-                .batBuoc(inputs.isBatBuoc())
-                .monHoc(_monHoc)
-                .hocKies(new HashSet<>(Arrays.asList(_hocKy)))
-                .soTinChiLyThuyet(inputs.getSoTinChiLyThuyet())
-                .soTinChiThucHanh(inputs.getSoTinChiThucHanh())
-                .build();
+        HocPhan _hocPhan = HocPhan.builder().maHocPhan(inputs.getMaHocPhan()).moTa(inputs.getMoTa()).batBuoc(inputs.isBatBuoc()).monHoc(_monHoc).hocKies(new HashSet<>(Arrays.asList(_hocKy))).soTinChiLyThuyet(inputs.getSoTinChiLyThuyet()).soTinChiThucHanh(inputs.getSoTinChiThucHanh()).build();
 
         HocPhan _hocPhanRes = hocPhanRepository.saveAndFlush(_hocPhan);
 
@@ -133,19 +125,8 @@ public class HocPhanService {
     }
 
     public List<HocPhan> getListHocPhanForDKHP(Long hocKyNormalId, KieuDangKy kieuDangKy, Account account) {
-        HocKyNormal _hocKyNormal = hocKyNormalRepository.getById(hocKyNormalId);
-
-        Integer _namNhapHoc = account.getSinhVien().getNgayVaoTruong().getYear() + 1900;
-        Integer _namDangHoc = _hocKyNormal.getNamHoc().getNamKetThuc() - _namNhapHoc;
-        Integer _thuTuHocKyMaper = _namDangHoc + _hocKyNormal.getThuTuHocKy();
-
-        System.out.println("_namNhapHoc = " + _namNhapHoc + ", _namDangHoc = " + _namDangHoc + ", _thuTuHocKyMaper = " + _thuTuHocKyMaper);
-
         if (kieuDangKy == KieuDangKy.HOC_MOI) {
-//            List<HocPhan> _hocPhahanRepository.getListHocPhanHocMoi(account.getSinhVien().getLop().getKhoa().getId(), hocKyDangKy, account.getSinhVien().getId());
-//            return _hocPhans;
-
-            List<HocPhan> _listHocPhan = hocPhanRepository.getListHocPhanForDangKy(hocKyNormalId, _thuTuHocKyMaper, account.getSinhVien().getId());
+            List<HocPhan> _listHocPhan = hocPhanRepository.getListHocPhanForDangKyHocMoi(hocKyNormalId, account.getSinhVien().getId());
             for (int i = 0; i < _listHocPhan.size(); i++) {
                 List<LopHocPhan> _listLopHocPhan = lopHocPhanRepository.getLopHocPhanByLopHocPhanDangKy(_listHocPhan.get(i).getId(), hocKyNormalId);
                 _listHocPhan.get(i).setLopHocPhans(_listLopHocPhan);
@@ -164,37 +145,25 @@ public class HocPhanService {
         if (_isInputsEmpty) {
             List<HocPhan> _listHocPhan = hocPhanRepository.findAll();
 
-            return PaginationHocPhan.builder()
-                    .count(_listHocPhan.size())
-                    .data(_listHocPhan)
-                    .build();
+            return PaginationHocPhan.builder().count(_listHocPhan.size()).data(_listHocPhan).build();
         }
 
         if (inputs.checkAllDataIsNull()) {
             List<HocPhan> _listHocPhan = hocPhanRepository.findAll();
 
-            return PaginationHocPhan.builder()
-                    .count(_listHocPhan.size())
-                    .data(_listHocPhan)
-                    .build();
+            return PaginationHocPhan.builder().count(_listHocPhan.size()).data(_listHocPhan).build();
         }
 
         if (inputs.checkPaginationIsNull()) {
             List<HocPhan> _listHocPhan = hocPhanRepository.filterHocPhan(inputs.getId(), inputs.getMaHocPhan(), inputs.getHocKyIds(), inputs.getKhoaIds(), inputs.getChuyenNganhIds(), inputs.getKhoaVienIds(), inputs.getMonHocIds());
-            return PaginationHocPhan.builder()
-                    .count(_listHocPhan.size())
-                    .data(_listHocPhan)
-                    .build();
+            return PaginationHocPhan.builder().count(_listHocPhan.size()).data(_listHocPhan).build();
         }
 
         Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
 
         Page<HocPhan> _hocPhanPage = hocPhanRepository.filterHocPhan(inputs.getId(), inputs.getMaHocPhan(), inputs.getHocKyIds(), inputs.getKhoaIds(), inputs.getChuyenNganhIds(), inputs.getKhoaVienIds(), inputs.getMonHocIds(), _pageable);
 
-        return PaginationHocPhan.builder()
-                .count(_hocPhanPage.getNumberOfElements())
-                .data(_hocPhanPage.getContent())
-                .build();
+        return PaginationHocPhan.builder().count(_hocPhanPage.getNumberOfElements()).data(_hocPhanPage.getContent()).build();
 
     }
 
