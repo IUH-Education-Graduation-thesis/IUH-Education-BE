@@ -2,4 +2,5 @@ input ThemMonHocInputs{
     moTa: String
     ten: String!
     khoaVienID:ID!
+    giangVienIds: [ID]
 }

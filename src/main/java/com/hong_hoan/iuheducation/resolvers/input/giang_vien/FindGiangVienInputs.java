@@ -1,8 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers.input.giang_vien;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,15 +11,25 @@ import java.util.stream.Stream;
 @Builder
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class FindGiangVienInputs {
-    private String id;
+    private Long id;
     private String hoVaTen;
     private Collection<Long> khoaVienIds;
-    private int page;
-    private int size;
+    private Integer page;
+    private Integer size;
 
     public boolean checkBaseInputsEmpty() {
         return Stream.of(id, hoVaTen, khoaVienIds).allMatch(Objects::isNull);
+    }
+
+    public boolean checkAllFieldNull() {
+        return Stream.of(id, hoVaTen, khoaVienIds, page, size).allMatch(Objects::isNull);
+    }
+
+    public boolean checkPaginationVariableNull() {
+        return Stream.of(page, size).allMatch(Objects::isNull);
     }
 
     public boolean checkAndConditionNotNull() {

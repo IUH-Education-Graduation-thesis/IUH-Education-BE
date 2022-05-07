@@ -29,7 +29,7 @@ public class MonHoc {
     @JoinColumn(name = "khoa_vien_id")
     private KhoaVien khoaVien;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "mon_hoc_giang_vien",
             joinColumns = @JoinColumn(name = "mon_hoc_id"),
             inverseJoinColumns = @JoinColumn(name = "giang_vien_id"))

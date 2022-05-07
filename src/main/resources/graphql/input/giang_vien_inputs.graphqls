@@ -12,6 +12,6 @@ input FindGiangVienInputs {
     id: ID
     hoVaTen: String
     khoaVienIds: [ID]
-    page: Int!
-    size: Int!
+    page: Int
+    size: Int
 }
