@@ -64,7 +64,7 @@ public class LopHocPhan {
     private HocKyNormal hocKyNormal;
 
     public String getTenLopHocPhan() {
-        if(tenLopHocPhan != null) {
+        if (tenLopHocPhan != null) {
             return tenLopHocPhan;
         }
 
@@ -80,11 +80,22 @@ public class LopHocPhan {
     }
 
     public String getTrangThaiLopHocPhan() {
-        return this.trangThaiLopHocPhan.getName();
+        try {
+            return this.trangThaiLopHocPhan.getName();
+
+        } catch (NullPointerException ex) {
+            return null;
+        }
     }
 
+    public TrangThaiLopHocPhan getTrangThaiLopHocPhanEnum() {
+        return this.trangThaiLopHocPhan;
+    }
+
+    ;
+
     public String getLopDuKien() {
-        if(this.lopDuKien != null) return lopDuKien;
+        if (this.lopDuKien != null) return lopDuKien;
 
         try {
             return this.lop.getTen();

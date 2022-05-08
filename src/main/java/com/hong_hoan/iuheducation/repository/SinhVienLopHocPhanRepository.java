@@ -13,5 +13,4 @@ public interface SinhVienLopHocPhanRepository extends JpaRepository<SinhVienLopH
             "JOIN hoc_ky_normal hkn on hkn.id = lhp.hoc_ky_normal_id " +
             "where svlhp.sinh_vien_id = ?1 and hkn.id = ?2", nativeQuery = true)
     List<SinhVienLopHocPhan> getSinhVienLopHocPhansBySinhVienIdAndHocKyId(Long sinhVienId, Long hocKyNormalId);
-
 }

@@ -1,5 +1,6 @@
 package com.hong_hoan.iuheducation.resolvers.input.lop_hoc_phan;
 
+import com.hong_hoan.iuheducation.entity.TrangThaiLopHocPhan;
 import lombok.*;
 
 @Builder
@@ -16,4 +17,5 @@ public class ThemLopHocPhanInputs {
     private String lopDuKien;
     private Long hocPhanId;
     private Long hocKyNormalId;
+    private TrangThaiLopHocPhan trangThaiLopHocPhan;
 }

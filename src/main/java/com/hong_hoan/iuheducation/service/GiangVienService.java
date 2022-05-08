@@ -32,13 +32,13 @@ public class GiangVienService {
     public GiangVien suaGiangVien(ThemGiangVienInputs inputs, Long id) {
         GiangVien _giangVien = giangVienRepository.getById(id);
 
-        if(_giangVien == null) {
+        if (_giangVien == null) {
             throw new GiangVienIsNotExistException();
         }
 
         ChuyenNganh _chuyenNganh = chuyenNganhRepository.getById(inputs.getChuyenNganhID());
 
-        if(_chuyenNganh == null) {
+        if (_chuyenNganh == null) {
             throw new ChuyenNganhIsNotExistExcepton();
         }
 
@@ -80,38 +80,41 @@ public class GiangVienService {
                     .build();
         }
 
+        if (inputs.checkAllFieldNull()) {
+            List<GiangVien> _listGiangVien = giangVienRepository.findAll();
+
+            return PaginationGiangVien.builder()
+                    .count(_listGiangVien.size())
+                    .data(_listGiangVien)
+                    .build();
+        }
+
+        if (inputs.checkPaginationVariableNull()) {
+            String _nameSearch = inputs.getHoVaTen() == null ? null : "%" + inputs.getHoVaTen() + "%";
+
+            List<GiangVien> _listGiangVien = giangVienRepository.getGiangVienByNameAndKhoaVienId(inputs.getKhoaVienIds(), _nameSearch, inputs.getId());
+
+            return PaginationGiangVien.builder()
+                    .count(_listGiangVien.size())
+                    .data(_listGiangVien)
+                    .build();
+        }
+
         Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
 
-        if (inputs.checkBaseInputsEmpty()) {
-            Page<GiangVien> _pageGiangVien = giangVienRepository.findAll(_pageable);
+        String _nameSearch = inputs.getHoVaTen() == null ? null : "%" + inputs.getHoVaTen() + "%";
 
-            return PaginationGiangVien.builder()
-                    .count(_pageGiangVien.getNumberOfElements())
-                    .data(_pageGiangVien.getContent())
-                    .build();
-        }
+        Page<GiangVien> _pageGiangVien = giangVienRepository.getGiangVienByNameAndKhoaVienId(inputs.getKhoaVienIds(), _nameSearch, inputs.getId(), _pageable);
 
-        try {
-            boolean _isIdNull = inputs.getId().isEmpty();
-            List<GiangVien> _listGiangVien = findGiangVienById(inputs.getId());
+        return PaginationGiangVien.builder()
+                .count(_pageGiangVien.getNumberOfElements())
+                .data(_pageGiangVien.getContent())
+                .build();
 
-            return PaginationGiangVien.builder()
-                    .data(_listGiangVien)
-                    .count(_listGiangVien.size())
-                    .build();
 
-        } catch (NullPointerException ex) {
-            String _nameSearch = inputs.getHoVaTen() == null ? null : "%"+inputs.getHoVaTen()+"%";
-            Page<GiangVien> _giangVienPage = giangVienRepository.getGiangVienByNameAndKhoaVienId(inputs.getKhoaVienIds(), _nameSearch, _pageable);
-
-            return PaginationGiangVien.builder()
-                    .count(_giangVienPage.getNumberOfElements())
-                    .data(_giangVienPage.getContent())
-                    .build();
-        }
     }
 
-    public GiangVien themGiangVien(ThemGiangVienInputs inputs){
+    public GiangVien themGiangVien(ThemGiangVienInputs inputs) {
         boolean _isExistGiangVien = chuyenNganhRepository.existsById(inputs.getChuyenNganhID());
 
         if (!_isExistGiangVien) {
@@ -136,6 +139,7 @@ public class GiangVienService {
             throw new ChuyenNganhIsNotExistExcepton();
         }
     }
+
     public List<GiangVien> xoaGiangViens(Set<Long> ids) {
         List<GiangVien> _giangViens = giangVienRepository.findAllById(ids);
         if (_giangViens.isEmpty())

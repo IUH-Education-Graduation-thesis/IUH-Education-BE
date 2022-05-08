@@ -1,11 +1,13 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.ChuyenNganh;
+import com.hong_hoan.iuheducation.entity.GiangVien;
 import com.hong_hoan.iuheducation.entity.KhoaVien;
 import com.hong_hoan.iuheducation.entity.MonHoc;
 import com.hong_hoan.iuheducation.exception.ChuyenNganhIsNotExistExcepton;
 import com.hong_hoan.iuheducation.exception.KhoaVienIsNotExistException;
 import com.hong_hoan.iuheducation.exception.MonHocIsExistException;
+import com.hong_hoan.iuheducation.repository.GiangVienRepository;
 import com.hong_hoan.iuheducation.repository.KhoaVienRepository;
 import com.hong_hoan.iuheducation.repository.MonHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
@@ -13,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,44 +25,56 @@ public class MonHocService {
     private MonHocRepository monHocRepository;
     @Autowired
     private KhoaVienRepository khoaVienRepository;
+    @Autowired
+    private GiangVienRepository giangVienRepository;
 
     public MonHoc suaMonHoc(ThemMonHocInputs inputs, Long id) {
         MonHoc _monHoc = monHocRepository.getById(id);
 
-        if(_monHoc == null) {
+        if (_monHoc == null) {
             throw new MonHocIsExistException();
         }
 
         KhoaVien _khoaVien = khoaVienRepository.getById(inputs.getKhoaVienID());
 
-        if(_khoaVien == null) {
+        if (_khoaVien == null) {
             throw new KhoaVienIsNotExistException();
         }
+
+        List<GiangVien> _giangViens = giangVienRepository.findAllById(inputs.getGiangVienIds());
+        Set<GiangVien> _giangViensSet = new HashSet<>(_giangViens);
 
         _monHoc.setTen(inputs.getTen());
         _monHoc.setMoTa(inputs.getMoTa());
         _monHoc.setKhoaVien(_khoaVien);
+        _monHoc.setGiangViens(_giangViensSet);
 
         MonHoc _monHocRes = monHocRepository.saveAndFlush(_monHoc);
 
         return _monHocRes;
     }
 
-    public MonHoc themMonHoc(ThemMonHocInputs inputs){
+    public MonHoc themMonHoc(ThemMonHocInputs inputs) {
         boolean _isExistKhoaVien = khoaVienRepository.existsById(inputs.getKhoaVienID());
-        if(!_isExistKhoaVien) {throw new KhoaVienIsNotExistException();}
+        if (!_isExistKhoaVien) {
+            throw new KhoaVienIsNotExistException();
+        }
 
         Optional<KhoaVien> _khoaVienOptional = khoaVienRepository.findById(inputs.getKhoaVienID());
         try {
             KhoaVien _khoaVien = _khoaVienOptional.get();
+            List<GiangVien> _giangVienList = giangVienRepository.findAllById(inputs.getGiangVienIds());
+            Set<GiangVien> _giangVienSet = new HashSet<>(_giangVienList);
+
             MonHoc _monHoc = MonHoc.builder()
                     .ten(inputs.getTen())
                     .moTa(inputs.getMoTa())
                     .khoaVien(_khoaVien)
+                    .giangViens(_giangVienSet)
                     .build();
             MonHoc _monHocRes = monHocRepository.saveAndFlush(_monHoc);
             return _monHocRes;
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new KhoaVienIsNotExistException();
         }
     }

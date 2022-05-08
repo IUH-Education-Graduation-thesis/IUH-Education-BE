@@ -6,4 +6,5 @@ input ThemLopHocPhanInputs {
     lopDuKien: String!
     hocPhanId: ID!
     hocKyNormalId: ID!
+    trangThaiLopHocPhan: TrangThaiLopHocPhan
 }
