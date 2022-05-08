@@ -4,6 +4,7 @@ type Mutation {
 
     # lop hoc phan
     themLopHocPhan(inputs: ThemLopHocPhanInputs!): LopHocPhanResponse!
+    suaLopHocPhan(inputs: ThemLopHocPhanInputs!, id: ID!): LopHocPhanResponse!
 
     # lop
     themLop(inputs: ThemLopInputs!): LopResponse!

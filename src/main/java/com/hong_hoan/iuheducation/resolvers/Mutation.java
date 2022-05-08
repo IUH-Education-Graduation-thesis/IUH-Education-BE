@@ -267,7 +267,7 @@ public class Mutation implements GraphQLMutationResolver {
     }
 
     /*
-        hoc phan
+        lop hoc phan
         ======================================================================
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -309,6 +309,52 @@ public class Mutation implements GraphQLMutationResolver {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LopHocPhanResponse suaLopHocPhan(ThemLopHocPhanInputs inputs, Long id) {
+        try {
+            LopHocPhan _lopHocPhan = lopHocPhanService.suaLopHocPhan(inputs, id);
+
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm lớp học phần thành công!")
+                    .data(Arrays.asList(_lopHocPhan))
+                    .build();
+        } catch (LopHocPhanIsNotExist ex) {
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lớp học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocPhanIsNotExist ex) {
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (HocKyNormalIsNotExist ex) {
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return LopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     /*
         hoc phan

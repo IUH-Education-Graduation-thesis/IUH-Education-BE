@@ -6,6 +6,7 @@ type LopHocPhan {
     soLuongToiDa: Int
     soNhomThucHanh: Int
     trangThaiLopHocPhan: String
+    trangThaiLopHocPhanEnum: TrangThaiLopHocPhan
     hocPhan: HocPhan
     lop: Lop
     giangViens: [GiangVien]

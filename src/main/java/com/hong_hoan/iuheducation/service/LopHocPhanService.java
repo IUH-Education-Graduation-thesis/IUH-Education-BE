@@ -3,6 +3,7 @@ package com.hong_hoan.iuheducation.service;
 import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.HocKyNormalIsNotExist;
 import com.hong_hoan.iuheducation.exception.HocPhanIsNotExist;
+import com.hong_hoan.iuheducation.exception.LopHocPhanIsNotExist;
 import com.hong_hoan.iuheducation.repository.HocKyNormalRepository;
 import com.hong_hoan.iuheducation.repository.HocPhanRepository;
 import com.hong_hoan.iuheducation.repository.LopHocPhanRepository;
@@ -50,12 +51,43 @@ public class LopHocPhanService {
         return _lopHocPhanRes;
     }
 
+    public LopHocPhan suaLopHocPhan(ThemLopHocPhanInputs inputs, Long id) {
+        LopHocPhan _lopHocPhan = lopHocPhanRepository.getById(id);
+
+        if(_lopHocPhan == null) {
+            throw new LopHocPhanIsNotExist();
+        }
+
+        HocPhan _hocPhan = hocPhanRepository.getById(inputs.getHocPhanId());
+
+        if (_hocPhan == null) {
+            throw new HocPhanIsNotExist();
+        }
+
+        HocKyNormal _hocKyNormal = hocKyNormalRepository.getById(inputs.getHocKyNormalId());
+
+        if (_hocKyNormal == null) {
+            throw new HocKyNormalIsNotExist();
+        }
+
+        _lopHocPhan.setHocPhan(_hocPhan);
+        _lopHocPhan.setHocKyNormal(_hocKyNormal);
+        _lopHocPhan.setMaLopHocPhan(inputs.getMaLopHocPhan());
+        _lopHocPhan.setLopDuKien(inputs.getLopDuKien());
+        _lopHocPhan.setMoTa(inputs.getMoTa());
+        _lopHocPhan.setSoNhomThucHanh(inputs.getSoNhomThucHanh());
+        _lopHocPhan.setSoLuongToiDa(inputs.getSoLuongToiDa());
+        _lopHocPhan.setTrangThaiLopHocPhan(inputs.getTrangThaiLopHocPhan());
+
+        LopHocPhan _lopHocPhanRes = lopHocPhanRepository.saveAndFlush(_lopHocPhan);
+
+        return _lopHocPhanRes;
+    }
+
     public List<LopHocPhan> getLopHocPhanWithId(String id) {
         List<LopHocPhan> _listLopHocPhan = lopHocPhanRepository.getListLopHocPhanWithFilter(id);
         return _listLopHocPhan;
-    }
-
-    ;
+    };
 
     public List<LopHocPhan> getLopHocPhanDaDangKy(Long hocKyId, Account account) {
         SinhVien _sinhVien = account.getSinhVien();
