@@ -356,6 +356,55 @@ public class Mutation implements GraphQLMutationResolver {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public SinhVienResponse themSinhVienVaoLopHocPhan(Long lopHocPhanId, Set<Long> sinhVienIds, Integer nhomThucHanh) {
+        try {
+            List<SinhVienLopHocPhan> _listSinhVienLopHocPhan = lopHocPhanService.themSinhVienVaoLopHocPhan(lopHocPhanId, sinhVienIds, nhomThucHanh);
+            List<SinhVien> _listSinhVien = _listSinhVienLopHocPhan.stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm sinh viên vào lớp học phần thành công!")
+                    .data(_listSinhVien)
+                    .build();
+        } catch (LopHocPhanIsNotExist ex) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm sinh viên vào lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lớp học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (EnterNhomThucHanh ex) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm sinh viên vào lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Chưa chọn nhóm thực hành!")
+                            .build()))
+                    .build();
+        } catch (ValueOver ex) {
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm sinh viên vào lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Nhóm thực hành không đúng!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return SinhVienResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm sinh viên vào lớp học phần không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+
+                            .build()))
+                    .build();
+        }
+    }
+
     /*
         hoc phan
         ======================================================================

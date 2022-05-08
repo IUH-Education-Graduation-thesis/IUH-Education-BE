@@ -13,6 +13,11 @@ import java.util.List;
 
 public interface SinhVienRepository extends JpaRepository<SinhVien, Long> {
 
+    @Query(value = "SELECT sv.* FROM sinh_vien sv " +
+            "JOIN sinh_vien_lop_hoc_phan svlhp on svlhp.sinh_vien_id = sv.id " +
+            "WHERE svlhp.lop_hoc_phan_id  = ?1", nativeQuery = true)
+    List<SinhVien> findSinhVienInLopHocPhan(Long lopHocPhanId);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM sinh_vien WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)
