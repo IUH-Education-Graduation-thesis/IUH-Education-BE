@@ -1,9 +1,11 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.*;
+import com.hong_hoan.iuheducation.exception.SinhVienLopHocPhanIsNotExist;
 import com.hong_hoan.iuheducation.repository.LopHocPhanRepository;
 import com.hong_hoan.iuheducation.repository.SinhVienLopHocPhanRepository;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.input.sinh_vien_lop_hoc_phan.SuaSinhVienLopHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien_lop_hoc_phan.HocKyItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,58 @@ public class SinhVienLopHocPhanService {
     private LopHocPhanRepository lopHocPhanRepository;
     @Autowired
     private HocKyNormalService hocKyNormalService;
+
+    public SinhVienLopHocPhan suaDiemSinhVien(SuaSinhVienLopHocPhanInputs inputs) {
+        SinhVienLopHocPhan _sinhVienLopHocPhan = sinhVienLopHocPhanRepository.getById(SinhVienLopHocPhanId.builder()
+                        .sinhVienId(inputs.getSinhVienId())
+                        .lopHocPhanId(inputs.getLopHocPhanId())
+                .build());
+
+        if (_sinhVienLopHocPhan == null) {
+            throw new SinhVienLopHocPhanIsNotExist();
+        }
+
+        try {
+            _sinhVienLopHocPhan.setDiemThuongKy(inputs.getDiemThuongKy());
+        } catch (Exception ex) {
+
+        }
+
+        try {
+            _sinhVienLopHocPhan.setDiemGiuaKy(inputs.getDiemGiuaKy());
+        } catch (Exception ex) {
+
+        }
+
+        try {
+            _sinhVienLopHocPhan.setDiemThucHanh(inputs.getDiemThucHanh());
+        } catch (Exception ex) {
+
+        }
+
+        try {
+            _sinhVienLopHocPhan.setDiemThucHanh(inputs.getDiemThucHanh());
+        } catch (Exception ex) {
+
+        }
+
+        try {
+            _sinhVienLopHocPhan.setDiemCuoiKy(inputs.getDiemCuoiKy());
+        } catch (Exception ex) {
+
+        }
+
+        try {
+            _sinhVienLopHocPhan.setGhiChu(inputs.getGhiChu());
+        } catch (Exception ex) {
+
+        }
+
+        SinhVienLopHocPhan _sinhVienLopHocPhanRes = sinhVienLopHocPhanRepository.saveAndFlush(_sinhVienLopHocPhan);
+
+
+        return _sinhVienLopHocPhanRes;
+    }
 
     public List<HocKyItem> getSinhVienLopHocPhanOfSinhVien(Account account) {
         List<HocKyNormal> _hocKyNormal = hocKyNormalService.getListHocKyNormalOfSinhVien(account);

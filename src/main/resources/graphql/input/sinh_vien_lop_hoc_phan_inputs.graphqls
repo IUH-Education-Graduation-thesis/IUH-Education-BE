@@ -1,0 +1,9 @@
+input SuaSinhVienLopHocPhanInputs {
+    sinhVienId: ID!
+    lopHocPhanId: ID!
+    diemThuongKy: [Float]
+    diemGiuaKy: Float
+    diemThucHanh: [Float]
+    diemCuoiKy: Float
+    ghiChu: String
+}

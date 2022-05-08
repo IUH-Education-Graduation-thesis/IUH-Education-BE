@@ -6,6 +6,8 @@ type Mutation {
     themLopHocPhan(inputs: ThemLopHocPhanInputs!): LopHocPhanResponse!
     suaLopHocPhan(inputs: ThemLopHocPhanInputs!, id: ID!): LopHocPhanResponse!
     themSinhVienVaoLopHocPhan(hocPhanId: ID!, sinhVienIds: [ID!], nhomThuHanh: Int): SinhVienResponse!
+    dangKyHocPhan(inputs: [DangKyHocPhanInputs!]!): DangKyHocPhanResponse!
+    suaDiemSinhVien(inputs: SuaSinhVienLopHocPhanInputs!): SinhVienLopHocPhanResponse!
 
     # lop
     themLop(inputs: ThemLopInputs!): LopResponse!
@@ -65,5 +67,4 @@ type Mutation {
     suaHocPhan(inputs: ThemHocPhanInputs!, id: ID!): HocPhanResponse!
     xoaHocPhans(ids: [ID!]): HocPhanResponse!
 
-    dangKyHocPhan(inputs: [DangKyHocPhanInputs!]!): DangKyHocPhanResponse!
 }

@@ -20,6 +20,7 @@ import com.hong_hoan.iuheducation.resolvers.input.lop_hoc_phan.ThemLopHocPhanInp
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.SinhVienInputs;
+import com.hong_hoan.iuheducation.resolvers.input.sinh_vien_lop_hoc_phan.SuaSinhVienLopHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.response.DangKyHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
@@ -39,6 +40,7 @@ import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SinhVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.ThemSinhVienWithFileResponse;
+import com.hong_hoan.iuheducation.resolvers.response.sinh_vien_lop_hoc_phan.SinhVienLopHocPhanResponse;
 import com.hong_hoan.iuheducation.service.*;
 import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import graphql.kickstart.servlet.context.DefaultGraphQLServletContext;
@@ -405,6 +407,36 @@ public class Mutation implements GraphQLMutationResolver {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER')")
+    public SinhVienLopHocPhanResponse suaDiemSinhVien(SuaSinhVienLopHocPhanInputs inputs) {
+        try {
+            SinhVienLopHocPhan _sinhVienLopHocPhan = sinhVienLopHocPhanService.suaDiemSinhVien(inputs);
+
+            return SinhVienLopHocPhanResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa điểm sinh viên thành công!")
+                    .data(Arrays.asList(_sinhVienLopHocPhan))
+                    .build();
+        } catch (SinhVienLopHocPhanIsNotExist ex) {
+            return SinhVienLopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa điểm sinh viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                                    .message("Sinh viên lớp học phần không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return SinhVienLopHocPhanResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa điểm sinh viên không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
     /*
         hoc phan
         ======================================================================
