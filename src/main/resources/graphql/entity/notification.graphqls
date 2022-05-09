@@ -1,0 +1,7 @@
+type Notification {
+    id: ID
+    createDate: Date
+    message: String
+    type: NotiType
+    isRead: Boolean
+}

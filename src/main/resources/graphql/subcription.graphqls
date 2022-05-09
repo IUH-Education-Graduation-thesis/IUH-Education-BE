@@ -1,0 +1,3 @@
+type Subscription {
+    getNotification(sinhVienId: ID!): NotificationResponse!
+}

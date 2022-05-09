@@ -2,10 +2,7 @@ package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.*;
-import com.hong_hoan.iuheducation.repository.GiangVienRepository;
-import com.hong_hoan.iuheducation.repository.LichHocRepository;
-import com.hong_hoan.iuheducation.repository.LopHocPhanRepository;
-import com.hong_hoan.iuheducation.repository.PhongHocRepository;
+import com.hong_hoan.iuheducation.repository.*;
 import com.hong_hoan.iuheducation.resolvers.input.lich_hoc.ThemLichHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocFormat;
 import com.hong_hoan.iuheducation.util.HelperComponent;
@@ -14,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +26,8 @@ public class LichHocService {
     private GiangVienRepository giangVienRepository;
     @Autowired
     private LopHocPhanRepository lopHocPhanRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public List<LichHocFormat> getLichHoc(Date dateInput, Account account) {
         SinhVien _sinhVien = account.getSinhVien();
@@ -134,6 +134,18 @@ public class LichHocService {
                 .build();
 
         LichHoc _lichHocRes = lichHocRepository.saveAndFlush(_lichHoc);
+
+        List<SinhVien> _listSinhVien = _lopLopHocPhan.getSinhVienLopHocPhans().stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+        Notification _noti = Notification.builder()
+                .type(NotiType.LH)
+                .createDate(new Date())
+                .message("Lớp học phần '" + _lopLopHocPhan.getTenLopHocPhan() + "'đã thêm lịch học.")
+                .isRead(false)
+                .sinhViens(new HashSet<>(_listSinhVien))
+                .build();
+
+        notificationRepository.saveAndFlush(_noti);
 
         return _lichHocRes;
     }

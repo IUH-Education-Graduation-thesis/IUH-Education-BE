@@ -8,6 +8,7 @@ import org.apache.commons.math3.analysis.function.Sinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,8 @@ public class LopHocPhanService {
     private SinhVienRepository sinhVienRepository;
     @Autowired
     private SinhVienLopHocPhanRepository sinhVienLopHocPhanRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public List<SinhVienLopHocPhan> themSinhVienVaoLopHocPhan(Long lopHocPhanId, Set<Long> sinhVienIds, Integer nhomThucHanh) {
         LopHocPhan _lopHocPhan = lopHocPhanRepository.getById(lopHocPhanId);
@@ -70,6 +73,18 @@ public class LopHocPhanService {
         }).collect(Collectors.toList());
 
         List<SinhVienLopHocPhan> _listSinhVienLopHocPhanRes = sinhVienLopHocPhanRepository.saveAllAndFlush(_listSinhVienLopHocPhan);
+
+        List<SinhVien> _listSinhVienRes = _listSinhVienLopHocPhanRes.stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+        Notification _notification = Notification.builder()
+                .createDate(new Date())
+                .isRead(false)
+                .message("Bạn được thêm vào lớp học phần '" + _lopHocPhan.getTenLopHocPhan() + "'")
+                .type(NotiType.LHP)
+                .sinhViens(new HashSet<>(_listSinhVienRes))
+                .build();
+
+        notificationRepository.saveAndFlush(_notification);
 
         return _listSinhVienLopHocPhanRes;
     }
@@ -132,6 +147,20 @@ public class LopHocPhanService {
         _lopHocPhan.setTrangThaiLopHocPhan(inputs.getTrangThaiLopHocPhan());
 
         LopHocPhan _lopHocPhanRes = lopHocPhanRepository.saveAndFlush(_lopHocPhan);
+
+        if(!_lopHocPhan.getTrangThaiLopHocPhanEnum().equals(inputs.getTrangThaiLopHocPhan())) {
+            List<SinhVien> _listSinhVien = _lopHocPhan.getSinhVienLopHocPhans().stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+            Notification _notification = Notification.builder()
+                    .createDate(new Date())
+                    .isRead(false)
+                    .message("Lớp học phần " + _lopHocPhan.getTenLopHocPhan() + " đã thay đổi trạng thái thành '" + _lopHocPhanRes.getTrangThaiLopHocPhan() + "'")
+                    .type(NotiType.LHP)
+                    .sinhViens(new HashSet<>(_listSinhVien))
+                    .build();
+
+            notificationRepository.saveAndFlush(_notification);
+        }
 
         return _lopHocPhanRes;
     }
