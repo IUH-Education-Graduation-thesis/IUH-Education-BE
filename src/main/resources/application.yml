@@ -46,7 +46,7 @@ graphiql:
     subscriptions: /subscriptions
   subscriptions:
     reconnect: false
-    timeout: 30
+    timeout: 30000
   basePath: /
   enabled: true
   pageTitle: GraphiQL
