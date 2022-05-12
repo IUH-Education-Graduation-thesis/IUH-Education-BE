@@ -36,6 +36,7 @@ import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lich_hoc.LichHocResponse;
+import com.hong_hoan.iuheducation.resolvers.response.notification.NotificationResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SinhVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
@@ -104,7 +105,39 @@ public class Mutation implements GraphQLMutationResolver {
     private HocPhanService hocPhanService;
     @Autowired
     private LopHocPhanService lopHocPhanService;
+    @Autowired
+    private NotificationService notificationService;
 
+
+    @PreAuthorize("isAuthenticated()")
+    public NotificationResponse suaNotification(Long id, boolean isRead) {
+        try {
+            Notification _notification = notificationService.suaNotification(id, isRead);
+
+            return NotificationResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa thông báo thành công.")
+                    .data(Arrays.asList(_notification))
+                    .build();
+        } catch (NotificationIsNotExist ex) {
+            return NotificationResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa thông báo không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Thông báo không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return NotificationResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa thông báo không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
     public DangKyHocPhanResponse dangKyHocPhan(List<DangKyHocPhanInputs> inputs) {
@@ -422,7 +455,7 @@ public class Mutation implements GraphQLMutationResolver {
                     .status(ResponseStatus.ERROR)
                     .message("Sửa điểm sinh viên không thành công!")
                     .errors(Arrays.asList(ErrorResponse.builder()
-                                    .message("Sinh viên lớp học phần không tồn tại!")
+                            .message("Sinh viên lớp học phần không tồn tại!")
                             .build()))
                     .build();
         } catch (Exception ex) {
