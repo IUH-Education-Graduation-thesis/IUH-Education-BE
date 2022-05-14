@@ -25,4 +25,7 @@ public interface LopHocPhanRepository extends JpaRepository<LopHocPhan, Long> {
             "WHERE lhp.hoc_phan_id = ?1 " +
             "AND lhp.hoc_ky_normal_id = ?2", nativeQuery = true)
     List<LopHocPhan> getLopHocPhanByLopHocPhanDangKy(Long hocPhanId, Long hocKyNormalId);
+
+    @Query(value = "SELECT MAX(lhp.id) as max_id FROM lop_hoc_phan lhp", nativeQuery = true)
+    Integer getMaxId();
 }

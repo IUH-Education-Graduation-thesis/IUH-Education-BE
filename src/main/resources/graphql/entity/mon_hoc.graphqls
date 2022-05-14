@@ -4,4 +4,5 @@ type MonHoc {
     ten: String
     khoaVien: KhoaVien
     giangViens: [GiangVien]
+    maMonHoc: String
 }

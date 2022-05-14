@@ -10,7 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ThemLopHocPhanInputs {
-    private String maLopHocPhan;
     private Integer soNhomThucHanh;
     private Integer soLuongToiDa;
     private String moTa;

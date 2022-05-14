@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ThemHocPhanInputs {
-    private String maHocPhan;
     private String moTa;
     private boolean batBuoc;
     private Long hocKyId;

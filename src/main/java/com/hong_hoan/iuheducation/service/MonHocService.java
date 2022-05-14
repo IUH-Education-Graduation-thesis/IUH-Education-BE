@@ -5,12 +5,14 @@ import com.hong_hoan.iuheducation.entity.GiangVien;
 import com.hong_hoan.iuheducation.entity.KhoaVien;
 import com.hong_hoan.iuheducation.entity.MonHoc;
 import com.hong_hoan.iuheducation.exception.ChuyenNganhIsNotExistExcepton;
+import com.hong_hoan.iuheducation.exception.GiangVienIsNotExistException;
 import com.hong_hoan.iuheducation.exception.KhoaVienIsNotExistException;
 import com.hong_hoan.iuheducation.exception.MonHocIsExistException;
 import com.hong_hoan.iuheducation.repository.GiangVienRepository;
 import com.hong_hoan.iuheducation.repository.KhoaVienRepository;
 import com.hong_hoan.iuheducation.repository.MonHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
+import com.hong_hoan.iuheducation.util.HelperComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,34 @@ public class MonHocService {
     private KhoaVienRepository khoaVienRepository;
     @Autowired
     private GiangVienRepository giangVienRepository;
+    @Autowired
+    private HelperComponent helperComponent;
+
+    public List<GiangVien> xoaGiangVienOfMonHoc(List<Long> ids, Long id) {
+        List<GiangVien> _listGiangVienFind = giangVienRepository.findAllById(ids);
+
+        if (_listGiangVienFind.size() <= 0) {
+            throw new GiangVienIsNotExistException();
+        }
+
+        Optional<MonHoc> _monHocFind = monHocRepository.findById(id);
+
+        if (_monHocFind.isEmpty()) {
+            throw new MonHocIsExistException();
+        }
+
+        MonHoc _monHoc = _monHocFind.get();
+
+        boolean _isRemove = _monHoc.getGiangViens().removeAll(_listGiangVienFind);
+
+        if (!_isRemove) {
+            throw new GiangVienIsNotExistException();
+        }
+
+        monHocRepository.saveAndFlush(_monHoc);
+
+        return _listGiangVienFind;
+    }
 
     public MonHoc suaMonHoc(ThemMonHocInputs inputs, Long id) {
         MonHoc _monHoc = monHocRepository.getById(id);
@@ -63,14 +93,25 @@ public class MonHocService {
         Optional<KhoaVien> _khoaVienOptional = khoaVienRepository.findById(inputs.getKhoaVienID());
         try {
             KhoaVien _khoaVien = _khoaVienOptional.get();
-            List<GiangVien> _giangVienList = giangVienRepository.findAllById(inputs.getGiangVienIds());
-            Set<GiangVien> _giangVienSet = new HashSet<>(_giangVienList);
+
+            Integer _maxId = 0;
+
+            Integer _maxIdRes = monHocRepository.getMaxIdExistOnDB();
+
+            if(_maxIdRes != null) {
+                _maxId = _maxIdRes + 1;
+            }
+
+            String _idKhoaVienPadding = helperComponent.byPaddingZeros(_khoaVien.getId().intValue(), 3);
+            String _maxMonHocIdPadding = helperComponent.byPaddingZeros(_maxId, 4);
+
+            String _maMonHoc = _idKhoaVienPadding + _maxMonHocIdPadding;
 
             MonHoc _monHoc = MonHoc.builder()
                     .ten(inputs.getTen())
                     .moTa(inputs.getMoTa())
                     .khoaVien(_khoaVien)
-                    .giangViens(_giangVienSet)
+                    .maMonHoc(_maMonHoc)
                     .build();
             MonHoc _monHocRes = monHocRepository.saveAndFlush(_monHoc);
             return _monHocRes;

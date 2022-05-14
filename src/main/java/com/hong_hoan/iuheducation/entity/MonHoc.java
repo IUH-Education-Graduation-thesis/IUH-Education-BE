@@ -22,6 +22,9 @@ public class MonHoc {
     private Long id;
 
     @Column(nullable = false)
+    private String maMonHoc;
+
+    @Column(nullable = false)
     private String ten;
     private String moTa;
 
