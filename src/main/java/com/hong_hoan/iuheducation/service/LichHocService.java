@@ -61,6 +61,88 @@ public class LichHocService {
         return _lichHocFormatList;
     }
 
+    public LichHoc suaLichHoc(ThemLichHocInputs inputs, Long id) {
+        Optional<LichHoc> _lichHocOption = lichHocRepository.findById(id);
+
+        if(_lichHocOption.isEmpty()) {
+            throw new LichHocIsNotExistException();
+        }
+
+        LichHoc _lichHoc = _lichHocOption.get();
+
+        PhongHoc _phongHoc = null;
+
+        try {
+            _phongHoc = phongHocRepository.getById(inputs.getPhongHocId());
+        } catch (Exception ex) {
+
+        }
+
+        GiangVien _giangVien = null;
+
+        try {
+            _giangVien = giangVienRepository.getById(inputs.getGiangVienId());
+        } catch (Exception ex) {
+
+        }
+
+        Optional<LopHocPhan> _lopHocPhanOption = lopHocPhanRepository.findById(inputs.getLopHocPhanId());
+        if (_lichHocOption.isEmpty()) {
+            throw new LopHocPhanIsNotExist();
+        }
+
+        LopHocPhan _lopHocPhan = _lopHocPhanOption.get();
+
+        Integer _nhomThucHanh = null;
+
+        try {
+            Integer __nhomThucHanh = inputs.getNhomThucHanh();
+            Integer _soNhomThuHanh = _lopHocPhan.getSoNhomThucHanh();
+            if (__nhomThucHanh > _soNhomThuHanh) {
+                throw new GroupPraticeOver();
+            }
+
+            _nhomThucHanh = __nhomThucHanh;
+        } catch (NullPointerException ex) {
+            _nhomThucHanh = null;
+        }
+
+        if (inputs.getTietHocBatDau() > inputs.getTietHocKetThuc()) {
+            throw new ValueOver();
+        }
+
+        Integer _soTinChiLyThuyet = _lopHocPhan.getHocPhan().getSoTinChiLyThuyet();
+        Integer _soTinChiThucHanh = _lopHocPhan.getHocPhan().getSoTinChiThucHanh();
+
+        Integer _lapLai = 0;
+
+        if (inputs.getIsLichThi() || inputs.getIsHocBu()) {
+            _lapLai = 1;
+        } else {
+            if (_nhomThucHanh == null) {
+                _lapLai = (15 * _soTinChiLyThuyet) / (inputs.getTietHocKetThuc() - inputs.getTietHocBatDau());
+            } else {
+                _lapLai = (30 * _soTinChiThucHanh) / (inputs.getTietHocKetThuc() - inputs.getTietHocBatDau());
+            }
+        }
+
+        _lichHoc.setGhiChu(inputs.getGhiChu());
+        _lichHoc.setNgayHocTrongTuan(inputs.getNgayHocTrongTuan());
+        _lichHoc.setNhomThucHanh(_nhomThucHanh);
+        _lichHoc.setThoiGianBatDau(inputs.getThoiGianBatDau());
+        _lichHoc.setLapLai(_lapLai);
+        _lichHoc.setTietHocBatDau(inputs.getTietHocBatDau());
+        _lichHoc.setTietHocKetThuc(inputs.getTietHocKetThuc());
+        _lichHoc.setLopHocPhan(_lopHocPhan);
+        _lichHoc.setPhongHoc(_phongHoc);
+        _lichHoc.setGiangVien(_giangVien);
+        _lichHoc.setLichThi(inputs.getIsLichThi());
+
+        LichHoc _lichHocRes = lichHocRepository.saveAndFlush(_lichHoc);
+
+        return _lichHocRes;
+    }
+
     public LichHoc themLichHoc(ThemLichHocInputs inputs) {
 
 
