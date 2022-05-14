@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface MonHocRepository extends JpaRepository<MonHoc, Long> {
 
+    @Query(value = "SELECT MAX(mh.id) as max_id FROM mon_hoc mh", nativeQuery = true)
+    Integer getMaxIdExistOnDB();
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM mon_hoc WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)

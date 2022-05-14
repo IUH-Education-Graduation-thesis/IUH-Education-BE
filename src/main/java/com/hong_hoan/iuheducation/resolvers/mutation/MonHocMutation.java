@@ -83,6 +83,7 @@ public class MonHocMutation implements GraphQLMutationResolver {
         } catch (KhoaVienIsNotExistException ex) {
             return MonHocRespone.builder().status(ResponseStatus.ERROR).message("Thêm môn học không thành công!").errors(Arrays.asList(ErrorResponse.builder().error_fields(Arrays.asList("khoaVienID")).message("Khoa viện không tồn tại!").build())).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return MonHocRespone.builder().status(ResponseStatus.ERROR).message("Thêm môn học không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lỗi hệ thống!").build())).build();
         }
     }

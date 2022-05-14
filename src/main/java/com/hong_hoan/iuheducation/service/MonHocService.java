@@ -12,6 +12,7 @@ import com.hong_hoan.iuheducation.repository.GiangVienRepository;
 import com.hong_hoan.iuheducation.repository.KhoaVienRepository;
 import com.hong_hoan.iuheducation.repository.MonHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.mon_hoc.ThemMonHocInputs;
+import com.hong_hoan.iuheducation.util.HelperComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class MonHocService {
     private KhoaVienRepository khoaVienRepository;
     @Autowired
     private GiangVienRepository giangVienRepository;
+    @Autowired
+    private HelperComponent helperComponent;
 
     public List<GiangVien> xoaGiangVienOfMonHoc(List<Long> ids, Long id) {
         List<GiangVien> _listGiangVienFind = giangVienRepository.findAllById(ids);
@@ -90,14 +93,25 @@ public class MonHocService {
         Optional<KhoaVien> _khoaVienOptional = khoaVienRepository.findById(inputs.getKhoaVienID());
         try {
             KhoaVien _khoaVien = _khoaVienOptional.get();
-            List<GiangVien> _giangVienList = giangVienRepository.findAllById(inputs.getGiangVienIds());
-            Set<GiangVien> _giangVienSet = new HashSet<>(_giangVienList);
+
+            Integer _maxId = 0;
+
+            Integer _maxIdRes = monHocRepository.getMaxIdExistOnDB();
+
+            if(_maxIdRes != null) {
+                _maxId = _maxIdRes + 1;
+            }
+
+            String _idKhoaVienPadding = helperComponent.byPaddingZeros(_khoaVien.getId().intValue(), 3);
+            String _maxMonHocIdPadding = helperComponent.byPaddingZeros(_maxId, 4);
+
+            String _maMonHoc = _idKhoaVienPadding + _maxMonHocIdPadding;
 
             MonHoc _monHoc = MonHoc.builder()
                     .ten(inputs.getTen())
                     .moTa(inputs.getMoTa())
                     .khoaVien(_khoaVien)
-                    .giangViens(_giangVienSet)
+                    .maMonHoc(_maMonHoc)
                     .build();
             MonHoc _monHocRes = monHocRepository.saveAndFlush(_monHoc);
             return _monHocRes;
