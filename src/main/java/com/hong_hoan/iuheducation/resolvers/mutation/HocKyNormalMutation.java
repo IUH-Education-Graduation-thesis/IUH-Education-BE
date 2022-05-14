@@ -15,11 +15,43 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class HocKyNormalMutation implements GraphQLMutationResolver {
     @Autowired
     private HocKyNormalService hocKyNormalService;
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public HocKyNormalResponse xoaHocKyNormals(List<Long> ids) {
+        try {
+            List<HocKyNormal> _listHocKyNormal = hocKyNormalService.xoaHocKys(ids);
+
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa học kỳ thành công!")
+                    .data(_listHocKyNormal)
+                    .build();
+        } catch (HocKyNormalIsNotExist ex) {
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public HocKyNormalResponse suaHocKyNormal(ThemHocKyNormalInputs inputs, Long id) {

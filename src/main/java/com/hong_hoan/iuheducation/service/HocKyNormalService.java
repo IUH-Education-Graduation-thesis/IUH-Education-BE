@@ -17,6 +17,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HocKyNormalService {
@@ -24,6 +25,20 @@ public class HocKyNormalService {
     private HocKyNormalRepository hocKyNormalRepository;
     @Autowired
     private NamHocRepository namHocRepository;
+
+    public List<HocKyNormal> xoaHocKys(List<Long> ids) {
+        List<HocKyNormal> _listHocKyNormal = hocKyNormalRepository.findAllById(ids);
+
+        if(_listHocKyNormal.size() <= 0) {
+            throw new HocKyNormalIsNotExist();
+        }
+
+        List<Long> _ids = _listHocKyNormal.stream().map(i -> i.getId()).collect(Collectors.toList());
+
+        hocKyNormalRepository.xoaHocKyNormals(_ids);
+
+        return _listHocKyNormal;
+    }
 
     public HocKyNormal suaHocKyNormal(ThemHocKyNormalInputs inputs, Long id) {
 
