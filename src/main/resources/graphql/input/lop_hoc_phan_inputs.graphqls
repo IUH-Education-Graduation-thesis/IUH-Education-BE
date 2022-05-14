@@ -1,5 +1,4 @@
 input ThemLopHocPhanInputs {
-    maLopHocPhan: String!
     soNhomThucHanh: Int!
     soLuongToiDa: Int!
     moTa: String
