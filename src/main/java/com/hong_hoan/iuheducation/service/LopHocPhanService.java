@@ -9,10 +9,7 @@ import org.apache.commons.math3.analysis.function.Sinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +29,61 @@ public class LopHocPhanService {
     @Autowired
     private HelperComponent helperComponent;
 
+    public List<SinhVien> xoaSinhVienOfLopHocPhan(List<Long> sinhVienIds, Long lopHocPhanId) {
+        Optional<LopHocPhan> _lopHocPhanOption = lopHocPhanRepository.findById(lopHocPhanId);
+
+        if (_lopHocPhanOption.isEmpty()) {
+            throw new LopHocPhanIsNotExist();
+        }
+
+        List<SinhVien> _listSinhVienFind = sinhVienRepository.findAllById(sinhVienIds);
+
+        List<SinhVienLopHocPhan> _sinhVienLopHocPhan = _listSinhVienFind.stream().map(i -> {
+            SinhVienLopHocPhanId _sinhVienLopHocPhanId = SinhVienLopHocPhanId.builder()
+                    .lopHocPhanId(lopHocPhanId)
+                    .sinhVienId(i.getId())
+                    .build();
+
+            Optional<SinhVienLopHocPhan> _sinhVienLopHocPhanOptional = sinhVienLopHocPhanRepository.findById(_sinhVienLopHocPhanId);
+
+            if (_sinhVienLopHocPhanOptional.isEmpty()) {
+                return null;
+
+            }
+            return _sinhVienLopHocPhanOptional.get();
+
+
+        }).filter(i -> i != null).collect(Collectors.toList());
+
+        LopHocPhan _lopHocPhan = _lopHocPhanOption.get();
+
+        List<SinhVienLopHocPhanId> _listSinhVienLopHocPhanId = _sinhVienLopHocPhan.stream().map(i -> i.getSinhVienLopHocPhanId()).collect(Collectors.toList());
+
+        List<SinhVienLopHocPhan> _listNewSinhVienLopHocPhan = _lopHocPhan.getSinhVienLopHocPhans().stream().filter(i -> {
+            Integer _indexOf = _listSinhVienLopHocPhanId.indexOf(i.getSinhVienLopHocPhanId());
+
+            if (_indexOf >= 0) {
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        _lopHocPhan.setSinhVienLopHocPhans(new HashSet<>(_listNewSinhVienLopHocPhan));
+
+        List<SinhVien> _listSinhVien = _sinhVienLopHocPhan.stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+        Notification _notification = Notification.builder()
+                .sinhViens(new HashSet<>(_listSinhVien))
+                .isRead(false)
+                .message("Bạn bị xóa khỏi lớp học phần '" + _lopHocPhan.getTenLopHocPhan() + "'")
+                .type(NotiType.LHP)
+                .build();
+
+        lopHocPhanRepository.saveAndFlush(_lopHocPhan);
+        notificationRepository.saveAndFlush(_notification);
+        return _listSinhVien;
+    }
+
     public List<SinhVienLopHocPhan> themSinhVienVaoLopHocPhan(Long lopHocPhanId, Set<Long> sinhVienIds, Integer nhomThucHanh) {
         LopHocPhan _lopHocPhan = lopHocPhanRepository.getById(lopHocPhanId);
 
@@ -41,11 +93,11 @@ public class LopHocPhanService {
 
         Integer _soNhomThucHanh = _lopHocPhan.getSoNhomThucHanh();
 
-        if(_soNhomThucHanh > 0 && nhomThucHanh == null) {
+        if (_soNhomThucHanh > 0 && nhomThucHanh == null) {
             throw new EnterNhomThucHanh();
         }
 
-        if(nhomThucHanh > _soNhomThucHanh) {
+        if (nhomThucHanh > _soNhomThucHanh) {
             throw new ValueOver();
         }
 
@@ -110,7 +162,7 @@ public class LopHocPhanService {
         Integer _maxId = 0;
         Integer _maxIsRes = lopHocPhanRepository.getMaxId();
 
-        if(_maxIsRes != null) {
+        if (_maxIsRes != null) {
             _maxId = _maxIsRes;
         }
 
@@ -162,7 +214,7 @@ public class LopHocPhanService {
 
         LopHocPhan _lopHocPhanRes = lopHocPhanRepository.saveAndFlush(_lopHocPhan);
 
-        if(!_lopHocPhan.getTrangThaiLopHocPhanEnum().equals(inputs.getTrangThaiLopHocPhan())) {
+        if (!_lopHocPhan.getTrangThaiLopHocPhanEnum().equals(inputs.getTrangThaiLopHocPhan())) {
             List<SinhVien> _listSinhVien = _lopHocPhan.getSinhVienLopHocPhans().stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
 
             Notification _notification = Notification.builder()
