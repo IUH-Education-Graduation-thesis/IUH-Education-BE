@@ -10,6 +10,7 @@ import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.GetHocPhanDKHP;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.KieuDangKy;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.ThemHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.PaginationHocPhan;
+import com.hong_hoan.iuheducation.util.HelperComponent;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,9 @@ public class HocPhanService {
     private LopHocPhanRepository lopHocPhanRepository;
     @Autowired
     private MonHocRepository monHocRepository;
+    @Autowired
+    private HelperComponent helperComponent;
+
     @Autowired
     private HocKyRepository hocKyRepository;
 
@@ -91,7 +95,6 @@ public class HocPhanService {
 
         _hocKies.add(_hocKy);
 
-        _hocPhan.setMaHocPhan(inputs.getMaHocPhan());
         _hocPhan.setMonHoc(_monHoc);
         _hocPhan.setHocKies(_hocKies);
         _hocPhan.setBatBuoc(inputs.isBatBuoc());
@@ -117,7 +120,21 @@ public class HocPhanService {
             throw new HocKyIsNotExist();
         }
 
-        HocPhan _hocPhan = HocPhan.builder().maHocPhan(inputs.getMaHocPhan()).moTa(inputs.getMoTa()).batBuoc(inputs.isBatBuoc()).monHoc(_monHoc).hocKies(new HashSet<>(Arrays.asList(_hocKy))).soTinChiLyThuyet(inputs.getSoTinChiLyThuyet()).soTinChiThucHanh(inputs.getSoTinChiThucHanh()).build();
+        String _maMonHoc = _monHoc.getMaMonHoc();
+
+        Integer _maxId = 0;
+
+        Integer _maxIdRes = hocPhanRepository.getMaxIdExistInDB();
+
+        if (_maxIdRes != null) {
+            _maxId = _maxIdRes;
+        }
+
+        String _hocPhanIdPadding = helperComponent.byPaddingZeros(_maxId, 5);
+
+        String _maHocPhan = _maMonHoc + _hocPhanIdPadding;
+
+        HocPhan _hocPhan = HocPhan.builder().maHocPhan(_maHocPhan).moTa(inputs.getMoTa()).batBuoc(inputs.isBatBuoc()).monHoc(_monHoc).hocKies(new HashSet<>(Arrays.asList(_hocKy))).soTinChiLyThuyet(inputs.getSoTinChiLyThuyet()).soTinChiThucHanh(inputs.getSoTinChiThucHanh()).build();
 
         HocPhan _hocPhanRes = hocPhanRepository.saveAndFlush(_hocPhan);
 

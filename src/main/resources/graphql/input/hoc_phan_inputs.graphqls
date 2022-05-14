@@ -15,7 +15,6 @@ input GetHocPhanDKHP {
 }
 
 input ThemHocPhanInputs {
-    maHocPhan: String!
     moTa: String
     batBuoc: Boolean!
     hocKyId: ID!

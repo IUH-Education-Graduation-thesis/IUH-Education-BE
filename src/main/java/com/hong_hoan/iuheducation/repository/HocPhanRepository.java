@@ -85,6 +85,9 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
             "GROUP BY hp.id", nativeQuery = true)
     List<HocPhan> getListHocPhanForDangKyHocMoi(Long hocKyId, Long sinhVienId);
 
+    @Query(value = "SELECT MAX(hp.id) as max_id FROM hoc_phan hp", nativeQuery = true)
+    Integer getMaxIdExistInDB();
+
     @Query(value = "SELECT hp.* FROM hoc_phan hp " +
             "JOIN hoc_ky hk ON hk.id = hp.hoc_ky_id " +
             "JOIN khoa k on k.id = hk.khoa_id " +
