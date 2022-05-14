@@ -5,6 +5,7 @@ type Mutation {
     # nam hoc
     themNamHoc(inputs: ThemNamHocInputs!): NamHocResponse!
     suaNamHoc(inputs: ThemNamHocInputs!, id: ID!): NamHocResponse!
+    xoaNamHocs(ids: [ID!]): NamHocResponse!
 
     # notification
     suaNotification(id: ID!, isRead: Boolean): NotificationResponse!

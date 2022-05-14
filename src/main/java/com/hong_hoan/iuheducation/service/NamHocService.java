@@ -25,6 +25,18 @@ public class NamHocService {
         return namHocRepository.findAll();
     }
 
+    public List<NamHoc> xoaNamHoc(List<Long> ids) {
+        List<NamHoc> _listNamHocFind = namHocRepository.findAllById(ids);
+
+        if(_listNamHocFind.size() <= 0) {
+            throw new NamHocIsNotExist();
+        }
+
+        namHocRepository.deleteAll(_listNamHocFind);
+
+        return _listNamHocFind;
+    }
+
     public NamHoc suaNamHoc(ThemNamHocInputs inputs, Long id) {
         NamHoc _namHoc = namHocRepository.getById(id);
 
