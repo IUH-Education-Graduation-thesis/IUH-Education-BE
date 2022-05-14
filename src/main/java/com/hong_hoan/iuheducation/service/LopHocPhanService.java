@@ -4,6 +4,7 @@ import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.*;
 import com.hong_hoan.iuheducation.repository.*;
 import com.hong_hoan.iuheducation.resolvers.input.lop_hoc_phan.ThemLopHocPhanInputs;
+import com.hong_hoan.iuheducation.util.HelperComponent;
 import org.apache.commons.math3.analysis.function.Sinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class LopHocPhanService {
     private SinhVienLopHocPhanRepository sinhVienLopHocPhanRepository;
     @Autowired
     private NotificationRepository notificationRepository;
+    @Autowired
+    private HelperComponent helperComponent;
 
     public List<SinhVienLopHocPhan> themSinhVienVaoLopHocPhan(Long lopHocPhanId, Set<Long> sinhVienIds, Integer nhomThucHanh) {
         LopHocPhan _lopHocPhan = lopHocPhanRepository.getById(lopHocPhanId);
@@ -102,10 +105,22 @@ public class LopHocPhanService {
             throw new HocKyNormalIsNotExist();
         }
 
+        String _maHocPhan = _hocPhan.getMaHocPhan();
+
+        Integer _maxId = 0;
+        Integer _maxIsRes = lopHocPhanRepository.getMaxId();
+
+        if(_maxIsRes != null) {
+            _maxId = _maxIsRes;
+        }
+
+        String _idLopHocPhanPadding = helperComponent.byPaddingZeros(_maxId, 5);
+        String _maLopHocPhan = _maHocPhan + _idLopHocPhanPadding;
+
         LopHocPhan _lopHocPhan = LopHocPhan.builder()
                 .hocKyNormal(_hocKyNormal)
                 .hocPhan(_hocPhan)
-                .maLopHocPhan(inputs.getMaLopHocPhan())
+                .maLopHocPhan(_maLopHocPhan)
                 .lopDuKien(inputs.getLopDuKien())
                 .moTa(inputs.getMoTa())
                 .trangThaiLopHocPhan(TrangThaiLopHocPhan.DANG_LEN_KE_HOACH)
@@ -139,7 +154,6 @@ public class LopHocPhanService {
 
         _lopHocPhan.setHocPhan(_hocPhan);
         _lopHocPhan.setHocKyNormal(_hocKyNormal);
-        _lopHocPhan.setMaLopHocPhan(inputs.getMaLopHocPhan());
         _lopHocPhan.setLopDuKien(inputs.getLopDuKien());
         _lopHocPhan.setMoTa(inputs.getMoTa());
         _lopHocPhan.setSoNhomThucHanh(inputs.getSoNhomThucHanh());
