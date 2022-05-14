@@ -16,11 +16,43 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class LichHocMutation implements GraphQLMutationResolver {
     @Autowired
     private LichHocService lichHocService;
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public LichHocResponse xoaLichHocs(List<Long> ids) {
+        try {
+            List<LichHoc> _listLichHoc = lichHocService.xoaLichHocs(ids);
+
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Xóa lịch học thành công.")
+                    .data(_listLichHoc)
+                    .build();
+        } catch (LichHocIsNotExistException ex) {
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lịch học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return LichHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Xóa lịch học không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public LichHocResponse suaLichHoc(ThemLichHocInputs inputs, Long id) {

@@ -61,6 +61,20 @@ public class LichHocService {
         return _lichHocFormatList;
     }
 
+    public List<LichHoc> xoaLichHocs(List<Long> ids) {
+        List<LichHoc> _listLichHoc = lichHocRepository.findAllById(ids);
+
+        if(_listLichHoc.size() <= 0) {
+            throw new LichHocIsNotExistException();
+        }
+
+        List<Long> _ids = _listLichHoc.stream().map(i -> i.getId()).collect(Collectors.toList());
+
+        lichHocRepository.xoaLichHocs(_ids);
+
+        return _listLichHoc;
+    }
+
     public LichHoc suaLichHoc(ThemLichHocInputs inputs, Long id) {
         Optional<LichHoc> _lichHocOption = lichHocRepository.findById(id);
 
