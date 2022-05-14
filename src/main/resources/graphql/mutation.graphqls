@@ -2,6 +2,16 @@ type Mutation {
     login(user_name: String!, password: String!): LoginResponse!
     register(inputs: CreateAccountInput!): RegisterResponse!
 
+    # hoc ky normal
+    themHocKyNormal(inputs: ThemHocKyNormalInputs!): HocKyNormalResponse!
+    suaHocKyNormal(inputs: ThemHocKyNormalInputs!, id: ID!): HocKyNormalResponse!
+    xoaHocKyNormals(ids:[ID!]): HocKyNormalResponse!
+
+    # nam hoc
+    themNamHoc(inputs: ThemNamHocInputs!): NamHocResponse!
+    suaNamHoc(inputs: ThemNamHocInputs!, id: ID!): NamHocResponse!
+    xoaNamHocs(ids: [ID!]): NamHocResponse!
+
     # notification
     suaNotification(id: ID!, isRead: Boolean): NotificationResponse!
 

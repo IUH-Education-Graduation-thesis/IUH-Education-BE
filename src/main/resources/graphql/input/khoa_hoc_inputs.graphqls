@@ -9,6 +9,8 @@ input ThemKhoaHocInputs {
 input FindKhoaHocInputs {
     id: ID
     tenKhoaHoc: Int
+    khoaVienId: ID
+    chuyenNganhId: ID
     page: Int
     size: Int
 }

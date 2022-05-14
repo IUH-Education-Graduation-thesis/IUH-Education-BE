@@ -22,11 +22,19 @@ public interface KhoaRepository extends JpaRepository<Khoa, Long> {
     void xoaKhoaHocs(List<Long> ids);
 
     @Query(value = "SELECT * FROM khoa k " +
-            "WHERE (?1 IS NULL OR k.id = ?1) AND (?2 IS NULL OR k.khoa = ?2)", nativeQuery = true)
-    List<Khoa> findKhoaWithFilter(Long id, Integer khoa);
+            "JOIN chuyen_nganh cn on cn.id = k.chuyen_nganh_id " +
+            "WHERE (?1 IS NULL OR k.id = ?1) " +
+            "AND (?2 IS NULL OR k.khoa = ?2) " +
+            "AND (?3 IS NULL OR k.chuyen_nganh_id = ?3) " +
+            "AND (?4 IS NULL OR cn.khoa_vien_id = ?4)", nativeQuery = true)
+    List<Khoa> findKhoaWithFilter(Long id, Integer khoa, Long chuyenNganhId, Long khoaVienId);
 
     @Query(value = "SELECT * FROM khoa k " +
-            "WHERE (?1 IS NULL OR k.id = ?1) AND (?2 IS NULL OR k.khoa = ?2)", nativeQuery = true)
-    Page findKhoaWithFilterAndPagination(Long id, Integer khoa, Pageable pageable);
+            "JOIN chuyen_nganh cn on cn.id = k.chuyen_nganh_id " +
+            "WHERE (?1 IS NULL OR k.id = ?1) " +
+            "AND (?2 IS NULL OR k.khoa = ?2) " +
+            "AND (?3 IS NULL OR k.chuyen_nganh_id = ?3) " +
+            "AND (?4 IS NULL OR cn.khoa_vien_id = ?4)", nativeQuery = true)
+    Page findKhoaWithFilterAndPagination(Long id, Integer khoa, Long chuyenNganhId, Long khoaVienId, Pageable pageable);
 
 }

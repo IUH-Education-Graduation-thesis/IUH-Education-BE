@@ -1,0 +1,13 @@
+input FilterNamHocInputs {
+    id: ID
+    fromYear: Int
+    toYear: Int
+    page: Int
+    size: Int
+}
+
+input ThemNamHocInputs {
+    namBatDau: Int!
+    namKetThuc: Int!
+    ghiChu: String
+}

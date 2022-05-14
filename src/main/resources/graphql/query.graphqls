@@ -16,4 +16,5 @@ type Query {
     getListHocKy: HocKyNormalResponse!
     getDiem: DiemResponse!
     getNamHocs: NamHocResponse!
+    filterNamHoc(inputs: FilterNamHocInputs): FilterNamHocResponse!
 }
