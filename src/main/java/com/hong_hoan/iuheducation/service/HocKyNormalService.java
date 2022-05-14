@@ -3,6 +3,7 @@ package com.hong_hoan.iuheducation.service;
 import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.HocKyNormal;
 import com.hong_hoan.iuheducation.entity.NamHoc;
+import com.hong_hoan.iuheducation.exception.HocKyNormalIsNotExist;
 import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.HocKyNormalRepository;
 import com.hong_hoan.iuheducation.repository.NamHocRepository;
@@ -23,6 +24,32 @@ public class HocKyNormalService {
     private HocKyNormalRepository hocKyNormalRepository;
     @Autowired
     private NamHocRepository namHocRepository;
+
+    public HocKyNormal suaHocKyNormal(ThemHocKyNormalInputs inputs, Long id) {
+
+        Optional<HocKyNormal> _hocKyNormalOptional = hocKyNormalRepository.findById(id);
+
+        if(_hocKyNormalOptional.isEmpty()) {
+            throw new HocKyNormalIsNotExist();
+        }
+
+        Optional<NamHoc> _namHocOptional = namHocRepository.findById(inputs.getNamHocId());
+
+        if(_namHocOptional.isEmpty()) {
+            throw new NamHocIsNotExist();
+        }
+
+        HocKyNormal _hocKyNormal = _hocKyNormalOptional.get();
+        NamHoc _namHoc = _namHocOptional.get();
+
+        _hocKyNormal.setNamHoc(_namHoc);
+        _hocKyNormal.setThuTuHocKy(inputs.getThuTuHocKy());
+        _hocKyNormal.setGhiChu(inputs.getGhiChu());
+
+        HocKyNormal _hocKyNormalRes = hocKyNormalRepository.saveAndFlush(_hocKyNormal);
+
+        return _hocKyNormalRes;
+    }
 
     public HocKyNormal themHocKyNormal(ThemHocKyNormalInputs inputs) {
 

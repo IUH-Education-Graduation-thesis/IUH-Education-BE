@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.resolvers.mutation;
 
 import com.hong_hoan.iuheducation.entity.HocKyNormal;
+import com.hong_hoan.iuheducation.exception.HocKyNormalIsNotExist;
 import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
@@ -10,6 +11,7 @@ import com.hong_hoan.iuheducation.service.HocKyNormalService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -18,6 +20,44 @@ import java.util.Arrays;
 public class HocKyNormalMutation implements GraphQLMutationResolver {
     @Autowired
     private HocKyNormalService hocKyNormalService;
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public HocKyNormalResponse suaHocKyNormal(ThemHocKyNormalInputs inputs, Long id) {
+        try {
+            HocKyNormal _hocKyNormal = hocKyNormalService.suaHocKyNormal(inputs, id);
+
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Sửa học kỳ thành công!")
+                    .data(Arrays.asList(_hocKyNormal))
+                    .build();
+        } catch (HocKyNormalIsNotExist ex) {
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Học kỳ không tồn!")
+                            .build()))
+                    .build();
+        } catch (NamHocIsNotExist ex) {
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Năm học không tồn!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return HocKyNormalResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Sửa học kỳ không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public HocKyNormalResponse themHocKyNormal(ThemHocKyNormalInputs inputs) {
