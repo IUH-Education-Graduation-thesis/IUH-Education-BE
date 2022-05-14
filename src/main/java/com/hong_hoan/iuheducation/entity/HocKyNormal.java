@@ -21,7 +21,7 @@ public class HocKyNormal {
 
     private String ghiChu;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "nam_hoc_id", nullable = false)
     private NamHoc namHoc;
 

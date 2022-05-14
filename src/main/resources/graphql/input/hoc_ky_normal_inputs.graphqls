@@ -1,0 +1,5 @@
+input ThemHocKyNormalInputs {
+    thuTuHocKy: Int!
+    ghiChu: String
+    namHocId: ID!
+}
