@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 public class FindKhoaHocInputs {
     private Long id;
     private Integer tenKhoaHoc;
+    private Long chuyenNganhId;
+    private Long khoaVienId;
     private Integer page;
     private Integer size;
 
@@ -25,6 +27,6 @@ public class FindKhoaHocInputs {
     }
 
     public boolean allDataIsEmpty() {
-        return Stream.of(id, tenKhoaHoc, page, size).allMatch(Objects::isNull);
+        return Stream.of(id, tenKhoaHoc, chuyenNganhId, khoaVienId, page, size).allMatch(Objects::isNull);
     }
 }

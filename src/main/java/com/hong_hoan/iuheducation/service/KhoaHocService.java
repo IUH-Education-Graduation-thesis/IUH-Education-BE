@@ -56,7 +56,7 @@ public class KhoaHocService {
         }
 
         if (inputs.checkPaginationEmpty()) {
-            List<Khoa> _khoas = khoaRepository.findKhoaWithFilter(inputs.getId(), inputs.getTenKhoaHoc());
+            List<Khoa> _khoas = khoaRepository.findKhoaWithFilter(inputs.getId(), inputs.getTenKhoaHoc(), inputs.getChuyenNganhId(), inputs.getKhoaVienId());
 
             return PaginationKhoaHoc.builder()
                     .count(_khoas.size())
@@ -66,7 +66,7 @@ public class KhoaHocService {
 
         Pageable _pageable = PageRequest.of(inputs.getPage(), inputs.getSize());
 
-        Page<Khoa> _khoaPage = khoaRepository.findKhoaWithFilterAndPagination(inputs.getId(), inputs.getTenKhoaHoc(), _pageable);
+        Page<Khoa> _khoaPage = khoaRepository.findKhoaWithFilterAndPagination(inputs.getId(), inputs.getTenKhoaHoc(), inputs.getChuyenNganhId(), inputs.getKhoaVienId(), _pageable);
 
         return PaginationKhoaHoc.builder()
                 .count(_khoaPage.getNumberOfElements())

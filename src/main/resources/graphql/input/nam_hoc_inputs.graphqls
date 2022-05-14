@@ -1,0 +1,7 @@
+input FilterNamHocInputs {
+    id: ID
+    fromYear: Int
+    toYear: Int
+    page: Int
+    size: Int
+}
