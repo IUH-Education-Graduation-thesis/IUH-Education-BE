@@ -3,6 +3,7 @@ package com.hong_hoan.iuheducation.service;
 import com.hong_hoan.iuheducation.entity.NamHoc;
 import com.hong_hoan.iuheducation.repository.NamHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FilterNamHocInputs;
+import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.response.nam_hoc.PaginationNamHoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,8 +24,19 @@ public class NamHocService {
         return namHocRepository.findAll();
     }
 
+    public NamHoc themNamHoc(ThemNamHocInputs inputs) {
+        NamHoc _namHoc = NamHoc.builder()
+                .namBatDau(inputs.getNamBatDau())
+                .namKetThuc(inputs.getNamKetThuc())
+                .ghiChu(inputs.getGhiChu())
+                .build();
+
+        NamHoc _namHocRes = namHocRepository.saveAndFlush(_namHoc);
+        return _namHocRes;
+    }
+
     public PaginationNamHoc filterNamHoc(FilterNamHocInputs inputs) {
-        if(ObjectUtils.isEmpty(inputs) || inputs.isAllFieldEmpty()) {
+        if (ObjectUtils.isEmpty(inputs) || inputs.isAllFieldEmpty()) {
             List<NamHoc> _listNamHocs = namHocRepository.findAll();
 
             return PaginationNamHoc.builder()
@@ -33,7 +45,7 @@ public class NamHocService {
                     .build();
         }
 
-        if(inputs.isPaginationFieldEmpty()) {
+        if (inputs.isPaginationFieldEmpty()) {
             List<NamHoc> _listNamHoc = namHocRepository.filterNamHoc(inputs.getId(), inputs.getFromYear(), inputs.getToYear());
 
             return PaginationNamHoc.builder()
