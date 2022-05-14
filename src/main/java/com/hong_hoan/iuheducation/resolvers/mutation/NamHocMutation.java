@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.resolvers.mutation;
 
 import com.hong_hoan.iuheducation.entity.NamHoc;
+import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
@@ -14,9 +15,39 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @Component
-public class MonHocMutation implements GraphQLMutationResolver {
+public class NamHocMutation implements GraphQLMutationResolver {
     @Autowired
     private NamHocService namHocService;
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public NamHocResponse suaNamHoc(ThemNamHocInputs inputs, Long id) {
+        try {
+            NamHoc _namHoc = namHocService.suaNamHoc(inputs, id);
+
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Thêm năm học thành công!")
+                    .data(Arrays.asList(_namHoc))
+                    .build();
+        } catch (NamHocIsNotExist ex) {
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm năm học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Năm học không tồn tại!")
+                            .build()))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return NamHocResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm năm học không thành công!")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public NamHocResponse themNamHoc(ThemNamHocInputs inputs) {

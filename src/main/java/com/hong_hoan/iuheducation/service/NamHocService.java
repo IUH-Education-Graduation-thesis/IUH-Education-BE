@@ -1,6 +1,7 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.NamHoc;
+import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.NamHocRepository;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.FilterNamHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.nam_hoc.ThemNamHocInputs;
@@ -22,6 +23,22 @@ public class NamHocService {
 
     public List<NamHoc> getAllNamHoc() {
         return namHocRepository.findAll();
+    }
+
+    public NamHoc suaNamHoc(ThemNamHocInputs inputs, Long id) {
+        NamHoc _namHoc = namHocRepository.getById(id);
+
+        if(_namHoc == null) {
+            throw new NamHocIsNotExist();
+        }
+
+        _namHoc.setNamBatDau(inputs.getNamBatDau());
+        _namHoc.setNamKetThuc(inputs.getNamKetThuc());
+        _namHoc.setGhiChu(inputs.getGhiChu());
+
+        NamHoc _namHocRes = namHocRepository.saveAndFlush(_namHoc);
+
+        return _namHocRes;
     }
 
     public NamHoc themNamHoc(ThemNamHocInputs inputs) {
