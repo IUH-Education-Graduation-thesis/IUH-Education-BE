@@ -5,6 +5,7 @@ import com.hong_hoan.iuheducation.entity.GiangVien;
 import com.hong_hoan.iuheducation.entity.KhoaVien;
 import com.hong_hoan.iuheducation.entity.MonHoc;
 import com.hong_hoan.iuheducation.exception.ChuyenNganhIsNotExistExcepton;
+import com.hong_hoan.iuheducation.exception.GiangVienIsNotExistException;
 import com.hong_hoan.iuheducation.exception.KhoaVienIsNotExistException;
 import com.hong_hoan.iuheducation.exception.MonHocIsExistException;
 import com.hong_hoan.iuheducation.repository.GiangVienRepository;
@@ -27,6 +28,32 @@ public class MonHocService {
     private KhoaVienRepository khoaVienRepository;
     @Autowired
     private GiangVienRepository giangVienRepository;
+
+    public List<GiangVien> xoaGiangVienOfMonHoc(List<Long> ids, Long id) {
+        List<GiangVien> _listGiangVienFind = giangVienRepository.findAllById(ids);
+
+        if (_listGiangVienFind.size() <= 0) {
+            throw new GiangVienIsNotExistException();
+        }
+
+        Optional<MonHoc> _monHocFind = monHocRepository.findById(id);
+
+        if (_monHocFind.isEmpty()) {
+            throw new MonHocIsExistException();
+        }
+
+        MonHoc _monHoc = _monHocFind.get();
+
+        boolean _isRemove = _monHoc.getGiangViens().removeAll(_listGiangVienFind);
+
+        if (!_isRemove) {
+            throw new GiangVienIsNotExistException();
+        }
+
+        monHocRepository.saveAndFlush(_monHoc);
+
+        return _listGiangVienFind;
+    }
 
     public MonHoc suaMonHoc(ThemMonHocInputs inputs, Long id) {
         MonHoc _monHoc = monHocRepository.getById(id);
