@@ -1,16 +1,21 @@
 package com.hong_hoan.iuheducation.resolvers.mutation;
 
+import com.hong_hoan.iuheducation.entity.Account;
 import com.hong_hoan.iuheducation.entity.LopHocPhan;
 import com.hong_hoan.iuheducation.entity.SinhVien;
 import com.hong_hoan.iuheducation.entity.SinhVienLopHocPhan;
 import com.hong_hoan.iuheducation.exception.*;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop_hoc_phan.ThemLopHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien_lop_hoc_phan.SuaSinhVienLopHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.CheckLichHocRes;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.CheckLichTrungResponse;
 import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.LopHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SinhVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien_lop_hoc_phan.SinhVienLopHocPhanResponse;
+import com.hong_hoan.iuheducation.service.AccountService;
 import com.hong_hoan.iuheducation.service.LopHocPhanService;
 import com.hong_hoan.iuheducation.service.SinhVienLopHocPhanService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -29,11 +34,37 @@ public class LopHocPhanMutation implements GraphQLMutationResolver {
     private LopHocPhanService lopHocPhanService;
     @Autowired
     private SinhVienLopHocPhanService sinhVienLopHocPhanService;
+    @Autowired
+    private AccountService accountService;
 
     /*
     lop hoc phan
     ======================================================================
  */
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public CheckLichTrungResponse checkLichTrung(List<DangKyHocPhanInputs> listLopHocPhanPrepareDangKy, Long hocKyNormalId) {
+        try {
+            Account _currentAccoutn = accountService.getCurrentAccount();
+            CheckLichHocRes _checkLichHocRes = lopHocPhanService.checkLichHoc(listLopHocPhanPrepareDangKy, hocKyNormalId, _currentAccoutn);
+
+            return CheckLichTrungResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Kiểm tram lịch trùng thành công.")
+                    .data(Arrays.asList(_checkLichHocRes))
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return CheckLichTrungResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Kiểm tram lịch trùng thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
+
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public SinhVienResponse xoaSinhVienOfLopHocPhan(List<Long> sinhVienIds, Long lopHocPhanId) {
         try {
