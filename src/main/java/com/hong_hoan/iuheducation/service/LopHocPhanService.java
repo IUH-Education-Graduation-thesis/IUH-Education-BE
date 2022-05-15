@@ -36,6 +36,34 @@ public class LopHocPhanService {
     @Autowired
     private LichHocRepository lichHocRepository;
 
+    public LopHocPhan huyLopHocPhan(Long lopHocPhanId, Account account) {
+        SinhVien _sinhVien = account.getSinhVien();
+
+        Optional<LopHocPhan> _lopHocPhanOption = lopHocPhanRepository.findById(lopHocPhanId);
+
+        if (_lopHocPhanOption.isEmpty()) {
+            throw new LopHocPhanIsNotExist();
+        }
+
+        LopHocPhan _lopHocPhan = _lopHocPhanOption.get();
+
+        SinhVienLopHocPhanId _sinhVienLopHocPhanId = SinhVienLopHocPhanId.builder()
+                .sinhVienId(_sinhVien.getId())
+                .lopHocPhanId(_lopHocPhan.getId())
+                .build();
+
+        Optional<SinhVienLopHocPhan> _sinhVienLopHocPhanOption = sinhVienLopHocPhanRepository.findById(_sinhVienLopHocPhanId);
+
+        if (_sinhVienLopHocPhanOption.isEmpty()) {
+            throw new SinhVienLopHocPhanIsNotExist();
+        }
+
+        SinhVienLopHocPhan _sinhVienLopHocPhan = _sinhVienLopHocPhanOption.get();
+        sinhVienLopHocPhanRepository.xoaSinhVienLopHocPhan(_sinhVienLopHocPhan.getSinhVienLopHocPhanId().getLopHocPhanId(), _sinhVienLopHocPhan.getSinhVienLopHocPhanId().getLopHocPhanId());
+
+        return _lopHocPhan;
+    }
+
     public CheckLichHocRes checkLichHoc(List<DangKyHocPhanInputs> listLopHocPhanPrepareDangKy, Long hocKyNormalId, Account account) {
         SinhVien _sinhVien = account.getSinhVien();
 

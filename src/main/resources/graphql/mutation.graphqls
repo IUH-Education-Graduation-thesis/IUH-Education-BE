@@ -23,6 +23,7 @@ type Mutation {
     suaDiemSinhVien(inputs: SuaSinhVienLopHocPhanInputs!): SinhVienLopHocPhanResponse!
     xoaSinhVienOfLopHocPhan(sinhVienIds: [ID!], lopHocPhanId: ID!): SinhVienResponse!
     checkLichTrung(listLopHocPhanPrepareDangKy: [DangKyHocPhanInputs!], hocKyNormalId: ID!): CheckLichTrungResponse!
+    huyLopHocPhan(lopHocPhanId: ID!): LopHocPhanResponse!
 
     # lop
     themLop(inputs: ThemLopInputs!): LopResponse!
