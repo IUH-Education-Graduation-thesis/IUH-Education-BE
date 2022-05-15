@@ -18,6 +18,27 @@ public interface SinhVienRepository extends JpaRepository<SinhVien, Long> {
             "WHERE svlhp.lop_hoc_phan_id  = ?1", nativeQuery = true)
     List<SinhVien> findSinhVienInLopHocPhan(Long lopHocPhanId);
 
+
+    /**
+     *  Cái hàm này sẽ tìm tất cả sinh viên của học phần mà sinh viên đó chưa có học hoặc đăng ký bất
+     *  kỳ lớp học phần nào
+     * @param hocPhanId học phần id
+     * @return list sinh viên
+     */
+    @Query(value = "SELECT sv.* from sinh_vien sv\n" +
+            "JOIN lop l on l.id = sv.lop_id\n" +
+            "JOIN khoa k on k.id = l.khoa_id \n" +
+            "JOIN hoc_ky hk on hk.khoa_id = k.id\n" +
+            "JOIN hoc_phan_hoc_ky hphk on hphk.hoc_ky_id = hk.id\n" +
+            "WHERE hphk.hoc_phan_id = ?1\n" +
+            "AND (\n" +
+            "\tselect COUNT(*) from hoc_phan hp\n" +
+            "\tjoin lop_hoc_phan lhp on lhp.hoc_phan_id = hp.id\n" +
+            "\tjoin sinh_vien_lop_hoc_phan svlhp on svlhp.lop_hoc_phan_id = lhp.id \n" +
+            "\tWHERE hp.id = ?1 AND svlhp.sinh_vien_id = sv.id \n" +
+            ") <= 0", nativeQuery = true)
+    List<SinhVien> getListSinhOfHocPhanButNotYetRegistry(Long hocPhanId);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM sinh_vien WHERE (COALESCE(?1) IS NULL OR id IN (?1))", nativeQuery = true)

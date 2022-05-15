@@ -183,6 +183,18 @@ public class LopHocPhanService {
 
         LopHocPhan _lopHocPhanRes = lopHocPhanRepository.saveAndFlush(_lopHocPhan);
 
+        List<SinhVien> _listSinhVien = sinhVienRepository.getListSinhOfHocPhanButNotYetRegistry(_lopHocPhan.getHocPhan().getId());
+
+        Notification _notification = Notification.builder()
+                .createDate(new Date())
+                .type(NotiType.LHP)
+                .isRead(false)
+                .sinhViens(new HashSet<>(_listSinhVien))
+                .message("Học phần '" + _lopHocPhan.getHocPhan().getMonHoc().getTen()+"' Đã mở 1 lớp học phần.")
+                .build();
+
+        notificationRepository.saveAndFlush(_notification);
+
         return _lopHocPhanRes;
     }
 
