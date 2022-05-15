@@ -11,6 +11,23 @@ import java.util.List;
 
 public interface LichHocRepository extends JpaRepository<LichHoc, Long> {
 
+    @Query(value = "SELECT lh.* FROM lich_hoc lh\n" +
+            "join lop_hoc_phan lhp ON lh.lop_hoc_phan_id = lhp.id\n" +
+            "Join hoc_ky_normal hkn on hkn.id = lhp.hoc_ky_normal_id\n" +
+            "WHERE hkn.id = ?1 \n" +
+            "and (ISNULL(lh.nhom_thuc_hanh) or lh.nhom_thuc_hanh = ?2)\n" +
+            "and lhp.id = ?3", nativeQuery = true)
+    List<LichHoc> getListLichHocByLopHocPhanAndNhomThucHanhAndHocKy(Long hocKyNormalId, Integer nhomThucHanh, Long lopHocPhanId);
+
+    @Query(value = "SELECT lh.* FROM lich_hoc lh\n" +
+            "join lop_hoc_phan lhp ON lh.lop_hoc_phan_id = lhp.id\n" +
+            "Join hoc_ky_normal hkn on hkn.id = lhp.hoc_ky_normal_id\n" +
+            "join sinh_vien_lop_hoc_phan svlhp on svlhp.lop_hoc_phan_id = lhp.id\n" +
+            "WHERE svlhp.sinh_vien_id = ?1\n" +
+            "and (svlhp.nhom_thuc_hanh = lh.nhom_thuc_hanh or ISNULL(lh.nhom_thuc_hanh)) \n" +
+            "and hkn.id = ?2", nativeQuery = true)
+    List<LichHoc> getListLichHocCuaHocSinhDaDangKyTrongHocKy(Long sinhVienId, Long hocKyNormalId);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM lich_hoc lh WHERE lh.id IN (?1)", nativeQuery = true)

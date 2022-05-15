@@ -3,14 +3,19 @@ package com.hong_hoan.iuheducation.service;
 import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.*;
 import com.hong_hoan.iuheducation.repository.*;
+import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop_hoc_phan.ThemLopHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.CheckLichHocRes;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.NgayTrongTuan;
 import com.hong_hoan.iuheducation.util.HelperComponent;
+import org.apache.commons.lang3.Range;
 import org.apache.commons.math3.analysis.function.Sinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class LopHocPhanService {
@@ -28,6 +33,127 @@ public class LopHocPhanService {
     private NotificationRepository notificationRepository;
     @Autowired
     private HelperComponent helperComponent;
+    @Autowired
+    private LichHocRepository lichHocRepository;
+
+    public LopHocPhan huyLopHocPhan(Long lopHocPhanId, Account account) {
+        SinhVien _sinhVien = account.getSinhVien();
+
+        Optional<LopHocPhan> _lopHocPhanOption = lopHocPhanRepository.findById(lopHocPhanId);
+
+        if (_lopHocPhanOption.isEmpty()) {
+            throw new LopHocPhanIsNotExist();
+        }
+
+        LopHocPhan _lopHocPhan = _lopHocPhanOption.get();
+
+        SinhVienLopHocPhanId _sinhVienLopHocPhanId = SinhVienLopHocPhanId.builder()
+                .sinhVienId(_sinhVien.getId())
+                .lopHocPhanId(_lopHocPhan.getId())
+                .build();
+
+        Optional<SinhVienLopHocPhan> _sinhVienLopHocPhanOption = sinhVienLopHocPhanRepository.findById(_sinhVienLopHocPhanId);
+
+        if (_sinhVienLopHocPhanOption.isEmpty()) {
+            throw new SinhVienLopHocPhanIsNotExist();
+        }
+
+        SinhVienLopHocPhan _sinhVienLopHocPhan = _sinhVienLopHocPhanOption.get();
+        sinhVienLopHocPhanRepository.xoaSinhVienLopHocPhan(_sinhVienLopHocPhan.getSinhVienLopHocPhanId().getLopHocPhanId(), _sinhVienLopHocPhan.getSinhVienLopHocPhanId().getLopHocPhanId());
+
+        return _lopHocPhan;
+    }
+
+    public CheckLichHocRes checkLichHoc(List<DangKyHocPhanInputs> listLopHocPhanPrepareDangKy, Long hocKyNormalId, Account account) {
+        SinhVien _sinhVien = account.getSinhVien();
+
+        List<LichHoc> _listLichHocPrepareDangKy = listLopHocPhanPrepareDangKy.stream()
+                .map(i -> {
+                    List<LichHoc> _listLichHoc = lichHocRepository.getListLichHocByLopHocPhanAndNhomThucHanhAndHocKy(hocKyNormalId, i.getNhomThucHanh(), i.getLopHocPhanId());
+                    return _listLichHoc;
+                })
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        List<LichHoc> _listLichHocSinhVienDaDangKy = lichHocRepository.getListLichHocCuaHocSinhDaDangKyTrongHocKy(_sinhVien.getId(), hocKyNormalId);
+
+        List<LichHoc> _listLichHoc = Stream.concat(_listLichHocSinhVienDaDangKy.stream(), _listLichHocPrepareDangKy.stream())
+                .collect(Collectors.toList());
+
+        List<LichHoc> _listLichHocAfterFilter = _listLichHoc.stream()
+                .filter(i -> {
+                    Range<Integer> _range = Range.between(i.getTietHocBatDau(), i.getTietHocKetThuc());
+
+                    Long _count = _listLichHoc.stream().filter(j -> {
+                                Boolean _isTrungThu = i.getNgayHocTrongTuan() == j.getNgayHocTrongTuan();
+                                Boolean _overLap = _range.isOverlappedBy(Range.between(j.getTietHocBatDau(), j.getTietHocKetThuc()));
+
+                                if (!_isTrungThu || !_overLap) {
+                                    return false;
+                                }
+
+                                return true;
+                            }
+                    ).count();
+
+                    if (_count >= 2) {
+                        return true;
+                    }
+
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        List<NgayTrongTuan> _listNgayTrongTuan = Stream.of(
+                NgayTrongTuan.builder()
+                        .thu("Thứ 2")
+                        .thuNumber(2)
+                        .lichHocs(new ArrayList<>())
+                        .build(),
+                NgayTrongTuan.builder()
+                        .thu("Thứ 3")
+                        .thuNumber(3)
+                        .lichHocs(new ArrayList<>())
+                        .build(),
+                NgayTrongTuan.builder()
+                        .thu("Thứ 4")
+                        .thuNumber(4)
+                        .lichHocs(new ArrayList<>())
+                        .build(),
+                NgayTrongTuan.builder()
+                        .thu("Thứ 5")
+                        .thuNumber(5)
+                        .lichHocs(new ArrayList<>())
+                        .build(),
+                NgayTrongTuan.builder()
+                        .thu("Thứ 6")
+                        .thuNumber(6)
+                        .lichHocs(new ArrayList<>())
+                        .build(),
+                NgayTrongTuan.builder()
+                        .thu("Thứ 7")
+                        .thuNumber(7)
+                        .lichHocs(new ArrayList<>())
+                        .build(),
+                NgayTrongTuan.builder()
+                        .thu("Chủ nhật")
+                        .lichHocs(new ArrayList<>())
+                        .thuNumber(8)
+                        .build()
+        ).collect(Collectors.toList());
+
+        for (LichHoc i : _listLichHocAfterFilter) {
+            _listNgayTrongTuan.get(i.getNgayHocTrongTuan() - 2)
+                    .getLichHocs().add(i);
+        }
+
+        CheckLichHocRes _checkLichHocRes = CheckLichHocRes.builder()
+                .isTrung(_listLichHocAfterFilter.size() > 0)
+                .listNgayTrongTuan(_listNgayTrongTuan)
+                .build();
+
+        return _checkLichHocRes;
+    }
 
     public List<SinhVien> xoaSinhVienOfLopHocPhan(List<Long> sinhVienIds, Long lopHocPhanId) {
         Optional<LopHocPhan> _lopHocPhanOption = lopHocPhanRepository.findById(lopHocPhanId);
@@ -190,7 +316,7 @@ public class LopHocPhanService {
                 .type(NotiType.LHP)
                 .isRead(false)
                 .sinhViens(new HashSet<>(_listSinhVien))
-                .message("Học phần '" + _lopHocPhan.getHocPhan().getMonHoc().getTen()+"' Đã mở 1 lớp học phần.")
+                .message("Học phần '" + _lopHocPhan.getHocPhan().getMonHoc().getTen() + "' Đã mở 1 lớp học phần.")
                 .build();
 
         notificationRepository.saveAndFlush(_notification);
