@@ -75,6 +75,7 @@ public class LopHocPhanService {
         Notification _notification = Notification.builder()
                 .sinhViens(new HashSet<>(_listSinhVien))
                 .isRead(false)
+                .createDate(new Date())
                 .message("Bạn bị xóa khỏi lớp học phần '" + _lopHocPhan.getTenLopHocPhan() + "'")
                 .type(NotiType.LHP)
                 .build();
