@@ -61,10 +61,11 @@ public class LichHocService {
         return _lichHocFormatList;
     }
 
+
     public List<LichHoc> xoaLichHocs(List<Long> ids) {
         List<LichHoc> _listLichHoc = lichHocRepository.findAllById(ids);
 
-        if(_listLichHoc.size() <= 0) {
+        if (_listLichHoc.size() <= 0) {
             throw new LichHocIsNotExistException();
         }
 
@@ -72,13 +73,33 @@ public class LichHocService {
 
         lichHocRepository.xoaLichHocs(_ids);
 
+        List<LopHocPhan> _listLopHocPhan = _listLichHoc.stream().map(i -> i.getLopHocPhan()).collect(Collectors.toList());
+
+
+        for (LopHocPhan _lopHocPhan : _listLopHocPhan) {
+            List<SinhVien> _listSinhVien = _lopHocPhan.getSinhVienLopHocPhans()
+                    .stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+            Notification _notification = Notification.builder()
+                    .type(NotiType.LH)
+                    .message("Lớp học phần '" + _lopHocPhan.getTenLopHocPhan() + "' vừa xóa 1 lịch học.")
+                    .sinhViens(new HashSet<>(_listSinhVien))
+                    .isRead(false)
+                    .createDate(new Date())
+                    .build();
+
+            notificationRepository.saveAndFlush(_notification);
+        }
+
+
+
         return _listLichHoc;
     }
 
     public LichHoc suaLichHoc(ThemLichHocInputs inputs, Long id) {
         Optional<LichHoc> _lichHocOption = lichHocRepository.findById(id);
 
-        if(_lichHocOption.isEmpty()) {
+        if (_lichHocOption.isEmpty()) {
             throw new LichHocIsNotExistException();
         }
 
@@ -153,6 +174,19 @@ public class LichHocService {
         _lichHoc.setLichThi(inputs.getIsLichThi());
 
         LichHoc _lichHocRes = lichHocRepository.saveAndFlush(_lichHoc);
+
+        List<SinhVien> _listSinhVien = _lopHocPhan.getSinhVienLopHocPhans()
+                .stream().map(i -> i.getSinhVien()).collect(Collectors.toList());
+
+        Notification _notification = Notification.builder()
+                .createDate(new Date())
+                .isRead(false)
+                .message("Lớp học phần '" + _lopHocPhan.getTenLopHocPhan() + "' đã sửa 1 lịch học.")
+                .type(NotiType.LH)
+                .sinhViens(new HashSet<>(_listSinhVien))
+                .build();
+
+        notificationRepository.saveAndFlush(_notification);
 
         return _lichHocRes;
     }

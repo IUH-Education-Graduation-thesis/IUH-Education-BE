@@ -21,6 +21,7 @@ type Mutation {
     themSinhVienVaoLopHocPhan(hocPhanId: ID!, sinhVienIds: [ID!], nhomThuHanh: Int): SinhVienResponse!
     dangKyHocPhan(inputs: [DangKyHocPhanInputs!]!): DangKyHocPhanResponse!
     suaDiemSinhVien(inputs: SuaSinhVienLopHocPhanInputs!): SinhVienLopHocPhanResponse!
+    xoaSinhVienOfLopHocPhan(sinhVienIds: [ID!], lopHocPhanId: ID!): SinhVienResponse!
 
     # lop
     themLop(inputs: ThemLopInputs!): LopResponse!
