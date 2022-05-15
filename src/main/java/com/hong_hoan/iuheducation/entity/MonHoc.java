@@ -38,6 +38,9 @@ public class MonHoc {
             inverseJoinColumns = @JoinColumn(name = "giang_vien_id"))
     private Set<GiangVien> giangViens = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "monHoc", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<HocPhan> hocPhans = new LinkedHashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
