@@ -62,26 +62,29 @@ public interface HocPhanRepository extends JpaRepository<HocPhan, Long> {
             ")", nativeQuery = true)
     List<HocPhan> getListHocPhanByHocKyForDKHP(Long hocPhanId, Long sinhVienId);
 
-    @Query(value = "SELECT hp.* FROM hoc_phan hp " +
-            "JOIN lop_hoc_phan lhp2 on lhp2.hoc_phan_id = hp.id " +
-            "WHERE ( " +
-            "SELECT COUNT(*) as soLopHocPhan FROM lop_hoc_phan lhp " +
-            "WHERE lhp.hoc_ky_normal_id = ?1 AND lhp.id = lhp2.id " +
-            ") > 0 " +
-            "AND ( " +
-            "SELECT COUNT(*) as soSinhVienLopHocPhan FROM sinh_vien_lop_hoc_phan svlhp " +
-            "JOIN lop_hoc_phan lhp3 ON lhp3.id = svlhp.lop_hoc_phan_id " +
-            "WHERE svlhp.sinh_vien_id = ?2 AND lhp3.hoc_phan_id = hp.id " +
-            ") < 1 " +
-            "AND EXISTS ( " +
-            "SELECT hp.* FROM sinh_vien sv " +
-            "JOIN lop l ON l.id = sv.lop_id " +
-            "JOIN khoa k on k.id = l.khoa_id " +
-            "JOIN hoc_ky hk on hk.khoa_id = k.id " +
-            "JOIN hoc_phan_hoc_ky hphk on hphk.hoc_ky_id = k.id " +
-            "JOIN hoc_phan hp on hphk.hoc_phan_id = hp.id " +
-            "WHERE sv.id = ?2 " +
-            ") " +
+    @Query(value = "SELECT hp.* FROM hoc_phan hp\n" +
+            "JOIN lop_hoc_phan lhp on lhp.hoc_phan_id = hp.id\n" +
+            "# check học phần đó học kỳ này có mở môn nào hay không\n" +
+            "WHERE (\n" +
+            "\tSELECT COUNT(*) as soLopHocPhan FROM lop_hoc_phan lhp2\n" +
+            "\tWHERE lhp2.hoc_ky_normal_id = ?1 AND lhp2.id = lhp.id \n" +
+            ") > 0\n" +
+            "# check hoc phan do hoc sinh da học lần nào hay chưa\n" +
+            "AND (\n" +
+            "\tSELECT COUNT(*) as soSinhVienLopHocPhan FROM sinh_vien_lop_hoc_phan svlhp\n" +
+            "\tJOIN lop_hoc_phan lhp3 ON lhp3.id = svlhp.lop_hoc_phan_id\n" +
+            "\tWHERE svlhp.sinh_vien_id = ?2 AND lhp3.hoc_phan_id = hp.id\n" +
+            ") < 1\n" +
+            "# check hoc phan thuoc sinh vien\n" +
+            "AND EXISTS (\n" +
+            "\tSELECT hp.* FROM sinh_vien sv\n" +
+            "\tJOIN lop l ON l.id = sv.lop_id\n" +
+            "\tJOIN khoa k on k.id = l.khoa_id\n" +
+            "\tJOIN hoc_ky hk on hk.khoa_id = k.id\n" +
+            "\tJOIN hoc_phan_hoc_ky hphk ON hphk.hoc_ky_id = hk.id\n" +
+            "\tJOIN hoc_phan hp on hphk.hoc_phan_id  = hp.id \n" +
+            "\tWHERE sv.id = ?2\n" +
+            ")\n" +
             "GROUP BY hp.id", nativeQuery = true)
     List<HocPhan> getListHocPhanForDangKyHocMoi(Long hocKyId, Long sinhVienId);
 
