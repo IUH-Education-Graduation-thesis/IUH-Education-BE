@@ -92,7 +92,6 @@ public class LichHocService {
         }
 
 
-
         return _listLichHoc;
     }
 

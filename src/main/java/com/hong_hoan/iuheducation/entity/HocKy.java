@@ -35,6 +35,10 @@ public class HocKy {
     @JoinColumn(name = "khoa_id")
     private Khoa khoa;
 
+    public Integer getTongSoTinChi() {
+        return this.hocPhans.stream().mapToInt(i -> i.getSoTinChiLyThuyet() + i.getSoTinChiThucHanh()).sum();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

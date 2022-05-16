@@ -16,6 +16,13 @@ public interface SinhVienLopHocPhanRepository extends JpaRepository<SinhVienLopH
             "where svlhp.sinh_vien_id = ?1 and hkn.id = ?2", nativeQuery = true)
     List<SinhVienLopHocPhan> getSinhVienLopHocPhansBySinhVienIdAndHocKyId(Long sinhVienId, Long hocKyNormalId);
 
+    @Query(value = "SELECT svlhp.* FROM sinh_vien_lop_hoc_phan svlhp\n" +
+            "JOIN lop_hoc_phan lhp on lhp.id = svlhp.lop_hoc_phan_id \n" +
+            "JOIN hoc_phan hp on hp.id = lhp.hoc_phan_id\n" +
+            "WHERE svlhp.sinh_vien_id = ?1\n" +
+            "AND hp.id = ?2", nativeQuery = true)
+    List<SinhVienLopHocPhan> getSinhVienLopHocPhanOfHocPhanBySinhVien(Long sinhVienId, Long hocPhanId);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM sinh_vien_lop_hoc_phan svlhp WHERE svlhp.lop_hoc_phan_id = ?1 and svlhp.sinh_vien_id = ?2", nativeQuery = true)

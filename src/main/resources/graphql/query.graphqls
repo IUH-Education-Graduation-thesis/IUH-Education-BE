@@ -17,4 +17,5 @@ type Query {
     getDiem: DiemResponse!
     getNamHocs: NamHocResponse!
     filterNamHoc(inputs: FilterNamHocInputs): FilterNamHocResponse!
+    getChuongTrinhKhung: ChuongTrinhKhungResponse!
 }
