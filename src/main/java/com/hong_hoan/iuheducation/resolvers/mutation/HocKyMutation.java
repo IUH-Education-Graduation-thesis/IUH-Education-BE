@@ -8,7 +8,7 @@ import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.resolvers.common.ErrorResponse;
 import com.hong_hoan.iuheducation.resolvers.common.ResponseStatus;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
-import com.hong_hoan.iuheducation.resolvers.response.HocKyResponse;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky.HocKyResponse;
 import com.hong_hoan.iuheducation.service.HocKyService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.beans.factory.annotation.Autowired;

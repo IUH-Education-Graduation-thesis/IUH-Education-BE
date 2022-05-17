@@ -1,4 +1,4 @@
-package com.hong_hoan.iuheducation.resolvers.response;
+package com.hong_hoan.iuheducation.resolvers.response.hoc_ky;
 
 import com.hong_hoan.iuheducation.entity.HocKy;
 import com.hong_hoan.iuheducation.entity.Khoa;

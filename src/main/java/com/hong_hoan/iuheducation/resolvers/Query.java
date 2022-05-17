@@ -17,6 +17,8 @@ import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.FindSinhVienInputs;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.FindChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.FindGiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.PaginationGiangVien;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky.ChuongTrinhKhungResponse;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky.HocKyChuongTrinhKhung;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_ky_normal.HocKyNormalResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.FindHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
@@ -82,6 +84,33 @@ public class Query implements GraphQLQueryResolver {
     private SinhVienLopHocPhanService sinhVienLopHocPhanService;
     @Autowired
     private NamHocService namHocService;
+    @Autowired
+    private HocKyService hocKyService;
+
+    @PreAuthorize("isAuthenticated()")
+    public ChuongTrinhKhungResponse getChuongTrinhKhung() {
+        Account _account = accountService.getCurrentAccount();
+
+        try {
+            List<HocKyChuongTrinhKhung> _listHocKyChuongTrinhKhung = hocKyService.getChuongTrinhKhung(_account);
+
+            return ChuongTrinhKhungResponse.builder()
+                    .status(ResponseStatus.OK)
+                    .message("Lấy thông tin chuơng trình khung thành công.")
+                    .data(_listHocKyChuongTrinhKhung)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ChuongTrinhKhungResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Lấy thông tin chuơng trình khung không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                                    .message("Lỗi hệ thống!")
+                            .build()))
+                    .build();
+        }
+    }
 
     @PreAuthorize("hasAnyAuthority('STUDENT')")
     public DiemResponse getDiem() {

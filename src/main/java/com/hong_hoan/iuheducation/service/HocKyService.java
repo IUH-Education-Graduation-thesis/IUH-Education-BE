@@ -1,9 +1,6 @@
 package com.hong_hoan.iuheducation.service;
 
-import com.hong_hoan.iuheducation.entity.HocKy;
-import com.hong_hoan.iuheducation.entity.HocPhan;
-import com.hong_hoan.iuheducation.entity.Khoa;
-import com.hong_hoan.iuheducation.entity.LopHocPhan;
+import com.hong_hoan.iuheducation.entity.*;
 import com.hong_hoan.iuheducation.exception.HocKyIsNotExist;
 import com.hong_hoan.iuheducation.exception.HocPhanIsNotExist;
 import com.hong_hoan.iuheducation.exception.KhoaHocIsNotExist;
@@ -11,7 +8,10 @@ import com.hong_hoan.iuheducation.exception.NamHocIsNotExist;
 import com.hong_hoan.iuheducation.repository.HocKyRepository;
 import com.hong_hoan.iuheducation.repository.HocPhanRepository;
 import com.hong_hoan.iuheducation.repository.KhoaRepository;
+import com.hong_hoan.iuheducation.repository.SinhVienLopHocPhanRepository;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_ky.ThemHocKyInputs;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky.HocKyChuongTrinhKhung;
+import com.hong_hoan.iuheducation.resolvers.response.hoc_ky.HocPhanCustomize;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,54 @@ public class HocKyService {
     private KhoaRepository khoaRepository;
     @Autowired
     private HocPhanRepository hocPhanRepository;
+    @Autowired
+    private SinhVienLopHocPhanRepository sinhVienLopHocPhanRepository;
+
+    public List<HocKyChuongTrinhKhung> getChuongTrinhKhung(Account account) {
+        SinhVien _sinhVien = account.getSinhVien();
+
+        List<HocKy> _listHocKyOfSinhVien = hocKyRepository.getListHocKyOfSinhVien(_sinhVien.getId());
+
+        List<HocKyChuongTrinhKhung> _listHocKyChuongTrinhKhung = _listHocKyOfSinhVien.stream()
+                .map(i -> {
+                    List<HocPhanCustomize> _listHocPhanCustomize = i.getHocPhans().stream()
+                            .map(j -> {
+                                List<SinhVienLopHocPhan> _listSinhVienLopHocPhan = sinhVienLopHocPhanRepository.getSinhVienLopHocPhanOfHocPhanBySinhVien(_sinhVien.getId(), j.getId());
+
+                                Double _maxDiemOfLopHocPhan = _listSinhVienLopHocPhan.stream()
+                                        .mapToDouble(_sinhVienLopHocPhan -> {
+                                            try {
+                                                return _sinhVienLopHocPhan.getDiemTrungBinh();
+
+                                            } catch (NullPointerException ex) {
+                                                return 0;
+                                            }
+                                        })
+                                        .max().orElse(0);
+
+                                HocPhanCustomize _hocPhanCustomize = HocPhanCustomize.builder()
+                                        .maMonHoc(j.getMonHoc().getMaMonHoc())
+                                        .tenMonHoc(j.getMonHoc().getTen())
+                                        .tinChi(j.getSoTinChiThucHanh() + j.getSoTinChiLyThuyet())
+                                        .trangThai(_maxDiemOfLopHocPhan >= 4)
+                                        .build();
+
+                                return _hocPhanCustomize;
+                            })
+                            .collect(Collectors.toList());
+
+                    HocKyChuongTrinhKhung _hocKyChuongTrinhKhung = HocKyChuongTrinhKhung.builder()
+                            .hocKy(i.getThuTu())
+                            .tongSoTinChi(i.getTongSoTinChi())
+                            .hocPhansRes(_listHocPhanCustomize)
+                            .build();
+
+                    return _hocKyChuongTrinhKhung;
+                })
+                .collect(Collectors.toList());
+
+        return _listHocKyChuongTrinhKhung;
+    }
 
     public HocKy themHocPhanVaoHocKy(List<Long> hocPhanIds, Long hocKyId) {
         Optional<HocKy> _hocKyOption = hocKyRepository.findById(hocKyId);

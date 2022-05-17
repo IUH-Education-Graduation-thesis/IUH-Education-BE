@@ -4,6 +4,7 @@ import com.hong_hoan.iuheducation.util.HelperComponent;
 import lombok.*;
 import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Transient;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -46,6 +47,15 @@ public class SinhVienLopHocPhan {
     @MapsId("lopHocPhanId")
     @JoinColumn(name = "lop_hoc_phan_id")
     private LopHocPhan lopHocPhan;
+
+
+    @Transient
+    private Double diemTrungBinh;
+
+    @PostLoad
+    public void calculateDiemTrungBinh() {
+        this.setDiemTrungBinh(this.getDiemTrungBinh());
+    }
 
     public Double getDiemTrungBinh() {
         if (this.getDiemCuoiKy() == null) {
