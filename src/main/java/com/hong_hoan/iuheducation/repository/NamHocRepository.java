@@ -12,13 +12,16 @@ public interface NamHocRepository extends JpaRepository<NamHoc, Long> {
     @Query(value = "SELECT * FROM nam_hoc nh " +
             "WHERE (?1 IS NULL OR nh.id = ?1) " +
             "AND (?2 IS NULL OR ?3 IS NULL OR nh.nam_bat_dau BETWEEN ?2 and ?3) " +
-            "AND (?2 IS NULL OR ?3 IS NULL OR nh.nam_ket_thuc  BETWEEN ?2 and ?3)", nativeQuery = true)
+            "AND (?2 IS NULL OR ?3 IS NULL OR nh.nam_ket_thuc  BETWEEN ?2 and ?3)" +
+            "ORDER BY nh.nam_ket_thuc DESC", nativeQuery = true)
     List<NamHoc> filterNamHoc(Long id, Integer fromDate, Integer toDate);
 
     @Query(value = "SELECT * FROM nam_hoc nh " +
             "WHERE (?1 IS NULL OR nh.id = ?1) " +
             "AND (?2 IS NULL OR ?3 IS NULL OR nh.nam_bat_dau BETWEEN ?2 and ?3) " +
-            "AND (?2 IS NULL OR ?3 IS NULL OR nh.nam_ket_thuc  BETWEEN ?2 and ?3)", nativeQuery = true)
+            "AND (?2 IS NULL OR ?3 IS NULL OR nh.nam_ket_thuc  BETWEEN ?2 and ?3)" +
+            "ORDER BY nh.nam_ket_thuc DESC", nativeQuery = true)
     Page<NamHoc> filterNamHoc(Long id, Integer fromDate, Integer toDate, Pageable pageable);
 
+    List<NamHoc> findAllByOrderByNamKetThucDesc();
 }
