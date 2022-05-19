@@ -33,7 +33,7 @@ public class Khoa {
     @JoinColumn(name = "chuyen_nganh_id")
     private ChuyenNganh chuyenNganh;
 
-    @OneToMany(mappedBy = "khoa", orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "khoa", orphanRemoval = true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Lop> lops = new ArrayList<>();
 
     @OneToMany(mappedBy = "khoa", cascade = CascadeType.ALL, orphanRemoval = true)
