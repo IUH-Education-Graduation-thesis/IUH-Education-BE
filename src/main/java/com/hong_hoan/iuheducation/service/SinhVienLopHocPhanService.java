@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,10 +25,16 @@ public class SinhVienLopHocPhanService {
     private HocKyNormalService hocKyNormalService;
 
     public SinhVienLopHocPhan suaDiemSinhVien(SuaSinhVienLopHocPhanInputs inputs) {
-        SinhVienLopHocPhan _sinhVienLopHocPhan = sinhVienLopHocPhanRepository.getById(SinhVienLopHocPhanId.builder()
+        Optional<SinhVienLopHocPhan> _sinhVienLopHocPhanOpt = sinhVienLopHocPhanRepository.findById(SinhVienLopHocPhanId.builder()
                         .sinhVienId(inputs.getSinhVienId())
                         .lopHocPhanId(inputs.getLopHocPhanId())
                 .build());
+
+        if(_sinhVienLopHocPhanOpt.isEmpty()) {
+            throw new SinhVienLopHocPhanIsNotExist();
+        }
+
+        SinhVienLopHocPhan _sinhVienLopHocPhan = _sinhVienLopHocPhanOpt.get();
 
         if (_sinhVienLopHocPhan == null) {
             throw new SinhVienLopHocPhanIsNotExist();
