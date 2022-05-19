@@ -227,7 +227,7 @@ public class Mutation implements GraphQLMutationResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ThemSinhVienWithFileResponse themSinhViens(List<Part> files, DataFetchingEnvironment env) throws IOException {
+    public ThemSinhVienWithFileResponse themSinhViens(List<Part> files, DataFetchingEnvironment env) {
         DefaultGraphQLServletContext _context = env.getContext();
 
         try {
@@ -248,15 +248,6 @@ public class Mutation implements GraphQLMutationResolver {
                     .build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ThemSinhVienWithFileResponse.builder()
-                    .status(ResponseStatus.OK)
-                    .message("Thêm sinh viên không thành công.")
-                    .errors(Arrays.asList(ErrorResponse.builder()
-                            .message("Lỗi hệ thống!")
-                            .build()))
-                    .build();
-        } catch (Throwable e) {
-            e.printStackTrace();
             return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Thêm sinh viên không thành công.")

@@ -1,9 +1,7 @@
 package com.hong_hoan.iuheducation.entity;
 
-import com.hong_hoan.iuheducation.util.HelperComponent;
 import lombok.*;
-import org.hibernate.annotations.Formula;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.annotations.Cascade;
 import org.springframework.data.annotation.Transient;
 
 import javax.persistence.*;
@@ -25,6 +23,7 @@ public class SinhVienLopHocPhan {
     @ElementCollection
     @Column(name = "diem_thuong_ky")
     @CollectionTable(name = "sinh_vien_lop_hoc_phan_diem_thuong_ky")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Double> diemThuongKy = new ArrayList<>();
 
     private Double diemGiuaKy;
@@ -32,6 +31,7 @@ public class SinhVienLopHocPhan {
     @ElementCollection
     @Column(name = "diem_thuc_hanh")
     @CollectionTable(name = "sinh_vien_lop_hoc_phan_diem_thuc_hanh")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Double> diemThucHanh = new ArrayList<>();
 
     private Double diemCuoiKy;
