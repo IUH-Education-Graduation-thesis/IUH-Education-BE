@@ -9,7 +9,6 @@ import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.CheckLichHocRe
 import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.NgayTrongTuan;
 import com.hong_hoan.iuheducation.util.HelperComponent;
 import org.apache.commons.lang3.Range;
-import org.apache.commons.math3.analysis.function.Sinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +46,13 @@ public class LopHocPhanService {
 
         LopHocPhan _lopHocPhan = _lopHocPhanOption.get();
 
+        Boolean _isNotPermissionCancel = _lopHocPhan.getTrangThaiLopHocPhanEnum() == TrangThaiLopHocPhan.CHAP_NHAN_MO_LOP ||
+                _lopHocPhan.getTrangThaiLopHocPhanEnum() == TrangThaiLopHocPhan.DA_KHOA;
+
+        if (_isNotPermissionCancel) {
+            throw new LopHocPhanLockedException();
+        }
+
         SinhVienLopHocPhanId _sinhVienLopHocPhanId = SinhVienLopHocPhanId.builder()
                 .sinhVienId(_sinhVien.getId())
                 .lopHocPhanId(_lopHocPhan.getId())
@@ -58,10 +64,14 @@ public class LopHocPhanService {
             throw new SinhVienLopHocPhanIsNotExist();
         }
 
-        SinhVienLopHocPhan _sinhVienLopHocPhan = _sinhVienLopHocPhanOption.get();
-        sinhVienLopHocPhanRepository.xoaSinhVienLopHocPhan(_sinhVienLopHocPhan.getSinhVienLopHocPhanId().getLopHocPhanId(), _sinhVienLopHocPhan.getSinhVienLopHocPhanId().getLopHocPhanId());
+        List<SinhVienLopHocPhan> _listNewSinhVienLopHocPhan = _lopHocPhan.getSinhVienLopHocPhans().stream()
+                .filter(i -> !i.getSinhVien().getId().equals(_sinhVien.getId())).collect(Collectors.toList());
 
-        return _lopHocPhan;
+        _lopHocPhan.setSinhVienLopHocPhans(new HashSet<>(_listNewSinhVienLopHocPhan));
+
+        LopHocPhan _lopHocPhanRes = lopHocPhanRepository.saveAndFlush(_lopHocPhan);
+
+        return _lopHocPhanRes;
     }
 
     public CheckLichHocRes checkLichHoc(List<DangKyHocPhanInputs> listLopHocPhanPrepareDangKy, Long hocKyNormalId, Account account) {
@@ -224,9 +234,15 @@ public class LopHocPhanService {
             throw new EnterNhomThucHanh();
         }
 
-        if (nhomThucHanh > _soNhomThucHanh) {
-            throw new ValueOver();
+        try {
+            if (nhomThucHanh > _soNhomThucHanh) {
+                throw new ValueOver();
+            }
+        } catch (NullPointerException ex) {
+
         }
+
+
 
         List<SinhVien> _listSinhVien = sinhVienRepository.findAllById(sinhVienIds);
 

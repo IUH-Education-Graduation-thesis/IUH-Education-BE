@@ -111,7 +111,7 @@ public class SinhVien {
     @JoinColumn(name = "lop_id")
     private Lop lop;
 
-    @OneToMany(mappedBy = "sinhVien", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sinhVien", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<SinhVienLopHocPhan> sinhVienLopHocPhans = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

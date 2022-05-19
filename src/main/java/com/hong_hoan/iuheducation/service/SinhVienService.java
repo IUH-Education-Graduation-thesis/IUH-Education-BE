@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import com.hong_hoan.iuheducation.entity.Account;
+import com.hong_hoan.iuheducation.entity.SinhVienLopHocPhan;
 import com.hong_hoan.iuheducation.exception.SinhVienIsNotExist;
+import com.hong_hoan.iuheducation.repository.SinhVienLopHocPhanRepository;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SuccessAndFailSinhVien;
 import org.apache.commons.math3.analysis.function.Sinh;
 import org.apache.poi.ss.usermodel.Cell;
@@ -49,6 +51,8 @@ public class SinhVienService {
     private HelperComponent helperComponent;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SinhVienLopHocPhanRepository sinhVienLopHocPhanRepository;
 
     public SinhVien suaSinhVien(SinhVienInputs inputs, Long sinhVienId) throws LopIsNotExist {
         SinhVien _sinhVien = sinhVienRepository.getById(sinhVienId);
@@ -102,72 +106,82 @@ public class SinhVienService {
         return _listSinhVien;
     }
 
-    public SuccessAndFailSinhVien addSinhVienWithFile(Part path) throws Throwable {
-        InputStream _inputStream = path.getInputStream();
-        Gson _gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
+    public SuccessAndFailSinhVien addSinhVienWithFile(Part path) {
+        InputStream _inputStream = null;
+        try {
+            _inputStream = path.getInputStream();
 
-        Workbook _workbook = new XSSFWorkbook(_inputStream);
+            Gson _gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
 
-        XSSFSheet _sheet = (XSSFSheet) _workbook.getSheetAt(0);
+            Workbook _workbook = new XSSFWorkbook(_inputStream);
 
-        List<JsonObject> _listDataJson = new ArrayList<>();
+            XSSFSheet _sheet = (XSSFSheet) _workbook.getSheetAt(0);
 
-        Row _header = _sheet.getRow(0);
+            List<JsonObject> _listDataJson = new ArrayList<>();
 
-        for (int i = 1; i < _sheet.getPhysicalNumberOfRows(); i++) {
-            XSSFRow _row = _sheet.getRow(i);
-            JsonObject _rowJsonObject = new JsonObject();
-            for (int j = 0; j < _header.getPhysicalNumberOfCells(); j++) {
-                String _columnName = _header.getCell(j).toString();
-                Cell _cell = _row.getCell(j);
-                try {
-                    switch (_cell.getCellType()) {
-                        case BOOLEAN:
-                            boolean _columnValue = _cell.getBooleanCellValue();
-                            _rowJsonObject.addProperty(_columnName, _columnValue);
-                            break;
-                        case NUMERIC:
-                            Double _number = _cell.getNumericCellValue();
-                            _rowJsonObject.addProperty(_columnName, _number);
-                            break;
-                        default:
-                            String _value = _cell.toString();
-                            _rowJsonObject.addProperty(_columnName, _value);
-                            break;
-                    }
-                } catch (NullPointerException ex) {
+            Row _header = _sheet.getRow(0);
+
+            for (int i = 1; i < _sheet.getPhysicalNumberOfRows(); i++) {
+                XSSFRow _row = _sheet.getRow(i);
+                JsonObject _rowJsonObject = new JsonObject();
+                for (int j = 0; j < _header.getPhysicalNumberOfCells(); j++) {
+                    String _columnName = _header.getCell(j).toString();
+                    Cell _cell = _row.getCell(j);
                     try {
-                        String _columnValue = _cell.toString();
-                        _rowJsonObject.addProperty(_columnName, _columnValue);
+                        switch (_cell.getCellType()) {
+                            case BOOLEAN:
+                                boolean _columnValue = _cell.getBooleanCellValue();
+                                _rowJsonObject.addProperty(_columnName, _columnValue);
+                                break;
+                            case NUMERIC:
+                                Double _number = _cell.getNumericCellValue();
+                                _rowJsonObject.addProperty(_columnName, _number);
+                                break;
+                            default:
+                                String _value = _cell.toString();
+                                _rowJsonObject.addProperty(_columnName, _value);
+                                break;
+                        }
+                    } catch (NullPointerException ex) {
+                        try {
+                            String _columnValue = _cell.toString();
+                            _rowJsonObject.addProperty(_columnName, _columnValue);
 
-                    } catch (NullPointerException _ex) {
-                        _rowJsonObject.addProperty(_columnName, (String) null);
+                        } catch (NullPointerException _ex) {
+                            _rowJsonObject.addProperty(_columnName, (String) null);
+                        }
                     }
                 }
+                _listDataJson.add(_rowJsonObject);
             }
-            _listDataJson.add(_rowJsonObject);
+
+            List<SinhVien> _listSinhVien = new ArrayList<>();
+            List<SinhVien> _listSinhVienFail = new ArrayList<>();
+
+
+            _listDataJson.forEach(i -> {
+                SinhVienInputs _sinhVienInputs = _gson.fromJson(i, SinhVienInputs.class);
+
+                try {
+                    SinhVien _sinhVien = addSinhVien(_sinhVienInputs);
+                    _listSinhVien.add(_sinhVien);
+                } catch (LopIsNotExist e) {
+                    e.printStackTrace();
+                    _listSinhVienFail.add(e.get_sinhVien());
+                }
+
+            });
+
+            return SuccessAndFailSinhVien.builder()
+                    .sinhVienSuccess(_listSinhVien)
+                    .sinhVienFailure(_listSinhVienFail)
+                    .build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return SuccessAndFailSinhVien.builder()
+                    .build();
         }
 
-        List<SinhVien> _listSinhVien = new ArrayList<>();
-        List<SinhVien> _listSinhVienFail = new ArrayList<>();
-
-
-        _listDataJson.forEach(i -> {
-            SinhVienInputs _sinhVienInputs = _gson.fromJson(i, SinhVienInputs.class);
-            try {
-                SinhVien _sinhVien = addSinhVien(_sinhVienInputs);
-                _listSinhVien.add(_sinhVien);
-            } catch (LopIsNotExist e) {
-                e.printStackTrace();
-                _listSinhVienFail.add(e.get_sinhVien());
-            }
-
-        });
-
-        return SuccessAndFailSinhVien.builder()
-                .sinhVienSuccess(_listSinhVien)
-                .sinhVienFailure(_listSinhVienFail)
-                .build();
     }
 
     public SinhVien addSinhVien(SinhVienInputs inputs) throws NumberFormatException, LopIsNotExist {

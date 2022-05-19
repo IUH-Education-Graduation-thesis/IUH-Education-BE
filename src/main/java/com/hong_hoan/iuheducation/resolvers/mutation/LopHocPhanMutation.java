@@ -49,6 +49,9 @@ public class LopHocPhanMutation implements GraphQLMutationResolver {
             LopHocPhan _lopHocPhan = lopHocPhanService.huyLopHocPhan(lopHocPhanId, _account);
 
             return LopHocPhanResponse.builder().status(ResponseStatus.OK).message("Hủy đăng ký lớp học phần thành công!").data(Arrays.asList(_lopHocPhan)).build();
+        } catch (LopHocPhanLockedException ex) {
+            return LopHocPhanResponse.builder().status(ResponseStatus.ERROR).message("Hủy đăng ký lớp học phần không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lớp học phần đã khóa, không thể hủy!").build())).build();
+
         } catch (LopHocPhanIsNotExist ex) {
             return LopHocPhanResponse.builder().status(ResponseStatus.ERROR).message("Hủy đăng ký lớp học phần không thành công!").errors(Arrays.asList(ErrorResponse.builder().message("Lớp học phần không tồn tại!").build())).build();
         } catch (SinhVienLopHocPhanIsNotExist ex) {

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -66,7 +67,7 @@ public class NamHocService {
 
     public PaginationNamHoc filterNamHoc(FilterNamHocInputs inputs) {
         if (ObjectUtils.isEmpty(inputs) || inputs.isAllFieldEmpty()) {
-            List<NamHoc> _listNamHocs = namHocRepository.findAll();
+            List<NamHoc> _listNamHocs = namHocRepository.findAllByOrderByNamKetThucDesc();
 
             return PaginationNamHoc.builder()
                     .count(_listNamHocs.size())
