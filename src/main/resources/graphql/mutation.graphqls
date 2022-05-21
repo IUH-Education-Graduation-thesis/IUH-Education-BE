@@ -78,7 +78,7 @@ type Mutation {
 
     #sinh vien
     themSinhVien(inputs: SinhVienInputs!): SinhVienResponse!
-    themSinhViens(files: [Upload!]!): ThemSinhVienWithFileResponse!
+    themSinhViens(files: [Upload!]!, lopId: ID!): ThemSinhVienWithFileResponse!
     xoaSinhViens(ids: [ID!]): SinhVienResponse!
     suaSinhVien(inputs: SinhVienInputs!, sinhVienId: ID!): SinhVienResponse!
 

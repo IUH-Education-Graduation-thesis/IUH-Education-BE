@@ -227,12 +227,12 @@ public class Mutation implements GraphQLMutationResolver {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ThemSinhVienWithFileResponse themSinhViens(List<Part> files, DataFetchingEnvironment env) {
+    public ThemSinhVienWithFileResponse themSinhViens(List<Part> files, Long lopId, DataFetchingEnvironment env) {
         DefaultGraphQLServletContext _context = env.getContext();
 
         try {
             Part _part = _context.getFileParts().get(0);
-            SuccessAndFailSinhVien _successAndFailSinhVien = sinhVienService.addSinhVienWithFile(_part);
+            SuccessAndFailSinhVien _successAndFailSinhVien = sinhVienService.addSinhVienWithFile(_part, lopId);
             return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Thêm sinh viên thành công.")
@@ -240,16 +240,26 @@ public class Mutation implements GraphQLMutationResolver {
                     .build();
         } catch (IndexOutOfBoundsException ex) {
             return ThemSinhVienWithFileResponse.builder()
-                    .status(ResponseStatus.OK)
+                    .status(ResponseStatus.ERROR)
                     .message("Thêm sinh viên không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Không tìm thấy file được thêm!")
                             .build()))
                     .build();
-        } catch (Exception ex) {
+        }
+        catch (LopIsNotExist e) {
+            return ThemSinhVienWithFileResponse.builder()
+                    .status(ResponseStatus.ERROR)
+                    .message("Thêm sinh viên không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lớp không tồn tại!")
+                            .build()))
+                    .build();
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
             return ThemSinhVienWithFileResponse.builder()
-                    .status(ResponseStatus.OK)
+                    .status(ResponseStatus.ERROR)
                     .message("Thêm sinh viên không thành công.")
                     .errors(Arrays.asList(ErrorResponse.builder()
                             .message("Lỗi hệ thống!")
