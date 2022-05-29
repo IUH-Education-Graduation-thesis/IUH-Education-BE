@@ -119,7 +119,7 @@ public class SinhVienLopHocPhanService {
 
 
             if (_lopHocPhan.getTrangThaiLopHocPhanEnum() != TrangThaiLopHocPhan.CHO_SINH_VIEN_DANG_KY
-                    || _lopHocPhan.getTrangThaiLopHocPhanEnum() != TrangThaiLopHocPhan.CHAP_NHAN_MO_LOP
+                    && _lopHocPhan.getTrangThaiLopHocPhanEnum() != TrangThaiLopHocPhan.CHAP_NHAN_MO_LOP
             ) {
                 _lopHocPhanFailure.add(LopHocPhanFailure.builder()
                         .lopHocPhan(_lopHocPhan)
