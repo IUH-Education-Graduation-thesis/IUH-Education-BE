@@ -8,4 +8,5 @@ type SinhVienLopHocPhan {
     sinhVien: SinhVien
     lopHocPhan: LopHocPhan
     diemTrungBinh: Float
+    nhomThucHanh: Int
 }

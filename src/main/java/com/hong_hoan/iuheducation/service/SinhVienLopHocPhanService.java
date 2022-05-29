@@ -1,11 +1,14 @@
 package com.hong_hoan.iuheducation.service;
 
 import com.hong_hoan.iuheducation.entity.*;
+import com.hong_hoan.iuheducation.exception.LopHocPhanIsNotExist;
 import com.hong_hoan.iuheducation.exception.SinhVienLopHocPhanIsNotExist;
 import com.hong_hoan.iuheducation.repository.LopHocPhanRepository;
 import com.hong_hoan.iuheducation.repository.SinhVienLopHocPhanRepository;
 import com.hong_hoan.iuheducation.resolvers.input.hoc_phan.DangKyHocPhanInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien_lop_hoc_phan.SuaSinhVienLopHocPhanInputs;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.HocPhanDangKy;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.LopHocPhanFailure;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien_lop_hoc_phan.HocKyItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +29,11 @@ public class SinhVienLopHocPhanService {
 
     public SinhVienLopHocPhan suaDiemSinhVien(SuaSinhVienLopHocPhanInputs inputs) {
         Optional<SinhVienLopHocPhan> _sinhVienLopHocPhanOpt = sinhVienLopHocPhanRepository.findById(SinhVienLopHocPhanId.builder()
-                        .sinhVienId(inputs.getSinhVienId())
-                        .lopHocPhanId(inputs.getLopHocPhanId())
+                .sinhVienId(inputs.getSinhVienId())
+                .lopHocPhanId(inputs.getLopHocPhanId())
                 .build());
 
-        if(_sinhVienLopHocPhanOpt.isEmpty()) {
+        if (_sinhVienLopHocPhanOpt.isEmpty()) {
             throw new SinhVienLopHocPhanIsNotExist();
         }
 
@@ -99,11 +102,55 @@ public class SinhVienLopHocPhanService {
         return _hocKyItem;
     }
 
-    public List<SinhVienLopHocPhan> themSinhVienLopHocPhan(List<DangKyHocPhanInputs> inputs, Account account) {
+    public HocPhanDangKy themSinhVienLopHocPhan(List<DangKyHocPhanInputs> inputs, Account account) {
         List<SinhVienLopHocPhan> _sinhVienLopHocPhans = new ArrayList<>();
 
+        List<LopHocPhanFailure> _lopHocPhanFailure = new ArrayList<>();
+
+
         inputs.forEach(i -> {
-            LopHocPhan _lopHocPhan = lopHocPhanRepository.findById(i.getLopHocPhanId()).get();
+            Optional<LopHocPhan> _lopHocPhanOption = lopHocPhanRepository.findById(i.getLopHocPhanId());
+
+            if (_lopHocPhanOption.isEmpty()) {
+                return;
+            }
+
+            LopHocPhan _lopHocPhan = _lopHocPhanOption.get();
+
+
+            if (_lopHocPhan.getTrangThaiLopHocPhanEnum() != TrangThaiLopHocPhan.CHO_SINH_VIEN_DANG_KY
+                    || _lopHocPhan.getTrangThaiLopHocPhanEnum() != TrangThaiLopHocPhan.CHAP_NHAN_MO_LOP
+            ) {
+                _lopHocPhanFailure.add(LopHocPhanFailure.builder()
+                        .lopHocPhan(_lopHocPhan)
+                        .message("Lớp học phần không được phép đăng ký!")
+                        .build());
+                return;
+            }
+
+            if (i.getNhomThucHanh() != null) {
+                Integer _soSinhVienCuaMotNhomThucHanh = Math.round(_lopHocPhan.getSoLuongToiDa() / _lopHocPhan.getSoNhomThucHanh());
+                long _currentSoLuongSinhVienCuaNhomThucHanh = _lopHocPhan.getSinhVienLopHocPhans().stream()
+                        .filter(item -> item.getNhomThucHanh() == i.getNhomThucHanh()).count();
+
+                if (_currentSoLuongSinhVienCuaNhomThucHanh >= _soSinhVienCuaMotNhomThucHanh) {
+                    _lopHocPhanFailure.add(LopHocPhanFailure.builder()
+                            .lopHocPhan(_lopHocPhan)
+                            .message("Nhóm thực hành đã đủ số lượng!")
+                            .build());
+
+                    return;
+                }
+            }
+
+            if (_lopHocPhan.getSinhVienLopHocPhans().size() >= _lopHocPhan.getSoLuongToiDa()) {
+                _lopHocPhanFailure.add(LopHocPhanFailure.builder()
+                        .lopHocPhan(_lopHocPhan)
+                        .message("Lớp học phần đã đủ số lượng!")
+                        .build());
+
+                return;
+            }
 
             SinhVienLopHocPhanId _sinhVienLopHocPhanId = SinhVienLopHocPhanId.builder()
                     .lopHocPhanId(_lopHocPhan.getId())
@@ -122,7 +169,10 @@ public class SinhVienLopHocPhanService {
 
         List<SinhVienLopHocPhan> _sinhVienLopHocPhanRes = sinhVienLopHocPhanRepository.saveAllAndFlush(_sinhVienLopHocPhans);
 
-        return _sinhVienLopHocPhanRes;
+        return HocPhanDangKy.builder()
+                .sinhVienLopHocPhans(_sinhVienLopHocPhanRes)
+                .lopHocPhanFailures(_lopHocPhanFailure)
+                .build();
     }
 
 }

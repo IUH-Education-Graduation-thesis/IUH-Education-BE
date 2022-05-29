@@ -1,6 +1,16 @@
+type LopHocPhanFailure {
+    lopHocPhan: LopHocPhan
+    message: String
+}
+
+type HocPhanDangKy {
+    sinhVienLopHocPhans: [SinhVienLopHocPhan]
+    lopHocPhanFailures: [LopHocPhanFailure]
+}
+
 type DangKyHocPhanResponse implements ResponseInterface {
     status: ResponseStatus!
     errors: [ErrorResponse]
     message: String
-    data: [HocPhan]
+    data: [HocPhanDangKy]
 }
