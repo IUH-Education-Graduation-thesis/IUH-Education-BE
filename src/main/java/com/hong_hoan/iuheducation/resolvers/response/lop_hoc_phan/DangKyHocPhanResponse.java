@@ -1,4 +1,4 @@
-package com.hong_hoan.iuheducation.resolvers.response;
+package com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan;
 
 import com.hong_hoan.iuheducation.entity.HocKy;
 import com.hong_hoan.iuheducation.entity.HocPhan;
@@ -18,5 +18,5 @@ public class DangKyHocPhanResponse implements ResponseInterface {
     private ResponseStatus status;
     private List<ErrorResponse> errors;
     private String message;
-    private List<HocPhan> data;
+    private List<HocPhanDangKy> data;
 }

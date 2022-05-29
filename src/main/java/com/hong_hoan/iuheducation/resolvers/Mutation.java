@@ -16,7 +16,7 @@ import com.hong_hoan.iuheducation.resolvers.input.khoa_vien.ThemKhoaVienInputs;
 import com.hong_hoan.iuheducation.resolvers.input.lop.ThemLopInputs;
 import com.hong_hoan.iuheducation.resolvers.input.phong_hoc.ThemPhongHocInputs;
 import com.hong_hoan.iuheducation.resolvers.input.sinh_vien.SinhVienInputs;
-import com.hong_hoan.iuheducation.resolvers.response.DangKyHocPhanResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.DangKyHocPhanResponse;
 import com.hong_hoan.iuheducation.resolvers.response.chuyen_nganh.ChuyenNganhResponse;
 import com.hong_hoan.iuheducation.resolvers.response.giang_vien.GiangVienResponse;
 import com.hong_hoan.iuheducation.resolvers.response.hoc_phan.HocPhanResponse;
@@ -27,6 +27,7 @@ import com.hong_hoan.iuheducation.resolvers.response.account.LoginData;
 import com.hong_hoan.iuheducation.resolvers.response.account.LoginResponse;
 import com.hong_hoan.iuheducation.resolvers.response.account.RegisterResponse;
 import com.hong_hoan.iuheducation.resolvers.response.day_nha.DayNhaResponse;
+import com.hong_hoan.iuheducation.resolvers.response.lop_hoc_phan.HocPhanDangKy;
 import com.hong_hoan.iuheducation.resolvers.response.notification.NotificationResponse;
 import com.hong_hoan.iuheducation.resolvers.response.phong_hoc.PhongHocResponse;
 import com.hong_hoan.iuheducation.resolvers.response.sinh_vien.SinhVienResponse;
@@ -47,7 +48,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.Part;
-import java.io.IOException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -127,20 +127,21 @@ public class Mutation implements GraphQLMutationResolver {
         Account _account = accountService.getCurrentAccount();
 
         try {
-            List<SinhVienLopHocPhan> _sinhVienLopHocPhans = sinhVienLopHocPhanService.themSinhVienLopHocPhan(inputs, _account);
-
-            List<HocPhan> _hocPhans = _sinhVienLopHocPhans.stream().map(i -> i.getLopHocPhan().getHocPhan()).collect(Collectors.toList());
+            HocPhanDangKy _hocPhanDangKy = sinhVienLopHocPhanService.themSinhVienLopHocPhan(inputs, _account);
 
             return DangKyHocPhanResponse.builder()
                     .status(ResponseStatus.ERROR)
                     .message("Đăng ký học phần thành công.")
-                    .data(_hocPhans)
+                    .data(Arrays.asList(_hocPhanDangKy))
                     .build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return DangKyHocPhanResponse.builder()
                     .status(ResponseStatus.OK)
                     .message("Đăng ký học phần Không thành công.")
+                    .errors(Arrays.asList(ErrorResponse.builder()
+                            .message("Lỗi hệ thống!")
+                            .build()))
                     .build();
         }
 
@@ -246,8 +247,7 @@ public class Mutation implements GraphQLMutationResolver {
                             .message("Không tìm thấy file được thêm!")
                             .build()))
                     .build();
-        }
-        catch (LopIsNotExist e) {
+        } catch (LopIsNotExist e) {
             return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.ERROR)
                     .message("Thêm sinh viên không thành công.")
@@ -255,8 +255,7 @@ public class Mutation implements GraphQLMutationResolver {
                             .message("Lớp không tồn tại!")
                             .build()))
                     .build();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return ThemSinhVienWithFileResponse.builder()
                     .status(ResponseStatus.ERROR)
